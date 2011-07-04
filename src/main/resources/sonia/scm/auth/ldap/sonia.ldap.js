@@ -49,15 +49,15 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
   enabledText: 'Enabled',
   
   // help texts
-  idAttributeHelpText: 'The name of the ldap attribute which contains the username',
-  fullnameAttributeHelpText: 'The name of the ldap attribute which contains the displayname of the user',
-  mailAttributeHelpText: 'The name of the ldap attribute which contains the e-mail address of the user',
+  idAttributeHelpText: 'LDAP attribute name holding the username (e.g. uid)',
+  fullnameAttributeHelpText: 'LDAP attribute name for the users displayname (e.g. cn)',
+  mailAttributeHelpText: 'LDAP attribute name for the users e-mail address (e.g. mail)',
   // TODO improve
   groupAttributeHelpText: 'The name of the ldap attribute which contains the group names of the user',
   baseDNHelpText: 'The basedn for example: dc=example,dc=com',
-  connectionDNHelpText: 'The complete dn of the connection user. <strong>Note:<strong> \n\
+  connectionDNHelpText: 'The complete dn of the proxy user. <strong>Note:<strong> \n\
                          This user needs read an search privileges for the id, mail and fullname attributes.',
-  connectionPasswordHelpText: 'The password for connection user.',
+  connectionPasswordHelpText: 'The password for proxy user.',
   hostURLHelpText: 'The url for the ldap server. For example: ldap://localhost:389/',
   searchFilterHelpText: 'The search filter to find the users. <strong>Note:</strong>\n\
                         {0} will be replaced by the username.',
