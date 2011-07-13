@@ -158,9 +158,10 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
         allowBlank : true,
         helpText: this.groupsUnitHelpText
       },{
-        xtpye: 'checkbox',
+        xtype: 'checkbox',
         fieldLabel : this.enabledText,
         name: 'enabled',
+        inputValue: 'true',
         helpText: this.enabledHelpText
       }]
     }
