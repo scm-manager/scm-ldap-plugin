@@ -8,6 +8,7 @@
     <name>${project.name}</name>
     <description>SCM-Manager LDAP Plugin</description>
     <author>Thorsten Ludewig</author>
+    <url>${project.url}</url>
   </information>
 
   <packages>

@@ -6,7 +6,7 @@
   <parent>
     <artifactId>scm-plugins</artifactId>
     <groupId>sonia.scm.plugins</groupId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.5</version>
   </parent>
 
   <groupId>sonia.scm.plugins</groupId>
@@ -16,10 +16,12 @@
   <name>${project.artifactId}</name>
   <description>scm manager auth ldap plugin</description>
 
+  <url>https://bitbucket.org/tludewig/scm-auth-ldap-plugin</url>
+
   <scm>
-    <connection>scm:hg:http://bitbucket.org/tludewig/scm-auth-ldap-plugin</connection>
+    <connection>scm:hg:https://bitbucket.org/tludewig/scm-auth-ldap-plugin</connection>
     <developerConnection>scm:hg:https://bitbucket.org/tludewig/scm-auth-ldap-plugin</developerConnection>
-    <url>http://bitbucket.org/tludewig/scm-auth-ldap-plugin</url>
+    <url>https://bitbucket.org/tludewig/scm-auth-ldap-plugin</url>
   </scm>
 
   <dependencies>

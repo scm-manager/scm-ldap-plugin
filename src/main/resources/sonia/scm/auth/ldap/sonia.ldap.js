@@ -63,7 +63,7 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
                         {0} will be replaced by the username.',
   searchScopeHelpText: 'The scope for the user search.',
   peopleUnitHelpText: 'The relative location of the users. For example: ou=People',
-  groupsUnitHelpText: 'The relative location of the users. For example: ou=Groups',
+  groupsUnitHelpText: 'The relative location of the groups. For example: ou=Groups',
   enabledHelpText: 'Enables or disables the ldap authentication',
   
   initComponent: function(){
@@ -140,9 +140,9 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
         store: new Ext.data.SimpleStore({
           fields: ['scope'],
           data: [
-            ['object'],
-            ['one'],
-            ['sub']
+          ['object'],
+          ['one'],
+          ['sub']
           ]
         })
       },{
@@ -187,7 +187,9 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
   },
 
   onLoad: function(el){
-    var tid = setTimeout( function(){el.mask(this.loadingText);}, 100);
+    var tid = setTimeout( function(){
+      el.mask(this.loadingText);
+    }, 100);
     Ext.Ajax.request({
       url: restUrl + 'config/auth/ldap.json',
       method: 'GET',
@@ -219,7 +221,38 @@ if ( i18n != null && i18n.country == 'de' ){
 
   Ext.override(Sonia.ldap.ConfigPanel, {
 
-    // TODO
+    titleText: 'LDAP Atthentifizierung',
+    idAttributeText: 'Attributname: ID',
+    fullnameAttributeText: 'Atributname: Vollständiger Name',
+    mailAttributeText: 'Attributname: eMail-Adresse',
+    groupAttributeText: 'Attributname: Gruppen',
+    baseDNText: 'Base DN',
+    connectionDNText: 'Verbindungs-DN',
+    connectionPasswordText: 'Verbindungs-Password',
+    hostURLText: 'Server URL',
+    searchFilterText: 'Suchfilter',
+    searchScopeText: 'Suchtiefe (scope)',
+    groupsUnitText: 'Gruppen (ou)',
+    peopleUnitText: 'Personen (ou)',
+    enabledText: 'Aktiviert',
+  
+    // help texts
+    idAttributeHelpText: 'LDAP Attributname der eindeutigen ID der Accounts (z.B. uid)',
+    fullnameAttributeHelpText: 'LDAP Attributname des vollständigen Accountnames (z.B. cn)',
+    mailAttributeHelpText: 'LDAP Attributname der Account-eMail-Adresse (z.B. mail)',
+
+    groupAttributeHelpText: 'Name des LDAP Grupen-Attributes (z.B. group)',
+    baseDNHelpText: 'Base DN zum Beispiel: dc=example,dc=com',
+    connectionDNHelpText: 'Vollständige DN des Proxy-Account <strong>Achtung<strong> \n\
+                         Dieser Account benötigt lese und such Berechtigung für die id, mail und fullname Attribute.',
+    connectionPasswordHelpText: 'Das Passwort des Proxy-Account',
+    hostURLHelpText: 'URL zum LDAP-Server (z.B. ldap://localhost:389/)',
+    searchFilterHelpText: 'Personensuchfilter <strong>Achtung:</strong>\n\
+                        {0} wird durch den Nutzernamen ersetzt.',
+    searchScopeHelpText: 'Suchtiefe (scope) für die Personensuche',
+    peopleUnitHelpText: 'Relativer Personen-Pfad (z.B. ou=People)',
+    groupsUnitHelpText: 'Relativer Gruppen-Pfad (z.B. ou=Groups)',
+    enabledHelpText: 'Aktiviert / Deaktiviert die LDAP Authentifizierung'
 
   });
 
