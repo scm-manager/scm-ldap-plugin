@@ -267,7 +267,7 @@ public class LDAPConfig
   private String searchFilter = "(&(uid={0})(objectClass=posixAccount))";
 
   /** Field description */
-  @XmlElement(name = "search-filter-groups")
+  @XmlElement(name = "search-filter-group")
   private String searchFilterGroup =
     "(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))";
 
