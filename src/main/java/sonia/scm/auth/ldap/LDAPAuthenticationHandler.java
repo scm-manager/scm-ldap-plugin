@@ -413,8 +413,13 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
 
     if (Util.isNotEmpty(config.getSearchFilterGroup()))
     {
+      if (mail == null)
+      {
+        mail = "";
+      }
+
       filter = MessageFormat.format(config.getSearchFilterGroup(), userDN, uid,
-                                    Util.nonNull(mail));
+                                    mail);
 
       if (logger.isDebugEnabled())
       {
