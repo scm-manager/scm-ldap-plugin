@@ -35,7 +35,6 @@ package sonia.scm.auth.ldap;
 
 //~--- JDK imports ------------------------------------------------------------
 
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -155,6 +154,17 @@ public class LDAPConfig
    *
    * @return
    */
+  public String getSearchFilterGroup()
+  {
+    return searchFilterGroup;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @return
+   */
   public String getSearchScope()
   {
     return searchScope;
@@ -207,6 +217,17 @@ public class LDAPConfig
     this.enabled = enabled;
   }
 
+  /**
+   * Method description
+   *
+   *
+   * @param searchFilterGroup
+   */
+  public void setSearchFilterGroup(String searchFilterGroup)
+  {
+    this.searchFilterGroup = searchFilterGroup;
+  }
+
   //~--- fields ---------------------------------------------------------------
 
   /** Field description */
@@ -244,6 +265,11 @@ public class LDAPConfig
   /** Field description */
   @XmlElement(name = "search-filter")
   private String searchFilter = "(&(uid={0})(objectClass=posixAccount))";
+
+  /** Field description */
+  @XmlElement(name = "search-filter-groups")
+  private String searchFilterGroup =
+    "(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))";
 
   /** Field description */
   @XmlElement(name = "search-scope")

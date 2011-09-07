@@ -43,6 +43,7 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
   connectionPasswordText: 'Connection Password',
   hostURLText: 'Host URL',
   searchFilterText: 'Search Filter',
+  searchFilterGroupText: 'Group Search Filter',
   searchScopeText: 'Search Scope',
   groupsUnitText: 'Groups Unit',
   peopleUnitText: 'People Unit',
@@ -61,6 +62,10 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
   hostURLHelpText: 'The url for the ldap server. For example: ldap://localhost:389/',
   searchFilterHelpText: 'The search filter to find the users. <strong>Note:</strong>\n\
                         {0} will be replaced by the username.',
+  searchFilterGroupHelpText: 'The search filter to find groups of the user. <string>Note:</strong>\n\
+                        {0} will be replaced by the dn of the user.<br />\n\
+                        {1} will be replaced by the username.<br />\n\
+                        {2} will be replaced by the email address of the user.',
   searchScopeHelpText: 'The scope for the user search.',
   peopleUnitHelpText: 'The relative location of the users. For example: ou=People',
   groupsUnitHelpText: 'The relative location of the groups. For example: ou=Groups',
@@ -125,6 +130,12 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
         name : 'search-filter',
         allowBlank : true,
         helpText: this.searchFilterHelpText
+      },{
+        xtype : 'textfield',
+        fieldLabel : this.searchFilterGroupText,
+        name : 'search-filter-group',
+        allowBlank : true,
+        helpText: this.searchFilterGroupHelpText        
       },{
         xtype : 'combo',
         fieldLabel : this.searchScopeText,
@@ -232,6 +243,7 @@ if ( i18n != null && i18n.country == 'de' ){
     connectionPasswordText: 'Verbindungs-Password',
     hostURLText: 'Server URL',
     searchFilterText: 'Suchfilter',
+    searchFilterGroupText: 'Gruppensuchfilter',
     searchScopeText: 'Suchtiefe (scope)',
     groupsUnitText: 'Gruppen (ou)',
     peopleUnitText: 'Personen (ou)',
@@ -250,6 +262,10 @@ if ( i18n != null && i18n.country == 'de' ){
     hostURLHelpText: 'URL zum LDAP-Server (z.B. ldap://localhost:389/)',
     searchFilterHelpText: 'Personensuchfilter <strong>Achtung:</strong>\n\
                         {0} wird durch den Nutzernamen ersetzt.',
+    searchFilterGroupHelpText: 'Gruppensuchfilter. <string>Achtung:</strong>\n\
+                        {0} wird durch die DN des Benutzers erssetzt.<br />\n\
+                        {1} wird durch den Nutzernamen ersetzt.<br />\n\
+                        {2} wird durch die E-Mail des Benutzers ersetzt.',
     searchScopeHelpText: 'Suchtiefe (scope) für die Personensuche',
     peopleUnitHelpText: 'Relativer Personen-Pfad (z.B. ou=People)',
     groupsUnitHelpText: 'Relativer Gruppen-Pfad (z.B. ou=Groups)',

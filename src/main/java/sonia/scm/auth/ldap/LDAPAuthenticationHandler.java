@@ -89,10 +89,6 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
   public static final String ATTRIBUTE_GROUP_NAME = "cn";
 
   /** Field description */
-  public static final String FILTER_GROUP =
-    "(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))";
-
-  /** Field description */
   public static final String SEARCHTYPE_GROUP = "group";
 
   /** Field description */
@@ -284,7 +280,8 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
             User user = createUser(attributes);
             Set<String> groups = new HashSet<String>();
 
-            fetchGroups(bindContext, groups, userDN);
+            fetchGroups(bindContext, groups, userDN, user.getId(),
+                        user.getMail());
             getGroups(attributes, groups);
             result = new AuthenticationResult(user, groups);
           }    // password wrong ?
@@ -404,6 +401,38 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
    * Method description
    *
    *
+   * @param userDN
+   * @param uid
+   * @param mail
+   *
+   * @return
+   */
+  private String createGroupSearchFilter(String userDN, String uid, String mail)
+  {
+    String filter = null;
+
+    if (Util.isNotEmpty(config.getSearchFilterGroup()))
+    {
+      filter = MessageFormat.format(config.getSearchFilterGroup(), userDN, uid,
+                                    Util.nonNull(mail));
+
+      if (logger.isDebugEnabled())
+      {
+        logger.debug("search-filter for group search: {}", filter);
+      }
+    }
+    else
+    {
+      logger.warn("search-filter for groups not defined");
+    }
+
+    return filter;
+  }
+
+  /**
+   * Method description
+   *
+   *
    * @param type
    * @param prefix
    *
@@ -513,9 +542,11 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
    * @param context
    * @param groups
    * @param userDN
+   * @param uid
+   * @param mail
    */
   private void fetchGroups(DirContext context, Set<String> groups,
-                           String userDN)
+                           String userDN, String uid, String mail)
   {
     NamingEnumeration<SearchResult> searchResultEnm = null;
 
@@ -528,33 +559,31 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
       searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
       searchControls.setReturningAttributes(new String[] { "cn" });
 
-      String filter = MessageFormat.format(FILTER_GROUP, userDN);
+      String filter = createGroupSearchFilter(userDN, uid, mail);
 
-      if (logger.isDebugEnabled())
+      if (filter != null)
       {
-        logger.debug("using filter {} for group search", filter);
-      }
+        String searchDN = createGroupSearchBaseDN();
 
-      String searchDN = createGroupSearchBaseDN();
+        searchResultEnm = context.search(searchDN, filter, searchControls);
 
-      searchResultEnm = context.search(searchDN, filter, searchControls);
-
-      while (searchResultEnm.hasMore())
-      {
-        SearchResult searchResult = searchResultEnm.next();
-        Attributes groupAttributes = searchResult.getAttributes();
-        String name = LdapUtil.getAttribute(groupAttributes,
-                        ATTRIBUTE_GROUP_NAME);
-
-        if (Util.isNotEmpty(name))
+        while (searchResultEnm.hasMore())
         {
-          groups.add(name);
+          SearchResult searchResult = searchResultEnm.next();
+          Attributes groupAttributes = searchResult.getAttributes();
+          String name = LdapUtil.getAttribute(groupAttributes,
+                          ATTRIBUTE_GROUP_NAME);
+
+          if (Util.isNotEmpty(name))
+          {
+            groups.add(name);
+          }
         }
       }
     }
     catch (NamingException ex)
     {
-      logger.debug("groupOfUniqueNames not found", ex);
+      logger.debug("could not find groups", ex);
     }
     finally
     {
