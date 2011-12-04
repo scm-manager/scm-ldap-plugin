@@ -9,7 +9,12 @@
     <description>SCM-Manager LDAP Plugin</description>
     <author>Thorsten Ludewig</author>
     <url>${project.url}</url>
+    <category>Authentication</category>
   </information>
+
+  <conditions>
+    <min-version>${project.parent.version}</min-version>
+  </conditions>
 
   <packages>
     <package>sonia.scm.auth.ldap</package>
