@@ -62,6 +62,9 @@ public class LDAPAuthenticationHandlerTest extends LDAPTestBase
   /** Field description */
   public static final String LDIF_002 = "/ldif/002.ldif";
 
+  /** Field description */
+  public static final String LDIF_003 = "/ldif/003.ldif";
+
   //~--- methods --------------------------------------------------------------
 
   /**
@@ -110,6 +113,37 @@ public class LDAPAuthenticationHandlerTest extends LDAPTestBase
   {
     assertSuccess(ar, "zaphod", "Zaphod Beeblebrox",
                   "zaphod.beeblebrox@hitchhiker.com");
+  }
+
+  /**
+   * Method description
+   *
+   *
+   *
+   * @throws LDAPException
+   */
+  @Test
+  public void testGroupAttribute() throws LDAPException
+  {
+    initialize(LDIF_003);
+
+    LDAPConfig config = createConfig();
+
+    config.setUnitGroup("cn=Other Groups");
+
+    LDAPAuthenticationHandler handler = createLDAPAuthHandler(config);
+    AuthenticationResult ar = handler.authenticate(null, null, "trillian",
+                                "trilli123");
+
+    assertTrillian(ar);
+
+    Collection<String> groups = ar.getGroups();
+
+    assertNotNull(groups);
+    assertTrue(groups.size() == 3);
+    assertTrue(groups.contains("HeartOfGold"));
+    assertTrue(groups.contains("RestaurantAtTheEndOfTheUniverse"));
+    assertTrue(groups.contains("HappyVerticalPeopleTransporter"));
   }
 
   /**

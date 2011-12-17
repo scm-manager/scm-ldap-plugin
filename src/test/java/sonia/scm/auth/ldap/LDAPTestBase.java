@@ -107,6 +107,9 @@ public class LDAPTestBase
     config.setListenerConfigs(new InMemoryListenerConfig("listener-1",
             InetAddress.getLocalHost(), PORT, ServerSocketFactory.getDefault(),
             SocketFactory.getDefault(), null));
+
+    // disable schema check, becase of memberOf attribute
+    config.setSchema(null);
     ldapServer = new InMemoryDirectoryServer(config);
     ldapServer.startListening();
   }
