@@ -71,6 +71,11 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
   groupsUnitHelpText: 'The relative location of the groups. For example: ou=Groups',
   enabledHelpText: 'Enables or disables the ldap authentication',
   
+  // errors 
+  errorBoxTitle: 'Error',
+  errorOnSubmitText: 'Error during config submit.',
+  errorOnLoadText: 'Error during config load.',
+  
   initComponent: function(){
     
     var config = {
@@ -193,7 +198,12 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
         this.el.unmask();
       },
       failure: function(){
-        this.el.unmask();
+        Ext.MessageBox.show({
+          title: this.errorBoxTitle,
+          msg: this.errorOnSubmitText,
+          buttons: Ext.MessageBox.OK,
+          icon:Ext.MessageBox.ERROR
+        });
       }
     });
   },
@@ -216,7 +226,12 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
       failure: function(){
         el.unmask();
         clearTimeout(tid);
-        alert('failure');
+        Ext.MessageBox.show({
+          title: this.errorBoxTitle,
+          msg: this.errorOnLoadText,
+          buttons: Ext.MessageBox.OK,
+          icon:Ext.MessageBox.ERROR
+        });
       }
     });
   }
@@ -269,7 +284,12 @@ if ( i18n != null && i18n.country == 'de' ){
     searchScopeHelpText: 'Suchtiefe (scope) für die Personensuche',
     peopleUnitHelpText: 'Relativer Personen-Pfad (z.B. ou=People)',
     groupsUnitHelpText: 'Relativer Gruppen-Pfad (z.B. ou=Groups)',
-    enabledHelpText: 'Aktiviert / Deaktiviert die LDAP Authentifizierung'
+    enabledHelpText: 'Aktiviert / Deaktiviert die LDAP Authentifizierung',
+    
+    // errors 
+    errorBoxTitle: 'Fehler',
+    errorOnSubmitText: 'Fehler beim speichern der Konfiguration.',
+    errorOnLoadText: 'Fehler beim laden der Konfiguration.'
 
   });
 
