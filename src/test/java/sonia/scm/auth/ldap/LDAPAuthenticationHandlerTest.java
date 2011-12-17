@@ -116,10 +116,11 @@ public class LDAPAuthenticationHandlerTest extends LDAPTestBase
    * Method description
    *
    *
-   * @throws Exception
+   *
+   * @throws LDAPException
    */
   @Test
-  public void testGroups() throws Exception
+  public void testGroups() throws LDAPException
   {
     initialize(LDIF_002);
 
@@ -147,10 +148,11 @@ public class LDAPAuthenticationHandlerTest extends LDAPTestBase
    * Method description
    *
    *
-   * @throws Exception
+   *
+   * @throws LDAPException
    */
   @Test
-  public void testNotFound() throws Exception
+  public void testNotFound() throws LDAPException
   {
     initialize(LDIF_001);
 
@@ -166,10 +168,11 @@ public class LDAPAuthenticationHandlerTest extends LDAPTestBase
    *
    *
    *
-   * @throws Exception
+   *
+   * @throws LDAPException
    */
   @Test
-  public void testSimpleAuthentication() throws Exception
+  public void testSimpleAuthentication() throws LDAPException
   {
     initialize(LDIF_001);
 
@@ -186,14 +189,15 @@ public class LDAPAuthenticationHandlerTest extends LDAPTestBase
   }
 
   /**
-   *   Method description
+   * Method description
    *
    *
    *
-   *   @throws Exception
+   *
+   * @throws LDAPException
    */
   @Test
-  public void testWrongPassword() throws Exception
+  public void testWrongPassword() throws LDAPException
   {
     initialize(LDIF_001);
 
