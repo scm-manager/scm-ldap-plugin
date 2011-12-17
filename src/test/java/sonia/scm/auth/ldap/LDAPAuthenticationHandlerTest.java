@@ -59,7 +59,89 @@ public class LDAPAuthenticationHandlerTest extends LDAPTestBase
   /** Field description */
   public static final String LDIF_001 = "/ldif/001.ldif";
 
+  /** Field description */
+  public static final String LDIF_002 = "/ldif/002.ldif";
+
   //~--- methods --------------------------------------------------------------
+
+  /**
+   * Method description
+   *
+   *
+   * @param ar
+   * @param name
+   * @param displayName
+   * @param mail
+   */
+  public void assertSuccess(AuthenticationResult ar, String name,
+                            String displayName, String mail)
+  {
+    assertNotNull(ar);
+    assertEquals(AuthenticationState.SUCCESS, ar.getState());
+
+    User user = ar.getUser();
+
+    assertNotNull(user);
+    assertEquals(LDAPAuthenticationHandler.TYPE, user.getType());
+    assertEquals(name, user.getName());
+    assertEquals(displayName, user.getDisplayName());
+    assertEquals(mail, user.getMail());
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @param ar
+   */
+  public void assertTrillian(AuthenticationResult ar)
+  {
+    assertSuccess(ar, "trillian", "Tricia McMillan",
+                  "tricia.mcmillan@hitchhiker.com");
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @param ar
+   */
+  public void assertZaphod(AuthenticationResult ar)
+  {
+    assertSuccess(ar, "zaphod", "Zaphod Beeblebrox",
+                  "zaphod.beeblebrox@hitchhiker.com");
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testGroups() throws Exception
+  {
+    initialize(LDIF_002);
+
+    LDAPAuthenticationHandler handler = createLDAPAuthHandler();
+    AuthenticationResult ar = handler.authenticate(null, null, "trillian",
+                                "trilli123");
+
+    assertTrillian(ar);
+
+    Collection<String> groups = ar.getGroups();
+
+    assertNotNull(groups);
+    assertTrue(groups.size() == 2);
+    assertTrue(groups.contains("HeartOfGold"));
+    assertTrue(groups.contains("RestaurantAtTheEndOfTheUniverse"));
+    ar = handler.authenticate(null, null, "zaphod", "zaphod123");
+    assertZaphod(ar);
+    groups = ar.getGroups();
+    assertNotNull(groups);
+    assertTrue(groups.size() == 1);
+    assertTrue(groups.contains("HeartOfGold"));
+  }
 
   /**
    * Method description
@@ -95,16 +177,7 @@ public class LDAPAuthenticationHandlerTest extends LDAPTestBase
     AuthenticationResult ar = handler.authenticate(null, null, "trillian",
                                 "trilli123");
 
-    assertNotNull(ar);
-    assertEquals(AuthenticationState.SUCCESS, ar.getState());
-
-    User user = ar.getUser();
-
-    assertNotNull(user);
-    assertEquals(LDAPAuthenticationHandler.TYPE, user.getType());
-    assertEquals("trillian", user.getName());
-    assertEquals("Tricia McMillan", user.getDisplayName());
-    assertEquals("tricia.mcmillan@hitchhiker.com", user.getMail());
+    assertTrillian(ar);
 
     Collection<String> groups = ar.getGroups();
 
@@ -114,9 +187,9 @@ public class LDAPAuthenticationHandlerTest extends LDAPTestBase
 
   /**
    *   Method description
-   *  
-   *  
-   *  
+   *
+   *
+   *
    *   @throws Exception
    */
   @Test
