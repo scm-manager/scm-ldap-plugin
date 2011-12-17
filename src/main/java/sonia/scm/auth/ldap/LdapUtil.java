@@ -152,6 +152,38 @@ public class LdapUtil
    * Method description
    *
    *
+   * @param dn
+   *
+   * @return
+   */
+  public static String getName(String dn)
+  {
+    String name = dn;
+    int start = dn.indexOf("=");
+
+    if (start > 0)
+    {
+      start++;
+
+      int end = dn.indexOf(",");
+
+      if (end > 0)
+      {
+        name = dn.substring(start, end);
+      }
+      else
+      {
+        name = dn.substring(start);
+      }
+    }
+
+    return name;
+  }
+
+  /**
+   * Method description
+   *
+   *
    * @param scopeString
    *
    * @return

@@ -621,7 +621,10 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
 
         while (userGroupsEnm.hasMore())
         {
-          groups.add((String) userGroupsEnm.next());
+          String group = (String) userGroupsEnm.next();
+
+          group = LdapUtil.getName(group);
+          groups.add(group);
         }
       }
       else
