@@ -652,7 +652,7 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
     appendAttribute(list, config.getAttributeNameId());
     appendAttribute(list, config.getAttributeNameFullname());
     appendAttribute(list, config.getAttributeNameMail());
-    appendAttribute(list, config.getAttributeNameMail());
+    appendAttribute(list, config.getAttributeNameGroup());
 
     return list.toArray(new String[list.size()]);
   }
