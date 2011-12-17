@@ -209,6 +209,83 @@ public class LDAPConfig
    * Method description
    *
    *
+   * @param attributeNameFullname
+   */
+  public void setAttributeNameFullname(String attributeNameFullname)
+  {
+    this.attributeNameFullname = attributeNameFullname;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @param attributeNameGroup
+   */
+  public void setAttributeNameGroup(String attributeNameGroup)
+  {
+    this.attributeNameGroup = attributeNameGroup;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @param attributeNameId
+   */
+  public void setAttributeNameId(String attributeNameId)
+  {
+    this.attributeNameId = attributeNameId;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @param attributeNameMail
+   */
+  public void setAttributeNameMail(String attributeNameMail)
+  {
+    this.attributeNameMail = attributeNameMail;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @param baseDn
+   */
+  public void setBaseDn(String baseDn)
+  {
+    this.baseDn = baseDn;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @param connectionDn
+   */
+  public void setConnectionDn(String connectionDn)
+  {
+    this.connectionDn = connectionDn;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @param connectionPassword
+   */
+  public void setConnectionPassword(String connectionPassword)
+  {
+    this.connectionPassword = connectionPassword;
+  }
+
+  /**
+   * Method description
+   *
+   *
    *
    * @param enabled
    */
@@ -221,11 +298,66 @@ public class LDAPConfig
    * Method description
    *
    *
+   * @param hostUrl
+   */
+  public void setHostUrl(String hostUrl)
+  {
+    this.hostUrl = hostUrl;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @param searchFilter
+   */
+  public void setSearchFilter(String searchFilter)
+  {
+    this.searchFilter = searchFilter;
+  }
+
+  /**
+   * Method description
+   *
+   *
    * @param searchFilterGroup
    */
   public void setSearchFilterGroup(String searchFilterGroup)
   {
     this.searchFilterGroup = searchFilterGroup;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @param searchScope
+   */
+  public void setSearchScope(String searchScope)
+  {
+    this.searchScope = searchScope;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @param unitGroup
+   */
+  public void setUnitGroup(String unitGroup)
+  {
+    this.unitGroup = unitGroup;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @param unitPeople
+   */
+  public void setUnitPeople(String unitPeople)
+  {
+    this.unitPeople = unitPeople;
   }
 
   //~--- fields ---------------------------------------------------------------
