@@ -65,6 +65,24 @@ public class LDAPAuthenticationHandlerTest extends LDAPTestBase
    * Method description
    *
    *
+   * @throws Exception
+   */
+  @Test
+  public void testNotFound() throws Exception
+  {
+    initialize(LDIF_001);
+
+    LDAPAuthenticationHandler handler = createLDAPAuthHandler();
+    AuthenticationResult ar = handler.authenticate(null, null, "hansolo",
+                                "trilli123");
+
+    assertFailed(AuthenticationState.NOT_FOUND, ar);
+  }
+
+  /**
+   * Method description
+   *
+   *
    *
    * @throws Exception
    */
@@ -92,5 +110,45 @@ public class LDAPAuthenticationHandlerTest extends LDAPTestBase
 
     assertNotNull(groups);
     assertTrue(groups.isEmpty());
+  }
+
+  /**
+   *   Method description
+   *  
+   *  
+   *  
+   *   @throws Exception
+   */
+  @Test
+  public void testWrongPassword() throws Exception
+  {
+    initialize(LDIF_001);
+
+    LDAPAuthenticationHandler handler = createLDAPAuthHandler();
+    AuthenticationResult ar = handler.authenticate(null, null, "trillian",
+                                "trilli1234");
+
+    assertFailed(AuthenticationState.FAILED, ar);
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @param state
+   * @param ar
+   */
+  private void assertFailed(AuthenticationState state, AuthenticationResult ar)
+  {
+    assertNotNull(ar);
+    assertEquals(state, ar.getState());
+
+    User user = ar.getUser();
+
+    assertNull(user);
+
+    Collection<String> groups = ar.getGroups();
+
+    assertNull(groups);
   }
 }
