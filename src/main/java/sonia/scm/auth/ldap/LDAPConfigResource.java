@@ -39,6 +39,8 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import sonia.scm.util.AssertUtil;
+import sonia.scm.web.security.AuthenticationResult;
+import sonia.scm.web.security.AuthenticationState;
 
 //~--- JDK imports ------------------------------------------------------------
 
@@ -107,14 +109,24 @@ public class LDAPConfigResource
    */
   @POST
   @Path("test")
-  @Produces({ MediaType.TEXT_PLAIN })
-  public String setConfig(@FormParam("username") String username,
-                          @FormParam("password") String password)
+  @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+  public LDAPAuthenticationState setConfig(
+          @FormParam("username") String username,
+          @FormParam("password") String password)
           throws IOException
   {
     LDAPConfig config = authenticationHandler.getConfig();
+    LDAPContext context = new LDAPContext(config);
+    AuthenticationResult ar = context.authenticate(username, password);
+    LDAPAuthenticationState state = context.getState();
 
-    return new LDAPContext(config).getState().toString();
+    if ((ar != null) && (ar.getState() == AuthenticationState.SUCCESS))
+    {
+      state.setUser(ar.getUser());
+      state.setGroups(ar.getGroups());
+    }
+
+    return state;
   }
 
   /**
