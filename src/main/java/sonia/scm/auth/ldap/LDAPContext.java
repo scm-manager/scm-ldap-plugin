@@ -143,7 +143,7 @@ public class LDAPContext
     }
     finally
     {
-      LdapUtil.close(bindContext);
+      LDAPUtil.close(bindContext);
     }
 
     return result;
@@ -226,7 +226,7 @@ public class LDAPContext
     }
     finally
     {
-      LdapUtil.close(userContext);
+      LDAPUtil.close(userContext);
     }
 
     return authenticated;
@@ -395,11 +395,11 @@ public class LDAPContext
   {
     User user = new User();
 
-    user.setName(LdapUtil.getAttribute(attributes,
+    user.setName(LDAPUtil.getAttribute(attributes,
                                        config.getAttributeNameId()));
-    user.setDisplayName(LdapUtil.getAttribute(attributes,
+    user.setDisplayName(LDAPUtil.getAttribute(attributes,
             config.getAttributeNameFullname()));
-    user.setMail(LdapUtil.getAttribute(attributes,
+    user.setMail(LDAPUtil.getAttribute(attributes,
                                        config.getAttributeNameMail()));
     user.setType(LDAPAuthenticationHandler.TYPE);
 
@@ -487,7 +487,7 @@ public class LDAPContext
           {
             SearchResult searchResult = searchResultEnm.next();
             Attributes groupAttributes = searchResult.getAttributes();
-            String name = LdapUtil.getAttribute(groupAttributes,
+            String name = LDAPUtil.getAttribute(groupAttributes,
                             ATTRIBUTE_GROUP_NAME);
 
             if (Util.isNotEmpty(name))
@@ -503,7 +503,7 @@ public class LDAPContext
       }
       finally
       {
-        LdapUtil.close(searchResultEnm);
+        LDAPUtil.close(searchResultEnm);
       }
     }
     else if (logger.isWarnEnabled())
@@ -539,7 +539,7 @@ public class LDAPContext
         {
           String group = (String) userGroupsEnm.next();
 
-          group = LdapUtil.getName(group);
+          group = LDAPUtil.getName(group);
           groups.add(group);
         }
       }
@@ -554,7 +554,7 @@ public class LDAPContext
     }
     finally
     {
-      LdapUtil.close(userGroupsEnm);
+      LDAPUtil.close(userGroupsEnm);
     }
   }
 
@@ -597,12 +597,12 @@ public class LDAPContext
       try
       {
         SearchControls searchControls = new SearchControls();
-        int scope = LdapUtil.getSearchScope(config.getSearchScope());
+        int scope = LDAPUtil.getSearchScope(config.getSearchScope());
 
         if (logger.isDebugEnabled())
         {
           logger.debug("using scope {} for user search",
-                       LdapUtil.getSearchScope(scope));
+                       LDAPUtil.getSearchScope(scope));
         }
 
         searchControls.setSearchScope(scope);
@@ -640,7 +640,7 @@ public class LDAPContext
       }
       finally
       {
-        LdapUtil.close(searchResultEnm);
+        LDAPUtil.close(searchResultEnm);
       }
     }
 

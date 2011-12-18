@@ -53,7 +53,7 @@ import javax.naming.directory.SearchControls;
  *
  * @author Sebastian Sdorra
  */
-public class LdapUtil
+public class LDAPUtil
 {
 
   /** Field description */
@@ -66,7 +66,7 @@ public class LdapUtil
   public static final String SCOPE_SUB = "sub";
 
   /** the logger for LdapUtil */
-  private static final Logger logger = LoggerFactory.getLogger(LdapUtil.class);
+  private static final Logger logger = LoggerFactory.getLogger(LDAPUtil.class);
 
   //~--- methods --------------------------------------------------------------
 
