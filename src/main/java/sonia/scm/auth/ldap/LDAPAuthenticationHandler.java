@@ -569,46 +569,56 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
   private void fetchGroups(DirContext context, Set<String> groups,
                            String userDN, String uid, String mail)
   {
-    NamingEnumeration<SearchResult> searchResultEnm = null;
-
-    try
+    if (Util.isNotEmpty(config.getSearchFilterGroup()))
     {
+      NamingEnumeration<SearchResult> searchResultEnm = null;
 
-      // read group of unique names
-      SearchControls searchControls = new SearchControls();
-
-      searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-      searchControls.setReturningAttributes(new String[] { "cn" });
-
-      String filter = createGroupSearchFilter(userDN, uid, mail);
-
-      if (filter != null)
+      try
       {
-        String searchDN = createGroupSearchBaseDN();
 
-        searchResultEnm = context.search(searchDN, filter, searchControls);
+        // read group of unique names
+        SearchControls searchControls = new SearchControls();
 
-        while (searchResultEnm.hasMore())
+        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+
+        // make group name attribute configurable?
+        searchControls.setReturningAttributes(new String[] {
+          ATTRIBUTE_GROUP_NAME });
+
+        String filter = createGroupSearchFilter(userDN, uid, mail);
+
+        if (filter != null)
         {
-          SearchResult searchResult = searchResultEnm.next();
-          Attributes groupAttributes = searchResult.getAttributes();
-          String name = LdapUtil.getAttribute(groupAttributes,
-                          ATTRIBUTE_GROUP_NAME);
+          String searchDN = createGroupSearchBaseDN();
 
-          if (Util.isNotEmpty(name))
+          searchResultEnm = context.search(searchDN, filter, searchControls);
+
+          while (searchResultEnm.hasMore())
           {
-            groups.add(name);
+            SearchResult searchResult = searchResultEnm.next();
+            Attributes groupAttributes = searchResult.getAttributes();
+            String name = LdapUtil.getAttribute(groupAttributes,
+                            ATTRIBUTE_GROUP_NAME);
+
+            if (Util.isNotEmpty(name))
+            {
+              groups.add(name);
+            }
           }
         }
       }
+      catch (NamingException ex)
+      {
+        logger.debug("could not find groups", ex);
+      }
+      finally
+      {
+        LdapUtil.close(searchResultEnm);
+      }
     }
-    catch (NamingException ex)
+    else if (logger.isWarnEnabled())
     {
-      logger.debug("could not find groups", ex);
-    }
-    finally
-    {
-      LdapUtil.close(searchResultEnm);
+      logger.warn("group filter is empty");
     }
   }
 
