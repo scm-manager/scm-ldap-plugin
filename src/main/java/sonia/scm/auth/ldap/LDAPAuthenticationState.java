@@ -33,12 +33,46 @@
 
 package sonia.scm.auth.ldap;
 
+//~--- JDK imports ------------------------------------------------------------
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 /**
  *
  * @author Sebastian Sdorra
  */
 public class LDAPAuthenticationState
 {
+
+  /**
+   * Method description
+   *
+   *
+   * @return
+   */
+  @Override
+  public String toString()
+  {
+    StringBuilder msg = new StringBuilder();
+
+    msg.append("Bind: ").append(String.valueOf(bind)).append("\n").append(
+        "Search user: ").append(String.valueOf(searchUser)).append("\n").append(
+        "Authenticate user: ").append(String.valueOf(authenticateUser)).append(
+        "\n");
+
+    if (exception != null)
+    {
+      StringWriter writer = new StringWriter();
+
+      exception.printStackTrace(new PrintWriter(writer));
+      msg.append("Exception: \n").append(writer.toString());
+    }
+
+    return msg.toString();
+  }
+
+  //~--- get methods ----------------------------------------------------------
 
   /**
    * Method description
