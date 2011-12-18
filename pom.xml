@@ -51,6 +51,26 @@
 
   </dependencies>
   
+  <build>
+    <plugins>
+    
+      <plugin>
+        <groupId>sonia.scm.maven</groupId>
+        <artifactId>scm-maven-plugin</artifactId>
+        <version>1.9</version>
+        <executions>
+          <execution>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>fix-descriptor</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    
+    </plugins>
+  </build>
+  
   <repositories>
     
     <repository>
