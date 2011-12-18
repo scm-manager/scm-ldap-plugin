@@ -119,6 +119,28 @@ public class LDAPAuthenticationHandlerTest extends LDAPTestBase
    * Method description
    *
    *
+   * @throws LDAPException
+   */
+  @Test
+  public void testDisabled() throws LDAPException
+  {
+    initialize(LDIF_001);
+
+    LDAPConfig config = createConfig();
+
+    config.setEnabled(false);
+
+    LDAPAuthenticationHandler handler = createLDAPAuthHandler(config);
+    AuthenticationResult ar = handler.authenticate(null, null, "trillian",
+                                "trilli123");
+
+    assertFailed(AuthenticationState.NOT_FOUND, ar);
+  }
+
+  /**
+   * Method description
+   *
+   *
    *
    * @throws LDAPException
    */
