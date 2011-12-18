@@ -93,6 +93,7 @@ public class LDAPContext
   public LDAPContext(LDAPConfig config)
   {
     this.config = config;
+    this.state = new LDAPAuthenticationState();
     buildLdapProperties();
   }
 
@@ -187,6 +188,7 @@ public class LDAPContext
     {
       userContext = new InitialDirContext(userProperties);
       authenticated = true;
+      state.setAuthenticateUser(true);
 
       if (logger.isDebugEnabled())
       {
@@ -195,6 +197,9 @@ public class LDAPContext
     }
     catch (NamingException ex)
     {
+      state.setAuthenticateUser(false);
+      state.setException(ex);
+
       if (logger.isTraceEnabled())
       {
         logger.trace("authentication failed for user ".concat(userDN), ex);
@@ -258,9 +263,12 @@ public class LDAPContext
     try
     {
       context = new InitialDirContext(ldapProperties);
+      state.setBind(true);
     }
     catch (NamingException ex)
     {
+      state.setBind(false);
+      state.setException(ex);
       logger.error(
           "could not bind to ldap with dn ".concat(config.getConnectionDn()),
           ex);
@@ -600,6 +608,7 @@ public class LDAPContext
             if (searchResultEnm.hasMore())
             {
               result = searchResultEnm.next();
+              state.setSearchUser(true);
             }
             else if (logger.isWarnEnabled())
             {
@@ -610,6 +619,8 @@ public class LDAPContext
       }
       catch (NamingException ex)
       {
+        state.setSearchUser(false);
+        state.setException(ex);
         logger.error("exception occured during user search", ex);
       }
       finally
@@ -628,4 +639,7 @@ public class LDAPContext
 
   /** Field description */
   private Hashtable<String, String> ldapProperties;
+
+  /** Field description */
+  private LDAPAuthenticationState state;
 }
