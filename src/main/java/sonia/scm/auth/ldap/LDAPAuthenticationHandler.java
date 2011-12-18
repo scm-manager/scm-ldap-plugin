@@ -355,10 +355,26 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
     ldapProperties.put(Context.INITIAL_CONTEXT_FACTORY,
                        "com.sun.jndi.ldap.LdapCtxFactory");
     ldapProperties.put(Context.PROVIDER_URL, config.getHostUrl());
-    ldapProperties.put(Context.SECURITY_AUTHENTICATION, "simple");
-    ldapProperties.put(Context.SECURITY_PRINCIPAL, config.getConnectionDn());
-    ldapProperties.put(Context.SECURITY_CREDENTIALS,
-                       config.getConnectionPassword());
+
+    String connectionDN = config.getConnectionDn();
+    String connectionPassword = config.getConnectionPassword();
+
+    if (Util.isNotEmpty(connectionDN) && Util.isNotEmpty(connectionPassword))
+    {
+      if (logger.isDebugEnabled())
+      {
+        logger.debug("create bind context for dn {}", connectionDN);
+      }
+
+      ldapProperties.put(Context.SECURITY_AUTHENTICATION, "simple");
+      ldapProperties.put(Context.SECURITY_PRINCIPAL, connectionDN);
+      ldapProperties.put(Context.SECURITY_CREDENTIALS, connectionPassword);
+    }
+    else if (logger.isDebugEnabled())
+    {
+      logger.debug("create anonymous bind context");
+    }
+
     ldapProperties.put("java.naming.ldap.version", "3");
   }
 
