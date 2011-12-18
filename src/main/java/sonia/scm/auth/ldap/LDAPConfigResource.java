@@ -45,6 +45,7 @@ import sonia.scm.util.AssertUtil;
 import java.io.IOException;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -91,6 +92,30 @@ public class LDAPConfigResource
   }
 
   //~--- set methods ----------------------------------------------------------
+
+  /**
+   * Method description
+   *
+   *
+   *
+   * @param username
+   * @param password
+   *
+   * @return
+   *
+   * @throws IOException
+   */
+  @POST
+  @Path("text")
+  @Produces({ MediaType.TEXT_PLAIN })
+  public String setConfig(@FormParam("username") String username,
+                          @FormParam("password") String password)
+          throws IOException
+  {
+    LDAPConfig config = authenticationHandler.getConfig();
+
+    return new LDAPContext(config).getState().toString();
+  }
 
   /**
    * Method description

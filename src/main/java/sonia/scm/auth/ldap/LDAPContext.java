@@ -149,6 +149,21 @@ public class LDAPContext
     return result;
   }
 
+  //~--- get methods ----------------------------------------------------------
+
+  /**
+   * Method description
+   *
+   *
+   * @return
+   */
+  public LDAPAuthenticationState getState()
+  {
+    return state;
+  }
+
+  //~--- methods --------------------------------------------------------------
+
   /**
    * Method description
    *
