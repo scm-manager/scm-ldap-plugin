@@ -417,7 +417,7 @@ public class LDAPConfig
   private String hostUrl = "ldap://localhost:389";
 
   /** Field description */
-  @XmlElement(name = "Custom")
+  @XmlElement(name = "profile")
   private String profile = "Custom";
 
   /** Field description */
