@@ -38,6 +38,8 @@ package sonia.scm.auth.ldap;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import sonia.scm.util.AssertUtil;
+
 //~--- JDK imports ------------------------------------------------------------
 
 import java.io.IOException;
@@ -106,6 +108,7 @@ public class LDAPConfigResource
   public Response setConfig(@Context UriInfo uriInfo, LDAPConfig config)
           throws IOException
   {
+    AssertUtil.assertIsValid(config);
     authenticationHandler.setConfig(config);
     authenticationHandler.storeConfig();
 

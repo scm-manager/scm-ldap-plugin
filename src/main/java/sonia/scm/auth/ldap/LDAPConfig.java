@@ -33,6 +33,11 @@
 
 package sonia.scm.auth.ldap;
 
+//~--- non-JDK imports --------------------------------------------------------
+
+import sonia.scm.Validateable;
+import sonia.scm.util.Util;
+
 //~--- JDK imports ------------------------------------------------------------
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -46,7 +51,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "ldap-config")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class LDAPConfig
+public class LDAPConfig implements Validateable
 {
 
   /**
@@ -212,6 +217,19 @@ public class LDAPConfig
   public boolean isEnabled()
   {
     return enabled;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @return
+   */
+  @Override
+  public boolean isValid()
+  {
+    return isValid(attributeNameId, attributeNameFullname, attributeNameMail,
+                   hostUrl, searchFilter, searchScope);
   }
 
   //~--- set methods ----------------------------------------------------------
@@ -380,6 +398,33 @@ public class LDAPConfig
   public void setUnitPeople(String unitPeople)
   {
     this.unitPeople = unitPeople;
+  }
+
+  //~--- get methods ----------------------------------------------------------
+
+  /**
+   * Method description
+   *
+   *
+   * @param fields
+   *
+   * @return
+   */
+  private boolean isValid(String... fields)
+  {
+    boolean valid = true;
+
+    for (String field : fields)
+    {
+      if (Util.isEmpty(field))
+      {
+        valid = false;
+
+        break;
+      }
+    }
+
+    return valid;
   }
 
   //~--- fields ---------------------------------------------------------------
