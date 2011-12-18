@@ -366,6 +366,9 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
       success: function(response){
         var obj = Ext.decode(response.responseText);
         this.load(obj);
+        if ( obj.profile != 'Custom' ){
+          this.toggleFields(false);
+        }
         clearTimeout(tid);
         el.unmask();
       },
