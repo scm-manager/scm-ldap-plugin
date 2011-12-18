@@ -206,19 +206,19 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
         xtype : 'textfield',
         fieldLabel : this.idAttributeText,
         name : 'attribute-name-id',
-        allowBlank : true,
+        allowBlank : false,
         helpText: this.idAttributeHelpText
       },{
         xtype : 'textfield',
         fieldLabel : this.fullnameAttributeText,
         name : 'attribute-name-fullname',
-        allowBlank : true,
+        allowBlank : false,
         helpText: this.fullnameAttributeHelpText
       },{
         xtype : 'textfield',
         fieldLabel : this.mailAttributeText,
         name : 'attribute-name-mail',
-        allowBlank : true,
+        allowBlank : false,
         helpText: this.mailAttributeHelpText
       },{
         xtype : 'textfield',
@@ -249,13 +249,13 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
         xtype : 'textfield',
         fieldLabel : this.hostURLText,
         name : 'host-url',
-        allowBlank : true,
+        allowBlank : false,
         helpText: this.hostURLHelpText
       },{
         xtype : 'textfield',
         fieldLabel : this.searchFilterText,
         name : 'search-filter',
-        allowBlank : true,
+        allowBlank : false,
         helpText: this.searchFilterHelpText
       },{
         xtype : 'textfield',
@@ -267,7 +267,7 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
         xtype : 'combo',
         fieldLabel : this.searchScopeText,
         name : 'search-scope',
-        allowBlank : true,
+        allowBlank : false,
         helpText: this.searchScopeHelpText,
         valueField: 'scope',
         displayField: 'scope',
