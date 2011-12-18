@@ -143,6 +143,17 @@ public class LDAPConfig
    *
    * @return
    */
+  public String getProfile()
+  {
+    return profile;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @return
+   */
   public String getSearchFilter()
   {
     return searchFilter;
@@ -309,6 +320,17 @@ public class LDAPConfig
    * Method description
    *
    *
+   * @param profile
+   */
+  public void setProfile(String profile)
+  {
+    this.profile = profile;
+  }
+
+  /**
+   * Method description
+   *
+   *
    * @param searchFilter
    */
   public void setSearchFilter(String searchFilter)
@@ -393,6 +415,10 @@ public class LDAPConfig
   /** Field description */
   @XmlElement(name = "host-url")
   private String hostUrl = "ldap://localhost:389";
+
+  /** Field description */
+  @XmlElement(name = "Custom")
+  private String profile = "Custom";
 
   /** Field description */
   @XmlElement(name = "search-filter")

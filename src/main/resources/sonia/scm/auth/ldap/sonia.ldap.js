@@ -33,6 +33,103 @@ Ext.ns("Sonia.ldap");
 
 Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
   
+  profiles: [{
+    name: 'ActiveDirectory',
+    fields: {
+      'attribute-name-id': 'sAMAccountName',
+      'attribute-name-fullname': 'cn',
+      'attribute-name-mail': 'mail',
+      'attribute-name-group': 'memberOf',
+      'search-filter': '(&(objectClass=Person)(uid={0}))',
+      'search-filter-group': '(&(objectClass=group)(member={0}))',
+      'search-scope': 'sub',
+      'unit-people': 'ou=Users',
+      'unit-groups': 'ou=Groups'
+    }
+  },{
+    name: 'Apache Directory Server',
+    fields: {
+      'attribute-name-id': 'cn',
+      'attribute-name-fullname': 'displayName',
+      'attribute-name-mail': 'mail',
+      'attribute-name-group': 'memberOf',
+      'search-filter': '(&(objectClass=inetOrgPerson)(cn={0}))',
+      'search-filter-group': '(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))',
+      'search-scope': 'sub',
+      'unit-people': 'ou=People',
+      'unit-groups': 'ou=Groups'
+    }
+  },{
+    name: 'OpenDS',
+    fields: {
+      'attribute-name-id': 'uid',
+      'attribute-name-fullname': 'cn',
+      'attribute-name-mail': 'mail',
+      'attribute-name-group': 'memberOf',
+      'search-filter': '(&(objectClass=inetOrgPerson)(uid={0}))',
+      'search-filter-group': '(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))',
+      'search-scope': 'sub',
+      'unit-people': 'ou=People',
+      'unit-groups': 'ou=Groups'
+    }
+  },{
+    name: 'OpenLDAP',
+    fields: {
+      'attribute-name-id': 'uid',
+      'attribute-name-fullname': 'cn',
+      'attribute-name-mail': 'mail',
+      'attribute-name-group': 'memberOf',
+      'search-filter': '(&(objectClass=inetOrgPerson)(uid={0}))',
+      'search-filter-group': '(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))',
+      'search-scope': 'sub',
+      'unit-people': 'ou=People',
+      'unit-groups': 'ou=Groups'
+    }
+  },{
+    name: 'OpenLDAP (Posix)',
+    fields: {
+      'attribute-name-id': 'uid',
+      'attribute-name-fullname': 'cn',
+      'attribute-name-mail': 'mail',
+      'attribute-name-group': 'memberOf',
+      'search-filter': '(&(objectClass=posixAccount)(uid={0}))',
+      'search-filter-group': '(&(objectClass=posixGroup)(memberUid={1}))',
+      'search-scope': 'sub',
+      'unit-people': 'ou=People',
+      'unit-groups': 'ou=Groups'
+    }
+  },{
+    name: 'Sun/Oracle Directory Server',
+    fields: {
+      'attribute-name-id': 'uid',
+      'attribute-name-fullname': 'cn',
+      'attribute-name-mail': 'mail',
+      'attribute-name-group': 'memberOf',
+      'search-filter': '(&(objectClass=inetOrgPerson)(uid={0}))',
+      'search-filter-group': '(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))',
+      'search-scope': 'sub',
+      'unit-people': 'ou=People',
+      'unit-groups': 'ou=Groups'
+    }
+  },{
+    name: 'Custom'
+  }],
+  
+  customFields: [      
+    'attribute-name-id',
+    'attribute-name-fullname',
+    'attribute-name-mail',
+    'attribute-name-group',
+    'search-filter',
+    'search-filter-group',
+    'search-scope',
+    'unit-people',
+    'unit-groups'
+  ],
+
+  // labels
+  profileText: 'Profile',
+  
   titleText: 'LDAP Authentication',
   idAttributeText: 'ID Attribute Name',
   fullnameAttributeText: 'Fullname Attribute Name',
@@ -50,6 +147,8 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
   enabledText: 'Enabled',
   
   // help texts
+  profileHelpText: 'Predifined profiles for LDAP-Server',
+  
   idAttributeHelpText: 'LDAP attribute name holding the username (e.g. uid)',
   fullnameAttributeHelpText: 'LDAP attribute name for the users displayname (e.g. cn)',
   mailAttributeHelpText: 'LDAP attribute name for the users e-mail address (e.g. mail)',
@@ -81,6 +180,29 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
     var config = {
       title : this.titleText,
       items : [{
+        xtype : 'combo',
+        fieldLabel : this.profileText,
+        name : 'profile',
+        allowBlank : true,
+        helpText: this.searchScopeHelpText,
+        valueField: 'name',
+        displayField: 'name',
+        typeAhead: false,
+        editable: false,
+        triggerAction: 'all',
+        mode: 'local',
+        store: new Ext.data.JsonStore({
+          idProperty: 'name',
+          fields: ['name', 'fields'],
+          data: this.profiles
+        }),
+        listeners: {
+          select: {
+            fn: this.changeProfile,
+            scope: this
+          }
+        }
+      },{
         xtype : 'textfield',
         fieldLabel : this.idAttributeText,
         name : 'attribute-name-id',
@@ -156,9 +278,9 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
         store: new Ext.data.SimpleStore({
           fields: ['scope'],
           data: [
-          ['object'],
-          ['one'],
-          ['sub']
+            ['object'],
+            ['one'],
+            ['sub']
           ]
         })
       },{
@@ -184,6 +306,30 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
     
     Ext.apply(this, Ext.apply(this.initialConfig, config));
     Sonia.ldap.ConfigPanel.superclass.initComponent.apply(this, arguments);
+  },
+  
+  changeProfile: function(combo, record, number){
+    var profile = record.get('name');
+    if (debug){
+      console.debug( 'select profile "' + profile + '"');
+    }
+    
+    if ( profile == 'Custom' ){
+      this.toggleFields(true);
+    } else {
+      var fields = record.get('fields');
+      if (fields){
+        this.toggleFields(false);
+        this.getForm().setValues(fields);
+      }
+    }
+  },
+  
+  toggleFields: function(visible){
+    var form = this.getForm();
+    Ext.each(this.customFields, function(field){
+      form.findField(field).setVisible(visible);
+    }, this);    
   },
   
   onSubmit: function(values){
