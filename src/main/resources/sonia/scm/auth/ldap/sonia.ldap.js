@@ -60,7 +60,7 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
       'unit-groups': 'ou=Groups'
     }
   },{
-    name: 'OpenDS',
+    name: 'OpenDS/OpenDJ',
     fields: {
       'attribute-name-id': 'uid',
       'attribute-name-fullname': 'cn',
