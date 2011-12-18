@@ -106,7 +106,7 @@ public class LDAPConfigResource
    * @throws IOException
    */
   @POST
-  @Path("text")
+  @Path("test")
   @Produces({ MediaType.TEXT_PLAIN })
   public String setConfig(@FormParam("username") String username,
                           @FormParam("password") String password)
