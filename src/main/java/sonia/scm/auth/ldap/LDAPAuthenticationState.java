@@ -202,10 +202,7 @@ public class LDAPAuthenticationState
    */
   public void setException(Exception exception)
   {
-    StringWriter writer = new StringWriter();
-
-    exception.printStackTrace(new PrintWriter(writer));
-    this.exception = writer.toString();
+    this.exception = exception.getMessage();
   }
 
   /**
