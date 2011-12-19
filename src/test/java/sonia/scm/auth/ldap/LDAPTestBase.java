@@ -73,6 +73,15 @@ public class LDAPTestBase
   public static final String BIND_PWD = "scm-manager";
 
   /** Field description */
+  public static final String LDIF_001 = "/ldif/001.ldif";
+
+  /** Field description */
+  public static final String LDIF_002 = "/ldif/002.ldif";
+
+  /** Field description */
+  public static final String LDIF_003 = "/ldif/003.ldif";
+
+  /** Field description */
   public static final int PORT = 11389;
 
   /** Field description */
