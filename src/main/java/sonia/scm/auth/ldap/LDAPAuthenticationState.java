@@ -194,7 +194,6 @@ public class LDAPAuthenticationState
     this.exception = exception;
   }
 
-  
   /**
    * Method description
    *
@@ -204,11 +203,11 @@ public class LDAPAuthenticationState
   public void setException(Exception exception)
   {
     StringWriter writer = new StringWriter();
+
     exception.printStackTrace(new PrintWriter(writer));
-    
     this.exception = writer.toString();
   }
-  
+
   /**
    * Method description
    *
@@ -258,6 +257,9 @@ public class LDAPAuthenticationState
 
   /** Field description */
   private boolean searchUser;
+
+  /** Only for extjs */
+  private boolean success = true;
 
   /** Field description */
   private User user;

@@ -145,6 +145,7 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
   groupsUnitText: 'Groups Unit',
   peopleUnitText: 'People Unit',
   enabledText: 'Enabled',
+  testConnectionText: 'Test Connection',
   
   // help texts
   profileHelpText: 'Predifined profiles for LDAP-Server',
@@ -301,11 +302,23 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
         name: 'enabled',
         inputValue: 'true',
         helpText: this.enabledHelpText
+      },{
+        xtype: 'button',
+        fieldLabel : this.testConnectionText,
+        name: 'testConnection',
+        text: this.testConnectionText,
+        scope: this,
+        handler: this.testConnection
       }]
     }
     
     Ext.apply(this, Ext.apply(this.initialConfig, config));
     Sonia.ldap.ConfigPanel.superclass.initComponent.apply(this, arguments);
+  },
+  
+  testConnection: function(){
+    var window = new Sonia.ldap.ConnectionTestWindow();
+    window.show();
   },
   
   changeProfile: function(combo, record, number){
