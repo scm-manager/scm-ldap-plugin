@@ -146,7 +146,7 @@ Sonia.ldap.ConnectionTestForm = Ext.extend(Ext.FormPanel,{
     if (e.getKey() == e.ENTER) {
       var form = this.getForm();
       if ( form.isValid() ){
-        this.authenticate();
+        this.testConnection();
       }
     }
   }
