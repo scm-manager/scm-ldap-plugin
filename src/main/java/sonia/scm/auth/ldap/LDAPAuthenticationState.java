@@ -39,9 +39,6 @@ import sonia.scm.user.User;
 
 //~--- JDK imports ------------------------------------------------------------
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 import java.util.Collection;
 
 import javax.xml.bind.annotation.XmlAccessType;

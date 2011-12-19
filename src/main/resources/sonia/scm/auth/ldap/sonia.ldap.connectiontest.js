@@ -36,7 +36,6 @@ Sonia.ldap.ConnectionTestForm = Ext.extend(Ext.FormPanel,{
   passwordText: 'Password',
   testText: 'Test',
   cancelText: 'Cancel',
-  titleText: 'LDAP Connection Test',
   waitTitleText: 'Connecting',
   WaitMsgText: 'Sending data...',
   failedMsgText: 'LDAP Connection Test failed!',
@@ -46,10 +45,11 @@ Sonia.ldap.ConnectionTestForm = Ext.extend(Ext.FormPanel,{
     var config = {
       labelWidth: 80,
       url: restUrl + "config/auth/ldap/test.json",
-      frame: true,
-      title: this.titleText,
+      frame: false,
       defaultType: 'textfield',
       monitorValid: true,
+      bodyCssClass: 'x-panel-mc',
+      bodyStyle: 'padding: 5px',
       listeners: {
         afterrender: function(){
           Ext.getCmp('ldapTestUsername').focus(true, 500);
@@ -80,13 +80,31 @@ Sonia.ldap.ConnectionTestForm = Ext.extend(Ext.FormPanel,{
       },{
         id: 'ldapTestResultPanel',
         xtype: 'panel',
-        //height: 150,
+        bodyCssClass: 'x-panel-mc',
         tpl: new Ext.XTemplate([
           '<p>',
           '  Connection: {bind}<br />',
           '  Search user: {searchUser}<br />',
           '  Authenticate user: {authenticateUser}<br />',
-          '  Exception: <pre>{exception}</pre>',
+          '  <tpl if="exception">',
+          '    Exception: {exception}<br />',
+          '  </tpl>',
+          '  <tpl if="user">',
+          '    <p>&nbsp;</p>',
+          '    User:<br />',
+          '    <tpl for="user">',
+          '      - Name: {name}<br />',
+          '      - Display Name: {displayName}<br />',
+          '      - Mail: {mail}<br />',
+          '    </tpl>',
+          '  </tpl>',
+          '  <tpl if="groups">',
+          '    <p>&nbsp;</p>',
+          '    Groups<br />',
+          '    <tpl for="groups">',
+          '      - {.}<br />',
+          '    </tpl>',
+          '  </tpl>',
           '</p>'
         ])
       }],
@@ -112,22 +130,25 @@ Sonia.ldap.ConnectionTestForm = Ext.extend(Ext.FormPanel,{
     this.fireEvent('cancel');
   },
   
+  getBooleanLabel: function(value){
+    var label = null;
+    if (value){
+      label = '<span style="color: green">SUCCESS</span>';
+    } else {
+      label = '<span style="color: red">FAILURE</span>';
+    }
+    return label;
+  },
+  
   showResult: function(data){
-    if ( data.bind ){
-      data.bind = '<span style="color: green">SUCCESS</span>';
-    } else {
-      data.bind = '<span style="color: red">FAILURE</span>';
+    if (debug){
+      console.debug('connection test results:');
+      console.debug(data);
     }
-    if ( data.searchUser ){
-      data.searchUser = '<span style="color: green">SUCCESS</span>';
-    } else {
-      data.searchUser = '<span style="color: red">FAILURE</span>';
-    }
-    if ( data.authenticateUser ){
-      data.authenticateUser = '<span style="color: green">SUCCESS</span>';
-    } else {
-      data.authenticateUser = '<span style="color: red">FAILURE</span>';
-    }
+    data.bind = this.getBooleanLabel(data.bind);
+    data.searchUser = this.getBooleanLabel(data.searchUser);
+    data.authenticateUser = this.getBooleanLabel(data.authenticateUser);
+    
     var resultPanel = Ext.getCmp('ldapTestResultPanel');
     resultPanel.tpl.overwrite(resultPanel.body, data);
   },
@@ -170,6 +191,8 @@ Sonia.ldap.ConnectionTestForm = Ext.extend(Ext.FormPanel,{
 
 Sonia.ldap.ConnectionTestWindow = Ext.extend(Ext.Window,{
 
+  titleText: 'LDAP Connection Test',
+
   initComponent: function(){
     var form = new Sonia.ldap.ConnectionTestForm();
     form.on('cancel', function(){
@@ -178,13 +201,14 @@ Sonia.ldap.ConnectionTestWindow = Ext.extend(Ext.Window,{
 
     var config = {
       layout:'fit',
-      width: 640,
-      height: 480,
+      width: 480,
+      height: 320,
       closable: true,
       resizable: true,
       plain: true,
       border: false,
       modal: true,
+      title: this.titleText,
       items: [form]
     };
 
