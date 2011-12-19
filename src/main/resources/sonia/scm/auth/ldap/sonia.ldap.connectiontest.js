@@ -113,6 +113,21 @@ Sonia.ldap.ConnectionTestForm = Ext.extend(Ext.FormPanel,{
   },
   
   showResult: function(data){
+    if ( data.bind ){
+      data.bind = '<span style="color: green">SUCCESS</span>';
+    } else {
+      data.bind = '<span style="color: red">FAILURE</span>';
+    }
+    if ( data.searchUser ){
+      data.searchUser = '<span style="color: green">SUCCESS</span>';
+    } else {
+      data.searchUser = '<span style="color: red">FAILURE</span>';
+    }
+    if ( data.authenticateUser ){
+      data.authenticateUser = '<span style="color: green">SUCCESS</span>';
+    } else {
+      data.authenticateUser = '<span style="color: red">FAILURE</span>';
+    }
     var resultPanel = Ext.getCmp('ldapTestResultPanel');
     resultPanel.tpl.overwrite(resultPanel.body, data);
   },
