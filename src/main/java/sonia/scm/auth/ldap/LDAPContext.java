@@ -332,7 +332,7 @@ public class LDAPContext
         logger.debug("search-filter for group search: {}", filter);
       }
     }
-    else
+    else if (logger.isWarnEnabled())
     {
       logger.warn("search-filter for groups not defined");
     }
@@ -375,7 +375,7 @@ public class LDAPContext
         logger.debug("saarch base for {} search: {}", type, dn);
       }
     }
-    else
+    else if (logger.isErrorEnabled())
     {
       logger.error("no basedn defined");
     }
@@ -438,7 +438,7 @@ public class LDAPContext
         logger.debug("search-filter for user search: {}", filter);
       }
     }
-    else
+    else if (logger.isErrorEnabled())
     {
       logger.error("search filter not defined");
     }
@@ -499,7 +499,10 @@ public class LDAPContext
       }
       catch (NamingException ex)
       {
-        logger.debug("could not find groups", ex);
+        if (logger.isDebugEnabled())
+        {
+          logger.debug("could not find groups", ex);
+        }
       }
       finally
       {
@@ -543,9 +546,9 @@ public class LDAPContext
           groups.add(group);
         }
       }
-      else
+      else if (logger.isDebugEnabled())
       {
-        logger.info("user has no group attributes assigned");
+        logger.debug("user has no group attributes assigned");
       }
     }
     catch (NamingException ex)
@@ -636,7 +639,11 @@ public class LDAPContext
       {
         state.setSearchUser(false);
         state.setException(ex);
-        logger.error("exception occured during user search", ex);
+
+        if (logger.isErrorEnabled())
+        {
+          logger.error("exception occured during user search", ex);
+        }
       }
       finally
       {
