@@ -509,9 +509,9 @@ public class LDAPContext
         LDAPUtil.close(searchResultEnm);
       }
     }
-    else if (logger.isWarnEnabled())
+    else if (logger.isDebugEnabled())
     {
-      logger.warn("group filter is empty");
+      logger.debug("group filter is empty");
     }
   }
 
