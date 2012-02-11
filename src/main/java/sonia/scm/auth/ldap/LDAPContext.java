@@ -527,37 +527,45 @@ public class LDAPContext
    */
   private void getGroups(Attributes attributes, Set<String> groups)
   {
-    NamingEnumeration<?> userGroupsEnm = null;
+    String groupAttribute = config.getAttributeNameGroup();
 
-    try
+    if (Util.isNotEmpty(groupAttribute))
     {
-      Attribute groupsAttribute =
-        attributes.get(config.getAttributeNameGroup());
+      NamingEnumeration<?> userGroupsEnm = null;
 
-      if (groupsAttribute != null)
+      try
       {
-        userGroupsEnm = (NamingEnumeration<?>) groupsAttribute.getAll();
+        Attribute groupsAttribute = attributes.get(groupAttribute);
 
-        while (userGroupsEnm.hasMore())
+        if (groupsAttribute != null)
         {
-          String group = (String) userGroupsEnm.next();
+          userGroupsEnm = groupsAttribute.getAll();
 
-          group = LDAPUtil.getName(group);
-          groups.add(group);
+          while (userGroupsEnm.hasMore())
+          {
+            String group = (String) userGroupsEnm.next();
+
+            group = LDAPUtil.getName(group);
+            groups.add(group);
+          }
+        }
+        else if (logger.isDebugEnabled())
+        {
+          logger.debug("user has no group attributes assigned");
         }
       }
-      else if (logger.isDebugEnabled())
+      catch (NamingException ex)
       {
-        logger.debug("user has no group attributes assigned");
+        logger.error("could not read group attribute", ex);
+      }
+      finally
+      {
+        LDAPUtil.close(userGroupsEnm);
       }
     }
-    catch (NamingException ex)
+    else if (logger.isDebugEnabled())
     {
-      logger.error("could not read group attribute", ex);
-    }
-    finally
-    {
-      LDAPUtil.close(userGroupsEnm);
+      logger.debug("group attribute is empty");
     }
   }
 
