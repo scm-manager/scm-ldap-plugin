@@ -162,7 +162,7 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
   hostURLHelpText: 'The url for the ldap server. For example: ldap://localhost:389/',
   searchFilterHelpText: 'The search filter to find the users. <strong>Note:</strong>\n\
                         {0} will be replaced by the username.',
-  searchFilterGroupHelpText: 'The search filter to find groups of the user. <string>Note:</strong>\n\
+  searchFilterGroupHelpText: 'The search filter to find groups of the user.<br /><b>Note:</b><br />\n\
                         {0} will be replaced by the dn of the user.<br />\n\
                         {1} will be replaced by the username.<br />\n\
                         {2} will be replaced by the email address of the user.',
