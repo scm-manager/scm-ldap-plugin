@@ -148,13 +148,13 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
   testConnectionText: 'Test Connection',
   
   // help texts
-  profileHelpText: 'Predifined profiles for LDAP-Server',
+  profileHelpText: 'Predifined profiles for different LDAP-Servers.',
   
-  idAttributeHelpText: 'LDAP attribute name holding the username (e.g. uid)',
-  fullnameAttributeHelpText: 'LDAP attribute name for the users displayname (e.g. cn)',
-  mailAttributeHelpText: 'LDAP attribute name for the users e-mail address (e.g. mail)',
+  idAttributeHelpText: 'LDAP attribute name holding the username (e.g. uid).',
+  fullnameAttributeHelpText: 'LDAP attribute name for the users displayname (e.g. cn).',
+  mailAttributeHelpText: 'LDAP attribute name for the users e-mail address (e.g. mail).',
   // TODO improve
-  groupAttributeHelpText: 'The name of the ldap attribute which contains the group names of the user',
+  groupAttributeHelpText: 'The name of the ldap attribute which contains the group names of the user.',
   baseDNHelpText: 'The basedn for example: dc=example,dc=com',
   connectionDNHelpText: 'The complete dn of the proxy user. <strong>Note:<strong> \n\
                          This user needs read an search privileges for the id, mail and fullname attributes.',
@@ -169,7 +169,7 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
   searchScopeHelpText: 'The scope for the user search.',
   peopleUnitHelpText: 'The relative location of the users. For example: ou=People',
   groupsUnitHelpText: 'The relative location of the groups. For example: ou=Groups',
-  enabledHelpText: 'Enables or disables the ldap authentication',
+  enabledHelpText: 'Enables or disables the ldap authentication.',
   
   // errors 
   errorBoxTitle: 'Error',
@@ -185,7 +185,7 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
         fieldLabel : this.profileText,
         name : 'profile',
         allowBlank : true,
-        helpText: this.searchScopeHelpText,
+        helpText: this.profileHelpText,
         valueField: 'name',
         displayField: 'name',
         typeAhead: false,
@@ -427,6 +427,7 @@ if ( i18n != null && i18n.country == 'de' ){
     enabledText: 'Aktiviert',
   
     // help texts
+    profileHelpText: 'Vordefinierte LDAP-Profile.',
     idAttributeHelpText: 'LDAP Attributname der eindeutigen ID der Accounts (z.B. uid)',
     fullnameAttributeHelpText: 'LDAP Attributname des vollständigen Accountnames (z.B. cn)',
     mailAttributeHelpText: 'LDAP Attributname der Account-eMail-Adresse (z.B. mail)',
