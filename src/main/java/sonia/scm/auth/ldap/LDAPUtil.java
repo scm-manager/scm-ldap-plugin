@@ -86,7 +86,7 @@ public class LDAPUtil
       }
       catch (NamingException ex)
       {
-        logger.error(ex.getMessage(), ex);
+        logger.error("could not close context", ex);
       }
     }
   }
@@ -107,7 +107,7 @@ public class LDAPUtil
       }
       catch (NamingException ex)
       {
-        logger.error(ex.getMessage(), ex);
+        logger.error("could not close enumeration", ex);
       }
     }
   }
