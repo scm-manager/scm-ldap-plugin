@@ -37,7 +37,7 @@ Sonia.ldap.ConnectionTestForm = Ext.extend(Ext.FormPanel,{
   testText: 'Test',
   cancelText: 'Cancel',
   waitTitleText: 'Connecting',
-  WaitMsgText: 'Sending data...',
+  waitMsgText: 'Sending data...',
   failedMsgText: 'LDAP Connection Test failed!',
 
   initComponent: function(){
@@ -159,7 +159,7 @@ Sonia.ldap.ConnectionTestForm = Ext.extend(Ext.FormPanel,{
       scope: this,
       method: 'POST',
       waitTitle: this.waitTitleText,
-      waitMsg: this.WaitMsgText,
+      waitMsg: this.waitMsgText,
 
       success: function(form, action){
         if ( debug ){
