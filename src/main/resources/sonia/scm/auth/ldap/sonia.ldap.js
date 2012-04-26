@@ -40,11 +40,11 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
       'attribute-name-fullname': 'cn',
       'attribute-name-mail': 'mail',
       'attribute-name-group': 'memberOf',
-      'search-filter': '(&(objectClass=Person)(uid={0}))',
+      'search-filter': '(&(objectClass=Person)(sAMAccountName={0}))',
       'search-filter-group': '(&(objectClass=group)(member={0}))',
       'search-scope': 'sub',
-      'unit-people': 'ou=Users',
-      'unit-groups': 'ou=Groups'
+      'unit-people': '',
+      'unit-groups': ''
     }
   },{
     name: 'Apache Directory Server',
