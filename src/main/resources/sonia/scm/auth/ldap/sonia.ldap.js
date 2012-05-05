@@ -44,7 +44,8 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
       'search-filter-group': '(&(objectClass=group)(member={0}))',
       'search-scope': 'sub',
       'unit-people': '',
-      'unit-groups': ''
+      'unit-groups': '',
+      'enable-nested-ad-groups': 'true'
     }
   },{
     name: 'Apache Directory Server',
@@ -57,7 +58,8 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
       'search-filter-group': '(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))',
       'search-scope': 'sub',
       'unit-people': 'ou=People',
-      'unit-groups': 'ou=Groups'
+      'unit-groups': 'ou=Groups',
+      'enable-nested-ad-groups': 'false'
     }
   },{
     name: 'OpenDS/OpenDJ',
@@ -70,7 +72,8 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
       'search-filter-group': '(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))',
       'search-scope': 'sub',
       'unit-people': 'ou=People',
-      'unit-groups': 'ou=Groups'
+      'unit-groups': 'ou=Groups',
+      'enable-nested-ad-groups': 'false'
     }
   },{
     name: 'OpenLDAP',
@@ -83,7 +86,8 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
       'search-filter-group': '(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))',
       'search-scope': 'sub',
       'unit-people': 'ou=People',
-      'unit-groups': 'ou=Groups'
+      'unit-groups': 'ou=Groups',
+      'enable-nested-ad-groups': 'false'
     }
   },{
     name: 'OpenLDAP (Posix)',
@@ -96,7 +100,8 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
       'search-filter-group': '(&(objectClass=posixGroup)(memberUid={1}))',
       'search-scope': 'sub',
       'unit-people': 'ou=People',
-      'unit-groups': 'ou=Groups'
+      'unit-groups': 'ou=Groups',
+      'enable-nested-ad-groups': 'false'
     }
   },{
     name: 'Sun/Oracle Directory Server',
@@ -109,7 +114,8 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
       'search-filter-group': '(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))',
       'search-scope': 'sub',
       'unit-people': 'ou=People',
-      'unit-groups': 'ou=Groups'
+      'unit-groups': 'ou=Groups',
+      'enable-nested-ad-groups': 'false'
     }
   },{
     name: 'Custom'
@@ -124,7 +130,8 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
     'search-filter-group',
     'search-scope',
     'unit-people',
-    'unit-groups'
+    'unit-groups',
+    'enable-nested-ad-groups'
   ],
 
   // labels
@@ -144,6 +151,7 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
   searchScopeText: 'Search Scope',
   groupsUnitText: 'Groups Unit',
   peopleUnitText: 'People Unit',
+  enableNestedADGroupsText: 'Enable nested ad groups',
   enabledText: 'Enabled',
   testConnectionText: 'Test Connection',
   
@@ -169,6 +177,7 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
   searchScopeHelpText: 'The scope for the user search.',
   peopleUnitHelpText: 'The relative location of the users. For example: ou=People',
   groupsUnitHelpText: 'The relative location of the groups. For example: ou=Groups',
+  enableNestedADGroupsHelpText: 'Enable search for nested ActiveDirectory groups. <b>Note:</b> Nested ad groups work only for ActiveDirectory.',
   enabledHelpText: 'Enables or disables the ldap authentication.',
   
   // errors 
@@ -296,6 +305,12 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
         name : 'unit-groups',
         allowBlank : true,
         helpText: this.groupsUnitHelpText
+      },{
+        xtype: 'checkbox',
+        fieldLabel : this.enableNestedADGroupsText,
+        name: 'enable-nested-ad-groups',
+        inputValue: 'true',
+        helpText: this.enableNestedADGroupsHelpText
       },{
         xtype: 'checkbox',
         fieldLabel : this.enabledText,

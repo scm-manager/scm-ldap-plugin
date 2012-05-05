@@ -214,6 +214,17 @@ public class LDAPConfig implements Validateable
    *
    * @return
    */
+  public boolean isEnableNestedADGroups()
+  {
+    return enableNestedADGroups;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @return
+   */
   public boolean isEnabled()
   {
     return enabled;
@@ -309,6 +320,17 @@ public class LDAPConfig implements Validateable
   public void setConnectionPassword(String connectionPassword)
   {
     this.connectionPassword = connectionPassword;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @param enableNestedADGroups
+   */
+  public void setEnableNestedADGroups(boolean enableNestedADGroups)
+  {
+    this.enableNestedADGroups = enableNestedADGroups;
   }
 
   /**
@@ -489,4 +511,8 @@ public class LDAPConfig implements Validateable
   /** Field description */
   @XmlElement(name = "enabled")
   private boolean enabled = false;
+
+  /** Field description */
+  @XmlElement(name = "enable-nested-ad-groups")
+  private boolean enableNestedADGroups = false;
 }

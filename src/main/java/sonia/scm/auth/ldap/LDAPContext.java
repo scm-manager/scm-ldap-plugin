@@ -51,6 +51,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -71,6 +72,10 @@ public class LDAPContext
 
   /** Field description */
   public static final String ATTRIBUTE_GROUP_NAME = "cn";
+
+  /** Field description */
+  public static final String NESTEDGROUP_MATCHINGRULE =
+    ":1.2.840.113556.1.4.1941:=";
 
   /** Field description */
   public static final String SEARCHTYPE_GROUP = "group";
@@ -316,16 +321,22 @@ public class LDAPContext
   private String createGroupSearchFilter(String userDN, String uid, String mail)
   {
     String filter = null;
+    String filterPattern = config.getSearchFilterGroup();
 
-    if (Util.isNotEmpty(config.getSearchFilterGroup()))
+    if (Util.isNotEmpty(filterPattern))
     {
       if (mail == null)
       {
         mail = "";
       }
 
-      filter = MessageFormat.format(config.getSearchFilterGroup(), userDN, uid,
-                                    mail);
+      if (config.isEnableNestedADGroups())
+      {
+        filterPattern = prepareFilterPatternForNestedGroups(filterPattern,
+                userDN);
+      }
+
+      filter = MessageFormat.format(filterPattern, userDN, uid, mail);
 
       if (logger.isDebugEnabled())
       {
@@ -513,6 +524,22 @@ public class LDAPContext
     {
       logger.debug("group filter is empty");
     }
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @param filterPattern
+   * @param userDN
+   *
+   * @return
+   */
+  private String prepareFilterPatternForNestedGroups(String filterPattern,
+          String userDN)
+  {
+    return filterPattern.replaceAll(Pattern.quote("={0}"),
+                                    NESTEDGROUP_MATCHINGRULE.concat(userDN));
   }
 
   //~--- get methods ----------------------------------------------------------
