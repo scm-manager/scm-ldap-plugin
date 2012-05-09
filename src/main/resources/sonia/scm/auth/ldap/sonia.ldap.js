@@ -44,8 +44,7 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
       'search-filter-group': '(&(objectClass=group)(member={0}))',
       'search-scope': 'sub',
       'unit-people': '',
-      'unit-groups': '',
-      'enable-nested-ad-groups': 'true'
+      'unit-groups': ''
     }
   },{
     name: 'Apache Directory Server',
@@ -120,19 +119,6 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
   },{
     name: 'Custom'
   }],
-  
-  customFields: [      
-    'attribute-name-id',
-    'attribute-name-fullname',
-    'attribute-name-mail',
-    'attribute-name-group',
-    'search-filter',
-    'search-filter-group',
-    'search-scope',
-    'unit-people',
-    'unit-groups',
-    'enable-nested-ad-groups'
-  ],
 
   // labels
   profileText: 'Profile',
@@ -343,20 +329,25 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
     }
     
     if ( profile == 'Custom' ){
-      this.toggleFields(true);
+      this.toggleFields({});
     } else {
       var fields = record.get('fields');
       if (fields){
-        this.toggleFields(false);
-        this.getForm().setValues(fields);
+        this.applyProfileFields(fields);
       }
     }
   },
   
-  toggleFields: function(visible){
+  applyProfileFields: function(fields){
+    this.toggleFields(fields);
+    this.getForm().setValues(fields);
+  },
+  
+  toggleFields: function(profileFields){
     var form = this.getForm();
-    Ext.each(this.customFields, function(field){
-      form.findField(field).setVisible(visible);
+    form.items.each( function(field){
+      var visible = profileFields[field.getName()] == null;
+      field.setVisible(visible);
     }, this);    
   },
   
