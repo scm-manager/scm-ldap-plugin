@@ -427,6 +427,7 @@ if ( i18n != null && i18n.country == 'de' ){
     searchScopeText: 'Suchtiefe (scope)',
     groupsUnitText: 'Gruppen (ou)',
     peopleUnitText: 'Personen (ou)',
+    enableNestedADGroupsText: 'Aktiviere verschachtelte AD Gruppen',
     enabledText: 'Aktiviert',
   
     // help texts
@@ -443,13 +444,15 @@ if ( i18n != null && i18n.country == 'de' ){
     hostURLHelpText: 'URL zum LDAP-Server (z.B. ldap://localhost:389/)',
     searchFilterHelpText: 'Personensuchfilter <strong>Achtung:</strong>\n\
                         {0} wird durch den Nutzernamen ersetzt.',
-    searchFilterGroupHelpText: 'Gruppensuchfilter. <string>Achtung:</strong>\n\
+    searchFilterGroupHelpText: 'Gruppensuchfilter. <b>Achtung:</b>\n\
                         {0} wird durch die DN des Benutzers erssetzt.<br />\n\
                         {1} wird durch den Nutzernamen ersetzt.<br />\n\
                         {2} wird durch die E-Mail des Benutzers ersetzt.',
     searchScopeHelpText: 'Suchtiefe (scope) für die Personensuche',
     peopleUnitHelpText: 'Relativer Personen-Pfad (z.B. ou=People)',
     groupsUnitHelpText: 'Relativer Gruppen-Pfad (z.B. ou=Groups)',
+    enableNestedADGroupsHelpText: 'Aktiviert / Deaktiviert verschachtelte ActiveDirectory Gruppen. \n\
+                        <b>Achtung:</b> Verschachtelte Gruppen funktionieren nur mit einem ActiveDirectory Server.',
     enabledHelpText: 'Aktiviert / Deaktiviert die LDAP Authentifizierung',
     
     // errors 
