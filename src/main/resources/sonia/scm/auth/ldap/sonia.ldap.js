@@ -117,7 +117,8 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
       'enable-nested-ad-groups': 'false'
     }
   },{
-    name: 'Custom'
+    name: 'Custom',
+    fields: {}
   }],
 
   // labels
@@ -327,14 +328,10 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
     if (debug){
       console.debug( 'select profile "' + profile + '"');
     }
-    
-    if ( profile == 'Custom' ){
-      this.toggleFields({});
-    } else {
-      var fields = record.get('fields');
-      if (fields){
-        this.applyProfileFields(fields);
-      }
+
+    var fields = record.get('fields');
+    if (fields){
+      this.applyProfileFields(fields);
     }
   },
   
