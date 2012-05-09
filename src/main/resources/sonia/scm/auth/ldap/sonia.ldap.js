@@ -335,6 +335,15 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
     }
   },
   
+  applyProfile: function(profile){
+    for ( var i=0; i<this.profiles.length; i++ ){
+      if ( this.profiles[i].name == profile ){
+        this.toggleFields(this.profiles[i].fields);
+        break;
+      }
+    }
+  },
+  
   applyProfileFields: function(fields){
     this.toggleFields(fields);
     this.getForm().setValues(fields);
@@ -383,7 +392,7 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
         var obj = Ext.decode(response.responseText);
         this.load(obj);
         if ( obj.profile != 'Custom' ){
-          this.toggleFields(false);
+          this.applyProfile(obj.profile);
         }
         clearTimeout(tid);
         el.unmask();
