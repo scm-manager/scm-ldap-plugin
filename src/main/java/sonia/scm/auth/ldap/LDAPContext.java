@@ -136,12 +136,22 @@ public class LDAPContext
           {
             Attributes attributes = searchResult.getAttributes();
             User user = createUser(attributes);
-            Set<String> groups = new HashSet<String>();
 
-            fetchGroups(bindContext, groups, userDN, user.getId(),
-                        user.getMail());
-            getGroups(attributes, groups);
-            result = new AuthenticationResult(user, groups);
+            if (user.isValid())
+            {
+              state.setUserValid(true);
+
+              Set<String> groups = new HashSet<String>();
+
+              fetchGroups(bindContext, groups, userDN, user.getId(),
+                          user.getMail());
+              getGroups(attributes, groups);
+              result = new AuthenticationResult(user, groups);
+            }
+            else if (logger.isWarnEnabled())
+            {
+              logger.warn("the returned user is not valid");
+            }
           }    // password wrong ?
         }      // user not found
       }        // no bind context available

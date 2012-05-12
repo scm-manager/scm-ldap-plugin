@@ -86,6 +86,7 @@ Sonia.ldap.ConnectionTestForm = Ext.extend(Ext.FormPanel,{
           '  Connection: {bind}<br />',
           '  Search user: {searchUser}<br />',
           '  Authenticate user: {authenticateUser}<br />',
+          '  Returned user is valid: {userValid}<br />',
           '  <tpl if="exception">',
           '    Exception: {exception}<br />',
           '  </tpl>',
@@ -148,6 +149,7 @@ Sonia.ldap.ConnectionTestForm = Ext.extend(Ext.FormPanel,{
     data.bind = this.getBooleanLabel(data.bind);
     data.searchUser = this.getBooleanLabel(data.searchUser);
     data.authenticateUser = this.getBooleanLabel(data.authenticateUser);
+    data.userValid = this.getBooleanLabel(data.userValid);
     
     var resultPanel = Ext.getCmp('ldapTestResultPanel');
     resultPanel.tpl.overwrite(resultPanel.body, data);

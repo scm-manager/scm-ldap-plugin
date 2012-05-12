@@ -156,6 +156,17 @@ public class LDAPAuthenticationState
     return searchUser;
   }
 
+  /**
+   * Method description
+   *
+   *
+   * @return
+   */
+  public boolean isUserValid()
+  {
+    return userValid;
+  }
+
   //~--- set methods ----------------------------------------------------------
 
   /**
@@ -235,6 +246,18 @@ public class LDAPAuthenticationState
     this.user = user;
   }
 
+  /**
+   * Method description
+   *
+   *
+   *
+   * @param userValid
+   */
+  public void setUserValid(boolean userValid)
+  {
+    this.userValid = userValid;
+  }
+
   //~--- fields ---------------------------------------------------------------
 
   /** Field description */
@@ -257,4 +280,7 @@ public class LDAPAuthenticationState
 
   /** Field description */
   private User user;
+
+  /** Field description */
+  private boolean userValid = false;
 }

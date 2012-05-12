@@ -87,6 +87,7 @@ public class LDAPContextTest extends LDAPTestBase
     assertTrue(state.isBind());
     assertFalse(state.isSearchUser());
     assertFalse(state.isAuthenticateUser());
+    assertFalse(state.isUserValid());
 
     // set correct search filter
     config.setSearchFilter("(uid={0})");
@@ -97,6 +98,7 @@ public class LDAPContextTest extends LDAPTestBase
     assertTrue(state.isBind());
     assertTrue(state.isSearchUser());
     assertFalse(state.isAuthenticateUser());
+    assertFalse(state.isUserValid());
 
     // set correct password
     context = new LDAPContext(config);
@@ -106,5 +108,16 @@ public class LDAPContextTest extends LDAPTestBase
     assertTrue(state.isBind());
     assertTrue(state.isSearchUser());
     assertTrue(state.isAuthenticateUser());
+    assertTrue(state.isUserValid());
+
+    // not valid
+    context = new LDAPContext(config);
+    ar = context.authenticate("prefect", "prefi123");
+    state = context.getState();
+    assertNotNull(state);
+    assertTrue(state.isBind());
+    assertTrue(state.isSearchUser());
+    assertTrue(state.isAuthenticateUser());
+    assertFalse(state.isUserValid());
   }
 }
