@@ -109,7 +109,7 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
     {
       AssertUtil.assertIsNotEmpty(username);
       AssertUtil.assertIsNotEmpty(password);
-      result = new LDAPContext(config).authenticate(username, password);
+      result = new LDAPAuthenticationContext(config).authenticate(username, password);
     }
     else if (logger.isWarnEnabled())
     {

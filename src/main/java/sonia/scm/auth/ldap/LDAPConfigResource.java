@@ -116,7 +116,7 @@ public class LDAPConfigResource
           throws IOException
   {
     LDAPConfig config = authenticationHandler.getConfig();
-    LDAPContext context = new LDAPContext(config);
+    LDAPAuthenticationContext context = new LDAPAuthenticationContext(config);
     AuthenticationResult ar = context.authenticate(username, password);
     LDAPAuthenticationState state = context.getState();
 

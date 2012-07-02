@@ -67,7 +67,7 @@ import javax.naming.directory.SearchResult;
  *
  * @author Sebastian Sdorra
  */
-public class LDAPContext
+public class LDAPAuthenticationContext
 {
 
   /** Field description */
@@ -85,7 +85,7 @@ public class LDAPContext
 
   /** the logger for LDAPContext */
   private static final Logger logger =
-    LoggerFactory.getLogger(LDAPContext.class);
+    LoggerFactory.getLogger(LDAPAuthenticationContext.class);
 
   //~--- constructors ---------------------------------------------------------
 
@@ -95,7 +95,7 @@ public class LDAPContext
    *
    * @param config
    */
-  public LDAPContext(LDAPConfig config)
+  public LDAPAuthenticationContext(LDAPConfig config)
   {
     this.config = config;
     this.state = new LDAPAuthenticationState();
