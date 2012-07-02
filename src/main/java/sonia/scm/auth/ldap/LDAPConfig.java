@@ -225,6 +225,17 @@ public class LDAPConfig implements Validateable
    *
    * @return
    */
+  public boolean isEnableStartTls()
+  {
+    return enableStartTls;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @return
+   */
   public boolean isEnabled()
   {
     return enabled;
@@ -240,7 +251,7 @@ public class LDAPConfig implements Validateable
   public boolean isValid()
   {
     return isValid(attributeNameId, attributeNameFullname, attributeNameMail,
-                   hostUrl, searchFilter, searchScope);
+      hostUrl, searchFilter, searchScope);
   }
 
   //~--- set methods ----------------------------------------------------------
@@ -331,6 +342,17 @@ public class LDAPConfig implements Validateable
   public void setEnableNestedADGroups(boolean enableNestedADGroups)
   {
     this.enableNestedADGroups = enableNestedADGroups;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @param enableStartTls
+   */
+  public void setEnableStartTls(boolean enableStartTls)
+  {
+    this.enableStartTls = enableStartTls;
   }
 
   /**
@@ -511,6 +533,10 @@ public class LDAPConfig implements Validateable
   /** Field description */
   @XmlElement(name = "enabled")
   private boolean enabled = false;
+
+  /** Field description */
+  @XmlElement(name = "enable-starttls")
+  private boolean enableStartTls = false;
 
   /** Field description */
   @XmlElement(name = "enable-nested-ad-groups")

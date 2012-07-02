@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import sonia.scm.user.User;
+import sonia.scm.util.IOUtil;
 import sonia.scm.util.Util;
 import sonia.scm.web.security.AuthenticationResult;
 
@@ -48,18 +49,14 @@ import java.text.MessageFormat;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
@@ -99,7 +96,6 @@ public class LDAPAuthenticationContext
   {
     this.config = config;
     this.state = new LDAPAuthenticationState();
-    buildLdapProperties();
   }
 
   //~--- methods --------------------------------------------------------------
@@ -116,15 +112,16 @@ public class LDAPAuthenticationContext
   public AuthenticationResult authenticate(String username, String password)
   {
     AuthenticationResult result = AuthenticationResult.NOT_FOUND;
-    DirContext bindContext = null;
+    LDAPConnection bindConnection = null;
 
     try
     {
-      bindContext = createBindContext();
+      bindConnection = createBindConnection();
 
-      if (bindContext != null)
+      if (bindConnection != null)
       {
-        SearchResult searchResult = getUserSearchResult(bindContext, username);
+        SearchResult searchResult = getUserSearchResult(bindConnection,
+                                      username);
 
         if (searchResult != null)
         {
@@ -143,8 +140,8 @@ public class LDAPAuthenticationContext
 
               Set<String> groups = new HashSet<String>();
 
-              fetchGroups(bindContext, groups, userDN, user.getId(),
-                          user.getMail());
+              fetchGroups(bindConnection, groups, userDN, user.getId(),
+                user.getMail());
               getGroups(attributes, groups);
               result = new AuthenticationResult(user, groups);
             }
@@ -158,7 +155,7 @@ public class LDAPAuthenticationContext
     }
     finally
     {
-      LDAPUtil.close(bindContext);
+      IOUtil.close(bindConnection);
     }
 
     return result;
@@ -206,17 +203,11 @@ public class LDAPAuthenticationContext
   private boolean authenticateUser(String userDN, String password)
   {
     boolean authenticated = false;
-    Hashtable<String, String> userProperties = new Hashtable<String,
-                                                 String>(ldapProperties);
-
-    userProperties.put(Context.SECURITY_PRINCIPAL, userDN);
-    userProperties.put(Context.SECURITY_CREDENTIALS, password);
-
-    DirContext userContext = null;
+    LDAPConnection userConnection = null;
 
     try
     {
-      userContext = new InitialDirContext(userProperties);
+      userConnection = new LDAPConnection(config, userDN, password);
       authenticated = true;
       state.setAuthenticateUser(true);
 
@@ -225,7 +216,7 @@ public class LDAPAuthenticationContext
         logger.debug("user {} successfully authenticated", userDN);
       }
     }
-    catch (NamingException ex)
+    catch (Exception ex)
     {
       state.setAuthenticateUser(false);
       state.setException(ex);
@@ -241,7 +232,7 @@ public class LDAPAuthenticationContext
     }
     finally
     {
-      LDAPUtil.close(userContext);
+      IOUtil.close(userConnection);
     }
 
     return authenticated;
@@ -250,61 +241,29 @@ public class LDAPAuthenticationContext
   /**
    * Method description
    *
-   */
-  private void buildLdapProperties()
-  {
-    ldapProperties = new Hashtable<String, String>();
-    ldapProperties.put(Context.INITIAL_CONTEXT_FACTORY,
-                       "com.sun.jndi.ldap.LdapCtxFactory");
-    ldapProperties.put(Context.PROVIDER_URL, config.getHostUrl());
-
-    String connectionDN = config.getConnectionDn();
-    String connectionPassword = config.getConnectionPassword();
-
-    if (Util.isNotEmpty(connectionDN) && Util.isNotEmpty(connectionPassword))
-    {
-      if (logger.isDebugEnabled())
-      {
-        logger.debug("create bind context for dn {}", connectionDN);
-      }
-
-      ldapProperties.put(Context.SECURITY_AUTHENTICATION, "simple");
-      ldapProperties.put(Context.SECURITY_PRINCIPAL, connectionDN);
-      ldapProperties.put(Context.SECURITY_CREDENTIALS, connectionPassword);
-    }
-    else if (logger.isDebugEnabled())
-    {
-      logger.debug("create anonymous bind context");
-    }
-
-    ldapProperties.put("java.naming.ldap.version", "3");
-  }
-
-  /**
-   * Method description
-   *
    *
    * @return
    */
-  private DirContext createBindContext()
+  private LDAPConnection createBindConnection()
   {
-    DirContext context = null;
+    LDAPConnection connection = null;
 
     try
     {
-      context = new InitialDirContext(ldapProperties);
+      connection = new LDAPConnection(config, config.getConnectionDn(),
+        config.getConnectionPassword());
       state.setBind(true);
     }
-    catch (NamingException ex)
+    catch (Exception ex)
     {
       state.setBind(false);
       state.setException(ex);
       logger.error(
-          "could not bind to ldap with dn ".concat(config.getConnectionDn()),
-          ex);
+        "could not bind to ldap with dn ".concat(config.getConnectionDn()), ex);
+      IOUtil.close(connection);
     }
 
-    return context;
+    return connection;
   }
 
   /**
@@ -343,7 +302,7 @@ public class LDAPAuthenticationContext
       if (config.isEnableNestedADGroups())
       {
         filterPattern = prepareFilterPatternForNestedGroups(filterPattern,
-                userDN);
+          userDN);
       }
 
       filter = MessageFormat.format(filterPattern, userDN, uid, mail);
@@ -385,7 +344,7 @@ public class LDAPAuthenticationContext
         if (logger.isDebugEnabled())
         {
           logger.debug("no prefix for {} defined, using basedn for search",
-                       type);
+            type);
         }
 
         dn = config.getBaseDn();
@@ -417,11 +376,11 @@ public class LDAPAuthenticationContext
     User user = new User();
 
     user.setName(LDAPUtil.getAttribute(attributes,
-                                       config.getAttributeNameId()));
+      config.getAttributeNameId()));
     user.setDisplayName(LDAPUtil.getAttribute(attributes,
-            config.getAttributeNameFullname()));
+      config.getAttributeNameFullname()));
     user.setMail(LDAPUtil.getAttribute(attributes,
-                                       config.getAttributeNameMail()));
+      config.getAttributeNameMail()));
     user.setType(LDAPAuthenticationHandler.TYPE);
 
     return user;
@@ -471,14 +430,14 @@ public class LDAPAuthenticationContext
    * Method description
    *
    *
-   * @param context
+   * @param connection
    * @param groups
    * @param userDN
    * @param uid
    * @param mail
    */
-  private void fetchGroups(DirContext context, Set<String> groups,
-                           String userDN, String uid, String mail)
+  private void fetchGroups(LDAPConnection connection, Set<String> groups,
+    String userDN, String uid, String mail)
   {
     if (Util.isNotEmpty(config.getSearchFilterGroup()))
     {
@@ -502,7 +461,7 @@ public class LDAPAuthenticationContext
         {
           String searchDN = createGroupSearchBaseDN();
 
-          searchResultEnm = context.search(searchDN, filter, searchControls);
+          searchResultEnm = connection.search(searchDN, filter, searchControls);
 
           while (searchResultEnm.hasMore())
           {
@@ -546,10 +505,10 @@ public class LDAPAuthenticationContext
    * @return
    */
   private String prepareFilterPatternForNestedGroups(String filterPattern,
-          String userDN)
+    String userDN)
   {
     return filterPattern.replaceAll(Pattern.quote("={0}"),
-                                    NESTEDGROUP_MATCHINGRULE.concat(userDN));
+      NESTEDGROUP_MATCHINGRULE.concat(userDN));
   }
 
   //~--- get methods ----------------------------------------------------------
@@ -628,17 +587,17 @@ public class LDAPAuthenticationContext
    * Method description
    *
    *
-   * @param bindContext
+   * @param bindConnection
    * @param username
    *
    * @return
    */
-  private SearchResult getUserSearchResult(DirContext bindContext,
-          String username)
+  private SearchResult getUserSearchResult(LDAPConnection bindConnection,
+    String username)
   {
     SearchResult result = null;
 
-    if (bindContext != null)
+    if (bindConnection != null)
     {
       NamingEnumeration<SearchResult> searchResultEnm = null;
 
@@ -650,7 +609,7 @@ public class LDAPAuthenticationContext
         if (logger.isDebugEnabled())
         {
           logger.debug("using scope {} for user search",
-                       LDAPUtil.getSearchScope(scope));
+            LDAPUtil.getSearchScope(scope));
         }
 
         searchControls.setSearchScope(scope);
@@ -665,8 +624,8 @@ public class LDAPAuthenticationContext
 
           if (baseDn != null)
           {
-            searchResultEnm = bindContext.search(baseDn, filter,
-                    searchControls);
+            searchResultEnm = bindConnection.search(baseDn, filter,
+              searchControls);
 
             if (searchResultEnm.hasMore())
             {
@@ -703,9 +662,6 @@ public class LDAPAuthenticationContext
 
   /** Field description */
   private LDAPConfig config;
-
-  /** Field description */
-  private Hashtable<String, String> ldapProperties;
 
   /** Field description */
   private LDAPAuthenticationState state;

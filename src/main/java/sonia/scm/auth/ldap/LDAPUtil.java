@@ -42,12 +42,15 @@ import sonia.scm.util.Util;
 
 //~--- JDK imports ------------------------------------------------------------
 
+import java.io.IOException;
+
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
+import javax.naming.ldap.StartTlsResponse;
 
 /**
  *
@@ -87,6 +90,27 @@ public class LDAPUtil
       catch (NamingException ex)
       {
         logger.error("could not close context", ex);
+      }
+    }
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @param tls
+   */
+  public static void close(StartTlsResponse tls)
+  {
+    if (tls != null)
+    {
+      try
+      {
+        tls.close();
+      }
+      catch (IOException ex)
+      {
+        logger.error("could not close tls response", ex);
       }
     }
   }
