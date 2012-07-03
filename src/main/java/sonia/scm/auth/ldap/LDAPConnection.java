@@ -103,12 +103,22 @@ public class LDAPConnection implements Closeable
 
     if (config.isEnableStartTls())
     {
+      if (logger.isDebugEnabled())
+      {
+        logger.debug("send starttls request");
+      }
+
       tls = (StartTlsResponse) context.extendedOperation(new StartTlsRequest());
       tls.negotiate();
 
       // authenticate after bind
       if (userDN != null)
       {
+        if (logger.isDebugEnabled())
+        {
+          logger.debug("set bind credentials for dn {}", userDN);
+        }
+
         context.addToEnvironment(Context.SECURITY_AUTHENTICATION, "simple");
         context.addToEnvironment(Context.SECURITY_PRINCIPAL, userDN);
 
@@ -179,7 +189,7 @@ public class LDAPConnection implements Closeable
     {
       if (logger.isDebugEnabled())
       {
-        logger.debug("create bind context for dn {}", userDN);
+        logger.debug("create context for dn {}", userDN);
       }
 
       ldapProperties.put(Context.SECURITY_AUTHENTICATION, "simple");
@@ -188,7 +198,7 @@ public class LDAPConnection implements Closeable
     }
     else if (logger.isDebugEnabled())
     {
-      logger.debug("create anonymous bind context");
+      logger.debug("create anonymous context");
     }
 
     ldapProperties.put("java.naming.ldap.version", "3");
