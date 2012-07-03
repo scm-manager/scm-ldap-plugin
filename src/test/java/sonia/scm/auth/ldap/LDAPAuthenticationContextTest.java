@@ -48,7 +48,7 @@ import static org.junit.Assert.*;
  *
  * @author Sebastian Sdorra
  */
-public class LDAPContextTest extends LDAPTestBase
+public class LDAPAuthenticationContextTest extends LDAPServerTestBase
 {
 
   /**

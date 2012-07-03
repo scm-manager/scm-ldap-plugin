@@ -52,7 +52,7 @@ import java.util.Collection;
  *
  * @author Sebastian Sdorra
  */
-public class LDAPAuthenticationHandlerTest extends LDAPTestBase
+public class LDAPAuthenticationHandlerTest extends LDAPServerTestBase
 {
 
   /**
