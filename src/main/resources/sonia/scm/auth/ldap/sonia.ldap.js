@@ -139,6 +139,7 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
   groupsUnitText: 'Groups Unit',
   peopleUnitText: 'People Unit',
   enableNestedADGroupsText: 'Enable nested ad groups',
+  enableStartTlsText: 'Use StartTLS',
   enabledText: 'Enabled',
   testConnectionText: 'Test Connection',
   
@@ -165,6 +166,7 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
   peopleUnitHelpText: 'The relative location of the users. For example: ou=People',
   groupsUnitHelpText: 'The relative location of the groups. For example: ou=Groups',
   enableNestedADGroupsHelpText: 'Enable search for nested ActiveDirectory groups. <b>Note:</b> Nested ad groups work only for ActiveDirectory.',
+  enableStartTlsHelpText: 'Use StartTLS extension to encrypt the connection to the directory server.',
   enabledHelpText: 'Enables or disables the ldap authentication.',
   
   // errors 
@@ -298,6 +300,12 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
         name: 'enable-nested-ad-groups',
         inputValue: 'true',
         helpText: this.enableNestedADGroupsHelpText
+      },{
+        xtype: 'checkbox',
+        fieldLabel : this.enableStartTlsText,
+        name: 'enable-starttls',
+        inputValue: 'true',
+        helpText: this.enableStartTlsHelpText        
       },{
         xtype: 'checkbox',
         fieldLabel : this.enabledText,
@@ -437,6 +445,7 @@ if ( i18n != null && i18n.country == 'de' ){
     groupsUnitText: 'Gruppen (ou)',
     peopleUnitText: 'Personen (ou)',
     enableNestedADGroupsText: 'Aktiviere verschachtelte AD Gruppen',
+    enableStartTlsText: 'Verwende StartTLS',
     enabledText: 'Aktiviert',
   
     // help texts
@@ -462,6 +471,7 @@ if ( i18n != null && i18n.country == 'de' ){
     groupsUnitHelpText: 'Relativer Gruppen-Pfad (z.B. ou=Groups)',
     enableNestedADGroupsHelpText: 'Aktiviert / Deaktiviert verschachtelte ActiveDirectory Gruppen. \n\
                         <b>Achtung:</b> Verschachtelte Gruppen funktionieren nur mit einem ActiveDirectory Server.',
+    enableStartTlsHelpText: 'Verwende StartTLS Erweiterung um eine verschlüsselte Verbindung zum DirecotryServer aufzubauen.',
     enabledHelpText: 'Aktiviert / Deaktiviert die LDAP Authentifizierung',
     
     // errors 
