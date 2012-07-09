@@ -55,6 +55,9 @@ public class LDAPTestBase
   public static final String BIND_PWD = "scm-manager";
 
   /** Field description */
+  public static final String HOST = "localhost";
+
+  /** Field description */
   public static final int PORT = 11389;
 
   //~--- methods --------------------------------------------------------------
@@ -110,6 +113,6 @@ public class LDAPTestBase
    */
   protected InetAddress getInetAddress() throws UnknownHostException
   {
-    return InetAddress.getByName("localhost");
+    return InetAddress.getByName(HOST);
   }
 }

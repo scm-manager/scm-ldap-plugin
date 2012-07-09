@@ -102,8 +102,8 @@ public class LDAPServerTestBase extends LDAPTestBase
 
     config.addAdditionalBindCredentials(BIND_DN, BIND_PWD);
     config.setListenerConfigs(new InMemoryListenerConfig("listener-1",
-      InetAddress.getLocalHost(), PORT, ServerSocketFactory.getDefault(),
-      SocketFactory.getDefault(), null));
+      InetAddress.getByName(HOST), PORT,
+      ServerSocketFactory.getDefault(), SocketFactory.getDefault(), null));
 
     // disable schema check, becase of memberOf attribute
     config.setSchema(null);
