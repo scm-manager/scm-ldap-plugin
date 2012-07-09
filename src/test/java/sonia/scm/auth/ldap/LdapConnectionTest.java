@@ -36,6 +36,10 @@ package sonia.scm.auth.ldap;
 import com.unboundid.ldap.listener.InMemoryDirectoryServer;
 import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig;
 import com.unboundid.ldap.listener.InMemoryListenerConfig;
+import com.unboundid.ldif.LDIFReader;
+import com.unboundid.util.ssl.KeyStoreKeyManager;
+import com.unboundid.util.ssl.SSLUtil;
+import com.unboundid.util.ssl.TrustAllTrustManager;
 
 import org.junit.After;
 import org.junit.Before;
@@ -47,26 +51,31 @@ import sonia.scm.util.IOUtil;
 
 //~--- JDK imports ------------------------------------------------------------
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import java.security.KeyStore;
+import java.io.OutputStream;
 
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
+import javax.naming.AuthenticationException;
 import javax.naming.NamingException;
 
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
 
 /**
  *
  * @author Sebastian Sdorra
  */
-public class LdapTlsTest extends LDAPTestBase
+public class LdapConnectionTest extends LDAPTestBase
 {
+
+  /** Field description */
+  private static final String LDIF = "/ldif/004.ldif";
+
+  //~--- methods --------------------------------------------------------------
 
   /**
    * Method description
@@ -79,6 +88,9 @@ public class LdapTlsTest extends LDAPTestBase
   @Before
   public void startServer() throws Exception
   {
+
+    // System.setProperty("javax.net.debug", "all");
+
     accesslogHandler = new AccessLogHandler();
 
     this.sslContext = createSSLContext();
@@ -94,9 +106,25 @@ public class LdapTlsTest extends LDAPTestBase
         "tls-listener-1", getInetAddress(), PORT,
           sslContext.getSocketFactory()));
     config.addAdditionalBindCredentials(BIND_DN, BIND_PWD);
-    config.setSchema(null);
 
     ds = new InMemoryDirectoryServer(config);
+
+    LDIFReader reader = null;
+
+    try
+    {
+      reader =
+        new LDIFReader(LdapConnectionTest.class.getResourceAsStream(LDIF));
+      ds.importFromLDIF(false, reader);
+    }
+    finally
+    {
+      if (reader != null)
+      {
+        reader.close();
+      }
+    }
+
     ds.startListening();
   }
 
@@ -119,14 +147,35 @@ public class LdapTlsTest extends LDAPTestBase
    * @throws NamingException
    */
   @Test
-  public void testTlsConnection()
-    throws NamingException, IOException, InterruptedException
+  public void testTlsConnection() throws NamingException, IOException
   {
     LDAPConfig config = createConfig();
 
-    config.setEnableStartTls(false);
+    config.setEnableStartTls(true);
 
-    LDAPConnection connection = new LDAPConnection(config, BIND_DN, BIND_PWD);
+    LDAPConnection connection = new LDAPConnection(config, sslContext, BIND_DN,
+                                  BIND_PWD);
+
+    connection.close();
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @throws IOException
+   * @throws InterruptedException
+   * @throws NamingException
+   */
+  @Test(expected = AuthenticationException.class)
+  public void testWithWrongPassword() throws NamingException, IOException
+  {
+    LDAPConfig config = createConfig();
+
+    config.setEnableStartTls(true);
+
+    LDAPConnection connection = new LDAPConnection(config, sslContext, BIND_DN,
+                                  "test-123");
 
     connection.close();
   }
@@ -141,32 +190,30 @@ public class LdapTlsTest extends LDAPTestBase
    */
   private SSLContext createSSLContext() throws Exception
   {
-    KeyStore keyStore = KeyStore.getInstance("JKS");
     InputStream input = null;
+    OutputStream ouput = null;
+
+    File keystore = tempFolder.newFile("keystore.jks");
 
     try
     {
-      input = LdapTlsTest.class.getResourceAsStream("security/keystore.jks");
-      keyStore.load(input, "scm-manager.org".toCharArray());
+      input =
+        LdapConnectionTest.class.getResourceAsStream("/security/keystore.jks");
+      ouput = new FileOutputStream(keystore);
+
+      IOUtil.copy(input, ouput);
     }
     finally
     {
       IOUtil.close(input);
+      IOUtil.close(ouput);
     }
 
-    KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+    SSLUtil sslUtil =
+      new SSLUtil(new KeyStoreKeyManager(keystore,
+        "scm-manager.org".toCharArray()), new TrustAllTrustManager());
 
-    kmf.init(keyStore, "scm-manager.org".toCharArray());
-
-    TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
-
-    tmf.init(keyStore);
-
-    SSLContext ctx = SSLContext.getInstance("TLSv1");
-
-    ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-
-    return ctx;
+    return sslUtil.createSSLContext();
   }
 
   //~--- inner classes --------------------------------------------------------

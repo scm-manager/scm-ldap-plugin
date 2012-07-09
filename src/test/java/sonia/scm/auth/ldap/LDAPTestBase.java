@@ -59,10 +59,6 @@ public class LDAPTestBase
 
   //~--- methods --------------------------------------------------------------
 
-  protected InetAddress getInetAddress() throws UnknownHostException{
-    return InetAddress.getLocalHost();
-  }
-  
   /**
    * Method description
    *
@@ -100,5 +96,20 @@ public class LDAPTestBase
     }
 
     return config;
+  }
+
+  //~--- get methods ----------------------------------------------------------
+
+  /**
+   * Method description
+   *
+   *
+   * @return
+   *
+   * @throws UnknownHostException
+   */
+  protected InetAddress getInetAddress() throws UnknownHostException
+  {
+    return InetAddress.getByName("localhost");
   }
 }

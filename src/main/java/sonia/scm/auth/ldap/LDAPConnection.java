@@ -55,6 +55,8 @@ import javax.naming.ldap.LdapContext;
 import javax.naming.ldap.StartTlsRequest;
 import javax.naming.ldap.StartTlsResponse;
 
+import javax.net.ssl.SSLContext;
+
 /**
  *
  * @author Sebastian Sdorra
@@ -81,7 +83,7 @@ public class LDAPConnection implements Closeable
    */
   public LDAPConnection(LDAPConfig config) throws NamingException, IOException
   {
-    this(config, null, null);
+    this(config, null, null, null);
   }
 
   /**
@@ -98,6 +100,25 @@ public class LDAPConnection implements Closeable
   public LDAPConnection(LDAPConfig config, String userDN, String password)
     throws NamingException, IOException
   {
+    this(config, null, userDN, password);
+  }
+
+  /**
+   * Constructs ...
+   *
+   *
+   * @param config
+   * @param sslContext
+   * @param userDN
+   * @param password
+   *
+   * @throws IOException
+   * @throws NamingException
+   */
+  public LDAPConnection(LDAPConfig config, SSLContext sslContext,
+    String userDN, String password)
+    throws NamingException, IOException
+  {
     context = new InitialLdapContext(createBasicProperties(config, userDN,
       password), null);
 
@@ -109,7 +130,15 @@ public class LDAPConnection implements Closeable
       }
 
       tls = (StartTlsResponse) context.extendedOperation(new StartTlsRequest());
-      tls.negotiate();
+
+      if (sslContext != null)
+      {
+        tls.negotiate(sslContext.getSocketFactory());
+      }
+      else
+      {
+        tls.negotiate();
+      }
 
       // authenticate after bind
       if (userDN != null)
@@ -126,6 +155,9 @@ public class LDAPConnection implements Closeable
         {
           context.addToEnvironment(Context.SECURITY_CREDENTIALS, password);
         }
+
+        // force bind
+        context.getAttributes(config.getBaseDn(), new String[] { "dn" });
       }
     }
   }

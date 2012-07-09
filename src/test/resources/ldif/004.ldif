@@ -1,0 +1,6 @@
+version: 1
+
+dn: dc=scm-manager,dc=org
+objectClass: domain
+objectClass: top
+dc: scm-manager
