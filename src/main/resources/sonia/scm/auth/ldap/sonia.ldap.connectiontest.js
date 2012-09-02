@@ -39,12 +39,13 @@ Sonia.ldap.ConnectionTestForm = Ext.extend(Ext.FormPanel,{
   waitTitleText: 'Connecting',
   waitMsgText: 'Sending data...',
   failedMsgText: 'LDAP Connection Test failed!',
+  
+  data: null,
 
   initComponent: function(){
 
     var config = {
       labelWidth: 80,
-      url: restUrl + "config/auth/ldap/test.json",
       frame: false,
       defaultType: 'textfield',
       monitorValid: true,
@@ -157,20 +158,30 @@ Sonia.ldap.ConnectionTestForm = Ext.extend(Ext.FormPanel,{
 
   testConnection: function(){
     var form = this.getForm();
-    form.submit({
-      scope: this,
+    var testConfig = form.getValues();
+    testConfig['ldap-config'] = this.data;
+    
+    this.el.mask(this.submitText);
+    Ext.Ajax.request({
+      url: restUrl + 'config/auth/ldap/test.json',
       method: 'POST',
-      waitTitle: this.waitTitleText,
-      waitMsg: this.waitMsgText,
-
-      success: function(form, action){
+      jsonData: testConfig,
+      scope: this,
+      disableCaching: true,
+      success: function(response){
+        this.el.unmask();
         if ( debug ){
           console.debug( 'test connection success' );
         }
-        this.showResult(action.result);
+        var result = Ext.decode(response.responseText);
+        if (debug){
+          console.debug('connection test result:');
+          console.debug(result);
+        }
+        this.showResult(result);
       },
-
-      failure: function(form){
+      failure: function(){
+        this.el.unmask();
         if ( debug ){
           console.debug( 'test connection failed' );
         }
@@ -194,9 +205,12 @@ Sonia.ldap.ConnectionTestForm = Ext.extend(Ext.FormPanel,{
 Sonia.ldap.ConnectionTestWindow = Ext.extend(Ext.Window,{
 
   titleText: 'LDAP Connection Test',
+  data: null,
 
   initComponent: function(){
-    var form = new Sonia.ldap.ConnectionTestForm();
+    var form = new Sonia.ldap.ConnectionTestForm({
+      data: this.data
+    });
     form.on('cancel', function(){
       this.close();
     }, this);

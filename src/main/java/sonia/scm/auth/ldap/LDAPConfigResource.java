@@ -47,7 +47,6 @@ import sonia.scm.web.security.AuthenticationState;
 import java.io.IOException;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -78,6 +77,43 @@ public class LDAPConfigResource
     this.authenticationHandler = authenticationHandler;
   }
 
+  //~--- methods --------------------------------------------------------------
+
+  /**
+   * Method description
+   *
+   *
+   *
+   * @param username
+   * @param password
+   *
+   * @param testConfig
+   *
+   * @return
+   *
+   * @throws IOException
+   */
+  @POST
+  @Path("test")
+  @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+  public LDAPAuthenticationState testConfig(LDAPTestConfig testConfig)
+    throws IOException
+  {
+    LDAPConfig config = testConfig.getConfig();
+    LDAPAuthenticationContext context = new LDAPAuthenticationContext(config);
+    AuthenticationResult ar = context.authenticate(testConfig.getUsername(),
+                                testConfig.getPassword());
+    LDAPAuthenticationState state = context.getState();
+
+    if ((ar != null) && (ar.getState() == AuthenticationState.SUCCESS))
+    {
+      state.setUser(ar.getUser());
+      state.setGroups(ar.getGroups());
+    }
+
+    return state;
+  }
+
   //~--- get methods ----------------------------------------------------------
 
   /**
@@ -99,40 +135,6 @@ public class LDAPConfigResource
    * Method description
    *
    *
-   *
-   * @param username
-   * @param password
-   *
-   * @return
-   *
-   * @throws IOException
-   */
-  @POST
-  @Path("test")
-  @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-  public LDAPAuthenticationState setConfig(
-          @FormParam("username") String username,
-          @FormParam("password") String password)
-          throws IOException
-  {
-    LDAPConfig config = authenticationHandler.getConfig();
-    LDAPAuthenticationContext context = new LDAPAuthenticationContext(config);
-    AuthenticationResult ar = context.authenticate(username, password);
-    LDAPAuthenticationState state = context.getState();
-
-    if ((ar != null) && (ar.getState() == AuthenticationState.SUCCESS))
-    {
-      state.setUser(ar.getUser());
-      state.setGroups(ar.getGroups());
-    }
-
-    return state;
-  }
-
-  /**
-   * Method description
-   *
-   *
    * @param uriInfo
    * @param config
    *
@@ -143,7 +145,7 @@ public class LDAPConfigResource
   @POST
   @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
   public Response setConfig(@Context UriInfo uriInfo, LDAPConfig config)
-          throws IOException
+    throws IOException
   {
     AssertUtil.assertIsValid(config);
     authenticationHandler.setConfig(config);

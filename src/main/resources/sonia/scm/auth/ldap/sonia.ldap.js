@@ -327,7 +327,9 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
   },
   
   testConnection: function(){
-    var window = new Sonia.ldap.ConnectionTestWindow();
+    var window = new Sonia.ldap.ConnectionTestWindow({
+      data: this.getForm().getValues()
+    });
     window.show();
   },
   
@@ -377,6 +379,7 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
         this.el.unmask();
       },
       failure: function(){
+        this.el.unmask();
         Ext.MessageBox.show({
           title: this.errorBoxTitle,
           msg: this.errorOnSubmitText,
