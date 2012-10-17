@@ -233,6 +233,8 @@ public class LDAPConnection implements Closeable
       logger.debug("create anonymous context");
     }
 
+    // follow ldap referrals
+    ldapProperties.put(Context.REFERRAL, "follow");
     ldapProperties.put("java.naming.ldap.version", "3");
 
     return ldapProperties;
