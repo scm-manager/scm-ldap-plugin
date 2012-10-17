@@ -147,7 +147,7 @@ public class LDAPAuthenticationContext
             }
             else if (logger.isWarnEnabled())
             {
-              logger.warn("the returned user is not valid");
+              logger.warn("the returned user is not valid: {}", user);
             }
           }    // password wrong ?
         }      // user not found
