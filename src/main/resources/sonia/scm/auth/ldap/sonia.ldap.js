@@ -503,7 +503,7 @@ if ( i18n != null && i18n.country == 'de' ){
     searchScopeHelpText: 'Suchtiefe (scope) für die Personensuche',
     peopleUnitHelpText: 'Relativer Personen-Pfad (z.B. ou=People)',
     groupsUnitHelpText: 'Relativer Gruppen-Pfad (z.B. ou=Groups)',
-  referralStrategyHelpText: 'Strategie wie Ldap-Referenzen behandelt werden.<br />\n\
+    referralStrategyHelpText: 'Strategie wie Ldap-Referenzen behandelt werden.<br />\n\
                             <b>IGNORE:</b> alle Referenzen werden ignoriert.<br />\n\
                             <b>FOLLOW</b> alle Referenzen werden verfolgt.<br />\n\
                             <b>THROW</b> wirft eine ReferralException für jede Referenz.',
