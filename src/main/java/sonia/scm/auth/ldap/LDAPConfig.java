@@ -159,6 +159,17 @@ public class LDAPConfig implements Validateable
    *
    * @return
    */
+  public ReferralStrategy getReferralStrategy()
+  {
+    return referralStrategy;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @return
+   */
   public String getSearchFilter()
   {
     return searchFilter;
@@ -393,6 +404,17 @@ public class LDAPConfig implements Validateable
    * Method description
    *
    *
+   * @param referralStrategy
+   */
+  public void setReferralStrategy(ReferralStrategy referralStrategy)
+  {
+    this.referralStrategy = referralStrategy;
+  }
+
+  /**
+   * Method description
+   *
+   *
    * @param searchFilter
    */
   public void setSearchFilter(String searchFilter)
@@ -508,6 +530,10 @@ public class LDAPConfig implements Validateable
   /** Field description */
   @XmlElement(name = "profile")
   private String profile = "Custom";
+
+  /** Field description */
+  @XmlElement(name = "referral-strategy")
+  private ReferralStrategy referralStrategy = ReferralStrategy.FOLLOW;
 
   /** Field description */
   @XmlElement(name = "search-filter")

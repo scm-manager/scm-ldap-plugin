@@ -44,7 +44,8 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
       'search-filter-group': '(&(objectClass=group)(member={0}))',
       'search-scope': 'sub',
       'unit-people': '',
-      'unit-groups': ''
+      'unit-groups': '',
+      'referral-strategy': 'FOLLOW'
     }
   },{
     name: 'Apache Directory Server',
@@ -58,7 +59,8 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
       'search-scope': 'sub',
       'unit-people': 'ou=People',
       'unit-groups': 'ou=Groups',
-      'enable-nested-ad-groups': 'false'
+      'enable-nested-ad-groups': 'false',
+      'referral-strategy': 'FOLLOW'
     }
   },{
     name: 'OpenDS/OpenDJ',
@@ -72,6 +74,7 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
       'search-scope': 'sub',
       'unit-people': 'ou=People',
       'unit-groups': 'ou=Groups',
+      'referral-strategy': 'FOLLOW',
       'enable-nested-ad-groups': 'false'
     }
   },{
@@ -86,6 +89,7 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
       'search-scope': 'sub',
       'unit-people': 'ou=People',
       'unit-groups': 'ou=Groups',
+      'referral-strategy': 'FOLLOW',
       'enable-nested-ad-groups': 'false'
     }
   },{
@@ -100,6 +104,7 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
       'search-scope': 'sub',
       'unit-people': 'ou=People',
       'unit-groups': 'ou=Groups',
+      'referral-strategy': 'FOLLOW',
       'enable-nested-ad-groups': 'false'
     }
   },{
@@ -114,6 +119,7 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
       'search-scope': 'sub',
       'unit-people': 'ou=People',
       'unit-groups': 'ou=Groups',
+      'referral-strategy': 'FOLLOW',
       'enable-nested-ad-groups': 'false'
     }
   },{
@@ -138,6 +144,7 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
   searchScopeText: 'Search Scope',
   groupsUnitText: 'Groups Unit',
   peopleUnitText: 'People Unit',
+  referralStrategyText: 'Referral Strategy',
   enableNestedADGroupsText: 'Enable nested ad groups',
   enableStartTlsText: 'Use StartTLS',
   enabledText: 'Enabled',
@@ -165,6 +172,7 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
   searchScopeHelpText: 'The scope for the user search.',
   peopleUnitHelpText: 'The relative location of the users. For example: ou=People',
   groupsUnitHelpText: 'The relative location of the groups. For example: ou=Groups',
+  referralStrategyHelpText: '',
   enableNestedADGroupsHelpText: 'Enable search for nested ActiveDirectory groups. <b>Note:</b> Nested ad groups work only for ActiveDirectory.',
   enableStartTlsHelpText: 'Use StartTLS extension to encrypt the connection to the directory server.',
   enabledHelpText: 'Enables or disables the ldap authentication.',
@@ -294,6 +302,25 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
         name : 'unit-groups',
         allowBlank : true,
         helpText: this.groupsUnitHelpText
+      },{
+        xtype : 'combo',
+        name: 'referral-strategy',
+        fieldLabel: this.referralStrategyText,
+        helpText: this.referralStrategyHelpText,
+        valueField: 'rs',
+        displayField: 'rs',
+        typeAhead: false,
+        editable: false,
+        triggerAction: 'all',
+        mode: 'local',
+        store: new Ext.data.SimpleStore({
+          fields: ['rs'],
+          data: [
+            ['FOLLOW'],
+            ['IGNORE'],
+            ['THROW']
+          ]
+        })
       },{
         xtype: 'checkbox',
         fieldLabel : this.enableNestedADGroupsText,
