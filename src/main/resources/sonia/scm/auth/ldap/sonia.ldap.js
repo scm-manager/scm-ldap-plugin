@@ -172,7 +172,10 @@ Sonia.ldap.ConfigPanel = Ext.extend(Sonia.config.ConfigForm, {
   searchScopeHelpText: 'The scope for the user search.',
   peopleUnitHelpText: 'The relative location of the users. For example: ou=People',
   groupsUnitHelpText: 'The relative location of the groups. For example: ou=Groups',
-  referralStrategyHelpText: '',
+  referralStrategyHelpText: 'Strategy to handle ldap referrals.<br />\n\
+                            <b>IGNORE:</b> will ignore all referrals.<br />\n\
+                            <b>FOLLOW</b> automatically follow any referrals.<br />\n\
+                            <b>THROW</b> throw a ReferralException for each referral.',
   enableNestedADGroupsHelpText: 'Enable search for nested ActiveDirectory groups. <b>Note:</b> Nested ad groups work only for ActiveDirectory.',
   enableStartTlsHelpText: 'Use StartTLS extension to encrypt the connection to the directory server.',
   enabledHelpText: 'Enables or disables the ldap authentication.',
