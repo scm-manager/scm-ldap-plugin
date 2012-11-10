@@ -477,6 +477,7 @@ if ( i18n != null && i18n.country == 'de' ){
     searchScopeText: 'Suchtiefe (scope)',
     groupsUnitText: 'Gruppen (ou)',
     peopleUnitText: 'Personen (ou)',
+    referralStrategyText: 'Referenz Strategie',
     enableNestedADGroupsText: 'Aktiviere verschachtelte AD Gruppen',
     enableStartTlsText: 'Verwende StartTLS',
     enabledText: 'Aktiviert',
@@ -502,6 +503,10 @@ if ( i18n != null && i18n.country == 'de' ){
     searchScopeHelpText: 'Suchtiefe (scope) für die Personensuche',
     peopleUnitHelpText: 'Relativer Personen-Pfad (z.B. ou=People)',
     groupsUnitHelpText: 'Relativer Gruppen-Pfad (z.B. ou=Groups)',
+  referralStrategyHelpText: 'Strategie wie Ldap-Referenzen behandelt werden.<br />\n\
+                            <b>IGNORE:</b> alle Referenzen werden ignoriert.<br />\n\
+                            <b>FOLLOW</b> alle Referenzen werden verfolgt.<br />\n\
+                            <b>THROW</b> wirft eine ReferralException für jede Referenz.',
     enableNestedADGroupsHelpText: 'Aktiviert / Deaktiviert verschachtelte ActiveDirectory Gruppen. \n\
                         <b>Achtung:</b> Verschachtelte Gruppen funktionieren nur mit einem ActiveDirectory Server.',
     enableStartTlsHelpText: 'Verwende StartTLS Erweiterung um eine verschlüsselte Verbindung zum DirecotryServer aufzubauen.',
