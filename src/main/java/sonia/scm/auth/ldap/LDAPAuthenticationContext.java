@@ -352,7 +352,7 @@ public class LDAPAuthenticationContext
 
       if (logger.isDebugEnabled())
       {
-        logger.debug("saarch base for {} search: {}", type, dn);
+        logger.debug("search base for {} search: {}", type, dn);
       }
     }
     else if (logger.isErrorEnabled())
