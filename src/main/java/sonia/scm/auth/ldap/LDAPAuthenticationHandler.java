@@ -101,7 +101,7 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
    */
   @Override
   public AuthenticationResult authenticate(HttpServletRequest request,
-          HttpServletResponse response, String username, String password)
+    HttpServletResponse response, String username, String password)
   {
     AuthenticationResult result = AuthenticationResult.NOT_FOUND;
 
@@ -109,7 +109,8 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
     {
       AssertUtil.assertIsNotEmpty(username);
       AssertUtil.assertIsNotEmpty(password);
-      result = new LDAPAuthenticationContext(config).authenticate(username, password);
+      result = new LDAPAuthenticationContext(config).authenticate(username,
+        password);
     }
     else if (logger.isWarnEnabled())
     {

@@ -30,6 +30,7 @@
  */
 
 
+
 package sonia.scm.auth.ldap;
 
 //~--- non-JDK imports --------------------------------------------------------
@@ -125,10 +126,7 @@ public class LDAPConnection implements Closeable
 
     if (config.isEnableStartTls())
     {
-      if (logger.isDebugEnabled())
-      {
-        logger.debug("send starttls request");
-      }
+      logger.debug("send starttls request");
 
       tls = (StartTlsResponse) context.extendedOperation(new StartTlsRequest());
 
@@ -144,10 +142,7 @@ public class LDAPConnection implements Closeable
       // authenticate after bind
       if (userDN != null)
       {
-        if (logger.isDebugEnabled())
-        {
-          logger.debug("set bind credentials for dn {}", userDN);
-        }
+        logger.debug("set bind credentials for dn {}", userDN);
 
         context.addToEnvironment(Context.SECURITY_AUTHENTICATION, "simple");
         context.addToEnvironment(Context.SECURITY_PRINCIPAL, userDN);
@@ -156,8 +151,17 @@ public class LDAPConnection implements Closeable
         {
           context.addToEnvironment(Context.SECURITY_CREDENTIALS, password);
         }
+        else if (logger.isDebugEnabled())
+        {
+          logger.debug("try to bind user {} without password", userDN);
+        }
 
         // force bind
+        if (logger.isTraceEnabled())
+        {
+          logger.trace("fetch dn of {} to force bind", config.getBaseDn());
+        }
+
         context.getAttributes(config.getBaseDn(), new String[] { "dn" });
       }
     }

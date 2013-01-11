@@ -162,6 +162,10 @@ public class LDAPUtil
         {
           value = (String) attribute.get();
         }
+        else
+        {
+          logger.debug("could not find attribute {}", name);
+        }
       }
     }
     catch (NamingException ex)

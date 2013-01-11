@@ -441,6 +441,8 @@ public class LDAPAuthenticationContext
   {
     if (Util.isNotEmpty(config.getSearchFilterGroup()))
     {
+      logger.trace("try to fetch groups for user {}", uid);
+
       NamingEnumeration<SearchResult> searchResultEnm = null;
 
       try
@@ -461,6 +463,13 @@ public class LDAPAuthenticationContext
         {
           String searchDN = createGroupSearchBaseDN();
 
+          if (logger.isDebugEnabled())
+          {
+            logger.debug("search groups for user {} at {} with filter {}",
+              new Object[] { userDN,
+              searchDN, filter });
+          }
+
           searchResultEnm = connection.search(searchDN, filter, searchControls);
 
           while (searchResultEnm.hasMore())
@@ -472,7 +481,18 @@ public class LDAPAuthenticationContext
 
             if (Util.isNotEmpty(name))
             {
+              if (logger.isTraceEnabled())
+              {
+                logger.trace("append group {} with name {} to user result",
+                  searchResult.getNameInNamespace(), name);
+              }
+
               groups.add(name);
+            }
+            else if (logger.isDebugEnabled())
+            {
+              logger.debug("could not read group name from {}",
+                searchResult.getNameInNamespace());
             }
           }
         }
@@ -527,6 +547,7 @@ public class LDAPAuthenticationContext
 
     if (Util.isNotEmpty(groupAttribute))
     {
+      logger.trace("try to get groups from group attribute {}", groupAttribute);
       NamingEnumeration<?> userGroupsEnm = null;
 
       try
@@ -542,6 +563,7 @@ public class LDAPAuthenticationContext
             String group = (String) userGroupsEnm.next();
 
             group = LDAPUtil.getName(group);
+            logger.debug("append group {} to user result", group);
             groups.add(group);
           }
         }
