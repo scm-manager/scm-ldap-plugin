@@ -136,6 +136,8 @@ public class LDAPAuthenticationContext
 
             if (user.isValid())
             {
+              logger.trace(
+                "succefully created user from from ldap response: {}", user);
               state.setUserValid(true);
 
               Set<String> groups = new HashSet<String>();
@@ -157,6 +159,8 @@ public class LDAPAuthenticationContext
     {
       IOUtil.close(bindConnection);
     }
+
+    logger.trace("return authentication result: {}", result);
 
     return result;
   }
@@ -548,6 +552,7 @@ public class LDAPAuthenticationContext
     if (Util.isNotEmpty(groupAttribute))
     {
       logger.trace("try to get groups from group attribute {}", groupAttribute);
+
       NamingEnumeration<?> userGroupsEnm = null;
 
       try
