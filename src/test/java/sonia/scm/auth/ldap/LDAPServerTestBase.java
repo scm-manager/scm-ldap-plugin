@@ -48,8 +48,6 @@ import sonia.scm.store.MemoryStoreFactory;
 
 //~--- JDK imports ------------------------------------------------------------
 
-import java.io.IOException;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -102,8 +100,8 @@ public class LDAPServerTestBase extends LDAPTestBase
 
     config.addAdditionalBindCredentials(BIND_DN, BIND_PWD);
     config.setListenerConfigs(new InMemoryListenerConfig("listener-1",
-      InetAddress.getByName(HOST), PORT,
-      ServerSocketFactory.getDefault(), SocketFactory.getDefault(), null));
+      InetAddress.getByName(HOST), PORT, ServerSocketFactory.getDefault(),
+      SocketFactory.getDefault(), null));
 
     // disable schema check, becase of memberOf attribute
     config.setSchema(null);
