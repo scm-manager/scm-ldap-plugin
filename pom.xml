@@ -12,7 +12,7 @@
   <groupId>sonia.scm.plugins</groupId>
   <artifactId>scm-auth-ldap-plugin</artifactId>
   <packaging>jar</packaging>
-  <version>1.19</version>
+  <version>1.20-SNAPSHOT</version>
   <name>${project.artifactId}</name>
   <description>scm manager auth ldap plugin</description>
 
