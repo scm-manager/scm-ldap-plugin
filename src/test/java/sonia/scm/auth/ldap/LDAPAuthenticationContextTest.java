@@ -56,6 +56,32 @@ public class LDAPAuthenticationContextTest extends LDAPServerTestBase
    *
    *
    * @throws LDAPException
+   * 
+   * @see <a hre="https://groups.google.com/d/msg/scmmanager/EJ1k-6BVjxs/XzJpFHq1mMIJ">XzJpFHq1mMIJ</a>
+   */
+  @Test
+  public void testFilterEscaping() throws LDAPException
+  {
+    initialize(LDIF_001);
+
+    LDAPConfig config = createConfig();
+
+    config.setConnectionPassword(BIND_PWD);
+    config.setSearchFilter("(&(uid={0}))");
+
+    LDAPAuthenticationContext context = new LDAPAuthenticationContext(config);
+    AuthenticationResult ar = context.authenticate("trillian)(objectClass=top",
+                                "trilli123");
+
+    assertNull(context.getState().getException());
+    LDAPTestUtil.assertFailed(AuthenticationState.NOT_FOUND, ar);
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @throws LDAPException
    */
   @Test
   public void testState() throws LDAPException

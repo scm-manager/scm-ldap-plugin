@@ -415,7 +415,9 @@ public class LDAPAuthenticationContext
 
     if (Util.isNotEmpty(config.getSearchFilter()))
     {
-      filter = MessageFormat.format(config.getSearchFilter(), username);
+      filter = MessageFormat.format(
+        config.getSearchFilter(), LDAPUtil.escapeSearchFilter(username)
+      );
 
       if (logger.isDebugEnabled())
       {
