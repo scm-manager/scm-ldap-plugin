@@ -66,6 +66,20 @@ import javax.net.ssl.SSLContext;
 public class LDAPConnection implements Closeable
 {
 
+  /** property for ldap connect timeout */
+  private static final String PROPERTY_TIMEOUT_CONNECT =
+    "com.sun.jndi.ldap.connect.timeout";
+
+  /** property for ldap read timeout */
+  private static final String PROPERTY_TIMEOUT_READ =
+    "com.sun.jndi.ldap.read.timeout";
+
+  /** connect timeout: 5sec */
+  private static final String TIMEOUT_CONNECT = "5000";
+
+  /** read timeout: 2min */
+  private static final String TIMEOUT_READ = "120000";
+
   /**
    * the logger for LDAPConnection
    */
@@ -220,6 +234,11 @@ public class LDAPConnection implements Closeable
     ldapProperties.put(Context.INITIAL_CONTEXT_FACTORY,
       "com.sun.jndi.ldap.LdapCtxFactory");
     ldapProperties.put(Context.PROVIDER_URL, config.getHostUrl());
+
+    // apply timeout for read and connect
+    // see https://groups.google.com/d/topic/scmmanager/QTimDQM2Wfw/discussion
+    ldapProperties.put(PROPERTY_TIMEOUT_CONNECT, TIMEOUT_CONNECT);
+    ldapProperties.put(PROPERTY_TIMEOUT_READ, TIMEOUT_READ);
 
     if (Util.isNotEmpty(userDN) && Util.isNotEmpty(password)
       &&!config.isEnableStartTls())
