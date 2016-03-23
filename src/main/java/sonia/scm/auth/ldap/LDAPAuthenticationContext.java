@@ -533,8 +533,8 @@ public class LDAPAuthenticationContext
   private String prepareFilterPatternForNestedGroups(String filterPattern,
     String userDN)
   {
-    return filterPattern.replaceAll(Pattern.quote("={0}"),
-      NESTEDGROUP_MATCHINGRULE.concat(userDN));
+    return filterPattern.replaceAll(Pattern.quote("={0}"), 
+      NESTEDGROUP_MATCHINGRULE.concat(userDN.replace("\\,", "\\\\5c,")));
   }
 
   //~--- get methods ----------------------------------------------------------
