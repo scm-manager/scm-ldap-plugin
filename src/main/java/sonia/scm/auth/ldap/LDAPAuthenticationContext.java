@@ -306,10 +306,10 @@ public class LDAPAuthenticationContext
       if (config.isEnableNestedADGroups())
       {
         filterPattern = prepareFilterPatternForNestedGroups(filterPattern,
-          userDN);
+         escapeLDAPSearchFilter(userDN));
       }
 
-      filter = MessageFormat.format(filterPattern, userDN, uid, mail);
+      filter = MessageFormat.format(filterPattern, escapeLDAPSearchFilter(userDN), uid, mail);
 
       if (logger.isDebugEnabled())
       {
@@ -534,7 +534,7 @@ public class LDAPAuthenticationContext
     String userDN)
   {
     return filterPattern.replaceAll(Pattern.quote("={0}"), 
-      NESTEDGROUP_MATCHINGRULE.concat(userDN.replace("\\,", "\\\\5c,")));
+      NESTEDGROUP_MATCHINGRULE.concat(userDN));
   }
 
   //~--- get methods ----------------------------------------------------------
@@ -685,6 +685,41 @@ public class LDAPAuthenticationContext
     }
 
     return result;
+  }
+  
+  /**
+   * Sanitize LDAP search filter to prevent LDAP injection.
+   * Source: https://www.owasp.org/index.php/Preventing_LDAP_Injection_in_Java
+   * \\\\ is there because java.MessageFormat.format() is suppressing \\ to \
+   * 
+   * @param filter
+   * @return
+   */
+  public String escapeLDAPSearchFilter(String filter) {
+	  StringBuilder sb = new StringBuilder(); // If using JDK >= 1.5 consider using StringBuilder
+      for (int i = 0; i < filter.length(); i++) {
+          char curChar = filter.charAt(i);
+          switch (curChar) {
+              case '\\':
+                  sb.append("\\\\5c");
+                  break;
+              case '*':
+                  sb.append("\\\\2a");
+                  break;
+              case '(':
+                  sb.append("\\\\28");
+                  break;
+              case ')':
+                  sb.append("\\\\29");
+                  break;
+              case '\u0000': 
+                  sb.append("\\\\00"); 
+                  break;
+              default:
+                  sb.append(curChar);
+          }
+      }
+      return sb.toString();
   }
 
   //~--- fields ---------------------------------------------------------------
