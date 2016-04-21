@@ -57,7 +57,7 @@
       <plugin>
         <groupId>sonia.scm.maven</groupId>
         <artifactId>scm-maven-plugin</artifactId>
-        <version>1.9</version>
+        <version>1.46</version>
         <executions>
           <execution>
             <phase>process-resources</phase>
