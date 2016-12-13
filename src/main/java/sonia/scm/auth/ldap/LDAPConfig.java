@@ -50,7 +50,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *
  * @author Thorsten Ludewig
  */
-@XmlRootElement(name = "ldap-config")
+@XmlRootElement(name="ldap-config")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class LDAPConfig implements Validateable
 {
@@ -64,6 +64,17 @@ public class LDAPConfig implements Validateable
   public String getAttributeNameFullname()
   {
     return attributeNameFullname;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @return
+   */
+  public String getUniqueId()
+  {
+    return uniqueId;
   }
 
   /**
@@ -262,7 +273,7 @@ public class LDAPConfig implements Validateable
   @Override
   public boolean isValid()
   {
-    return isValid(attributeNameId, attributeNameFullname, attributeNameMail,
+    return isValid(uniqueId, attributeNameId, attributeNameFullname, attributeNameMail,
       hostUrl, searchFilter, searchScope);
   }
 
@@ -277,6 +288,17 @@ public class LDAPConfig implements Validateable
   public void setAttributeNameFullname(String attributeNameFullname)
   {
     this.attributeNameFullname = attributeNameFullname;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @param uniqueId
+   */
+  public void setUniqueId(String uniqueId)
+  {
+    this.uniqueId = uniqueId;
   }
 
   /**
@@ -495,6 +517,10 @@ public class LDAPConfig implements Validateable
   }
 
   //~--- fields ---------------------------------------------------------------
+
+  /** Field description */
+  @XmlElement(name = "unique-id")
+  private String uniqueId = "ldap-1";
 
   /** Field description */
   @XmlElement(name = "attribute-name-fullname")

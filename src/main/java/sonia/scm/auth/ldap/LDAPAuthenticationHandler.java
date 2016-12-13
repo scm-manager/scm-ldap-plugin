@@ -52,6 +52,8 @@ import sonia.scm.web.security.AuthenticationResult;
 //~--- JDK imports ------------------------------------------------------------
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -83,7 +85,7 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
   @Inject
   public LDAPAuthenticationHandler(StoreFactory factory)
   {
-    store = factory.getStore(LDAPConfig.class, TYPE);
+    store = factory.getStore(LDAPConfigList.class, TYPE);
   }
 
   //~--- methods --------------------------------------------------------------
@@ -105,17 +107,24 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
   {
     AuthenticationResult result = AuthenticationResult.NOT_FOUND;
 
-    if (config.isEnabled())
-    {
-      AssertUtil.assertIsNotEmpty(username);
-      AssertUtil.assertIsNotEmpty(password);
-      result = new LDAPAuthenticationContext(config).authenticate(username,
-        password);
+    boolean at_least_one_config_enabled = false;
+    List<LDAPConfig> configs = config.getLDAPConfigList();
+    for(LDAPConfig sub_config: configs) {
+      if (sub_config.isEnabled())
+      {
+        at_least_one_config_enabled = true;
+        break;
+      }
     }
-    else if (logger.isWarnEnabled())
-    {
-      logger.warn("ldap plugin is disabled");
-    }
+
+  if (at_least_one_config_enabled) {
+    AssertUtil.assertIsNotEmpty(username);
+    AssertUtil.assertIsNotEmpty(password);
+    result = new LDAPAuthenticationContext(config).authenticate(username, password);
+  } else if (logger.isWarnEnabled())
+  {
+    logger.warn("ldap plugin is disabled");
+  }
 
     return result;
   }
@@ -146,7 +155,7 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
 
     if (config == null)
     {
-      config = new LDAPConfig();
+      config = new LDAPConfigList();
       store.set(config);
     }
   }
@@ -168,7 +177,7 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
    *
    * @return
    */
-  public LDAPConfig getConfig()
+  public LDAPConfigList getConfig()
   {
     return config;
   }
@@ -193,7 +202,7 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
    *
    * @param config
    */
-  public void setConfig(LDAPConfig config)
+  public void setConfig(LDAPConfigList config)
   {
     this.config = config;
   }
@@ -201,8 +210,8 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
   //~--- fields ---------------------------------------------------------------
 
   /** Field description */
-  private LDAPConfig config;
+  private LDAPConfigList config;
 
   /** Field description */
-  private Store<LDAPConfig> store;
+  private Store<LDAPConfigList> store;
 }

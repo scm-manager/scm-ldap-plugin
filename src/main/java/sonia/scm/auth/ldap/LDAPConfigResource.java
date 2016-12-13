@@ -45,6 +45,9 @@ import sonia.scm.web.security.AuthenticationState;
 //~--- JDK imports ------------------------------------------------------------
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -100,7 +103,12 @@ public class LDAPConfigResource
     throws IOException
   {
     LDAPConfig config = testConfig.getConfig();
-    LDAPAuthenticationContext context = new LDAPAuthenticationContext(config);
+    LDAPConfigList config_list = new LDAPConfigList();
+    List<LDAPConfig> test_configs = new ArrayList<LDAPConfig>();
+    test_configs.add(config);
+    config_list.setLDAPConfigList(test_configs);
+
+    LDAPAuthenticationContext context = new LDAPAuthenticationContext(config_list);
     AuthenticationResult ar = context.authenticate(testConfig.getUsername(),
                                 testConfig.getPassword());
     LDAPAuthenticationState state = context.getState();
@@ -124,7 +132,7 @@ public class LDAPConfigResource
    */
   @GET
   @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-  public LDAPConfig getConfig()
+  public LDAPConfigList getConfig()
   {
     return authenticationHandler.getConfig();
   }
@@ -144,7 +152,7 @@ public class LDAPConfigResource
    */
   @POST
   @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-  public Response setConfig(@Context UriInfo uriInfo, LDAPConfig config)
+  public Response setConfig(@Context UriInfo uriInfo, LDAPConfigList config)
     throws IOException
   {
     AssertUtil.assertIsValid(config);

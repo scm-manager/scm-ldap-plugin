@@ -39,9 +39,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import sonia.scm.user.User;
+import sonia.scm.util.AssertUtil;
 import sonia.scm.util.IOUtil;
 import sonia.scm.util.Util;
 import sonia.scm.web.security.AuthenticationResult;
+import sonia.scm.web.security.AuthenticationState;
 
 //~--- JDK imports ------------------------------------------------------------
 
@@ -92,7 +94,7 @@ public class LDAPAuthenticationContext
    *
    * @param config
    */
-  public LDAPAuthenticationContext(LDAPConfig config)
+  public LDAPAuthenticationContext(LDAPConfigList config)
   {
     this.config = config;
     this.state = new LDAPAuthenticationState();
@@ -111,17 +113,69 @@ public class LDAPAuthenticationContext
    */
   public AuthenticationResult authenticate(String username, String password)
   {
+      AuthenticationResult result = AuthenticationResult.NOT_FOUND;
+      AssertUtil.assertIsNotEmpty(username);
+      AssertUtil.assertIsNotEmpty(password);
+
+      List<LDAPConfig> configs = config.getLDAPConfigList();
+
+      // If we have a forced domain in the username field then we should use that.
+      if (username.indexOf("\\") != -1) {
+          String[] items = username.split("\\\\");
+          String forced_domain = items[0];
+          for(LDAPConfig config: configs) {
+            if (config.isEnabled() && config.getUniqueId().equals(forced_domain)) {
+              result = authenticate(config, items[1], password);
+              return result;
+            }
+          }
+      }
+
+    for(LDAPConfig sub_config: configs) {
+          if (sub_config.isEnabled()) {
+              result = authenticate(sub_config, username, password);
+
+              // If we have not found the user in this config then we
+              // should try the remaining configurations. Else we
+              // should just return the result.
+              if (result.getState() == AuthenticationState.NOT_FOUND) {
+                  continue;
+              } else {
+                  break;
+              }
+          }
+
+      }
+
+      return result;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @param username
+   * @param password
+   * @param config
+   *
+   * @return
+   */
+  public AuthenticationResult authenticate(LDAPConfig config, String username, String password)
+  {
     AuthenticationResult result = AuthenticationResult.NOT_FOUND;
     LDAPConnection bindConnection = null;
 
     try
     {
-      bindConnection = createBindConnection();
+      bindConnection = createBindConnection(config);
 
       if (bindConnection != null)
       {
-        SearchResult searchResult = getUserSearchResult(bindConnection,
-                                      username);
+        SearchResult searchResult = getUserSearchResult(
+          config,
+          bindConnection,
+          username
+        );
 
         if (searchResult != null)
         {
@@ -129,10 +183,10 @@ public class LDAPAuthenticationContext
 
           String userDN = searchResult.getNameInNamespace();
 
-          if (authenticateUser(userDN, password))
+          if (authenticateUser(config, userDN, password))
           {
             Attributes attributes = searchResult.getAttributes();
-            User user = createUser(attributes);
+            User user = createUser(config, attributes);
 
             if (user.isValid())
             {
@@ -142,9 +196,9 @@ public class LDAPAuthenticationContext
 
               Set<String> groups = new HashSet<String>();
 
-              fetchGroups(bindConnection, groups, userDN, user.getId(),
+              fetchGroups(config, bindConnection, groups, userDN, user.getId(),
                 user.getMail());
-              getGroups(attributes, groups);
+              getGroups(config, attributes, groups);
               result = new AuthenticationResult(user, groups);
             }
             else if (logger.isWarnEnabled())
@@ -201,10 +255,11 @@ public class LDAPAuthenticationContext
    *
    * @param userDN
    * @param password
+   * @param config
    *
    * @return
    */
-  private boolean authenticateUser(String userDN, String password)
+  private boolean authenticateUser(LDAPConfig config, String userDN, String password)
   {
     boolean authenticated = false;
     LDAPConnection userConnection = null;
@@ -245,17 +300,20 @@ public class LDAPAuthenticationContext
   /**
    * Method description
    *
-   *
+   * @param config
    * @return
    */
-  private LDAPConnection createBindConnection()
+  private LDAPConnection createBindConnection(LDAPConfig config)
   {
     LDAPConnection connection = null;
 
     try
     {
-      connection = new LDAPConnection(config, config.getConnectionDn(),
-        config.getConnectionPassword());
+      connection = new LDAPConnection(
+        config,
+        config.getConnectionDn(),
+        config.getConnectionPassword()
+      );
       state.setBind(true);
     }
     catch (Exception ex)
@@ -273,12 +331,12 @@ public class LDAPAuthenticationContext
   /**
    * Method description
    *
-   *
+   * @param config
    * @return
    */
-  private String createGroupSearchBaseDN()
+  private String createGroupSearchBaseDN(LDAPConfig config)
   {
-    return createSearchBaseDN(SEARCHTYPE_GROUP, config.getUnitGroup());
+    return createSearchBaseDN(config, SEARCHTYPE_GROUP, config.getUnitGroup());
   }
 
   /**
@@ -288,10 +346,11 @@ public class LDAPAuthenticationContext
    * @param userDN
    * @param uid
    * @param mail
+   * @param config
    *
    * @return
    */
-  private String createGroupSearchFilter(String userDN, String uid, String mail)
+  private String createGroupSearchFilter(LDAPConfig config, String userDN, String uid, String mail)
   {
     String filter = null;
     String filterPattern = config.getSearchFilterGroup();
@@ -330,10 +389,11 @@ public class LDAPAuthenticationContext
    *
    * @param type
    * @param prefix
+   * @param config
    *
    * @return
    */
-  private String createSearchBaseDN(String type, String prefix)
+  private String createSearchBaseDN(LDAPConfig config, String type, String prefix)
   {
     String dn = null;
 
@@ -372,10 +432,11 @@ public class LDAPAuthenticationContext
    *
    *
    * @param attributes
+   * @param config
    *
    * @return
    */
-  private User createUser(Attributes attributes)
+  private User createUser(LDAPConfig config, Attributes attributes)
   {
     User user = new User();
 
@@ -393,23 +454,23 @@ public class LDAPAuthenticationContext
   /**
    * Method description
    *
-   *
+   * @param config
    * @return
    */
-  private String createUserSearchBaseDN()
+  private String createUserSearchBaseDN(LDAPConfig config)
   {
-    return createSearchBaseDN(SEARCHTYPE_USER, config.getUnitPeople());
+    return createSearchBaseDN(config, SEARCHTYPE_USER, config.getUnitPeople());
   }
 
   /**
    * Method description
    *
-   *
+   * @param config
    * @param username
    *
    * @return
    */
-  private String createUserSearchFilter(String username)
+  private String createUserSearchFilter(LDAPConfig config, String username)
   {
     String filter = null;
 
@@ -435,15 +496,15 @@ public class LDAPAuthenticationContext
   /**
    * Method description
    *
-   *
+   * @param config
    * @param connection
    * @param groups
    * @param userDN
    * @param uid
    * @param mail
    */
-  private void fetchGroups(LDAPConnection connection, Set<String> groups,
-    String userDN, String uid, String mail)
+  private void fetchGroups(LDAPConfig config, LDAPConnection connection, Set<String> groups,
+                           String userDN, String uid, String mail)
   {
     if (Util.isNotEmpty(config.getSearchFilterGroup()))
     {
@@ -463,11 +524,11 @@ public class LDAPAuthenticationContext
         searchControls.setReturningAttributes(new String[] {
           ATTRIBUTE_GROUP_NAME });
 
-        String filter = createGroupSearchFilter(userDN, uid, mail);
+        String filter = createGroupSearchFilter(config, userDN, uid, mail);
 
         if (filter != null)
         {
-          String searchDN = createGroupSearchBaseDN();
+          String searchDN = createGroupSearchBaseDN(config);
 
           if (logger.isDebugEnabled())
           {
@@ -542,12 +603,12 @@ public class LDAPAuthenticationContext
   /**
    * Method description
    *
-   *
+   * @param config
    * @param attributes
    * @param groups
    *
    */
-  private void getGroups(Attributes attributes, Set<String> groups)
+  private void getGroups(LDAPConfig config, Attributes attributes, Set<String> groups)
   {
     String groupAttribute = config.getAttributeNameGroup();
 
@@ -597,10 +658,10 @@ public class LDAPAuthenticationContext
   /**
    * Method description
    *
-   *
+   * @param config
    * @return
    */
-  private String[] getReturnAttributes()
+  private String[] getReturnAttributes(LDAPConfig config)
   {
     List<String> list = new ArrayList<String>();
 
@@ -615,14 +676,14 @@ public class LDAPAuthenticationContext
   /**
    * Method description
    *
-   *
+   * @param config
    * @param bindConnection
    * @param username
    *
    * @return
    */
-  private SearchResult getUserSearchResult(LDAPConnection bindConnection,
-    String username)
+  private SearchResult getUserSearchResult(LDAPConfig config, LDAPConnection bindConnection,
+                                           String username)
   {
     SearchResult result = null;
 
@@ -643,13 +704,13 @@ public class LDAPAuthenticationContext
 
         searchControls.setSearchScope(scope);
         searchControls.setCountLimit(1);
-        searchControls.setReturningAttributes(getReturnAttributes());
+        searchControls.setReturningAttributes(getReturnAttributes(config));
 
-        String filter = createUserSearchFilter(username);
+        String filter = createUserSearchFilter(config, username);
 
         if (filter != null)
         {
-          String baseDn = createUserSearchBaseDN();
+          String baseDn = createUserSearchBaseDN(config);
 
           if (baseDn != null)
           {
@@ -696,7 +757,7 @@ public class LDAPAuthenticationContext
    * @return
    */
   public String escapeLDAPSearchFilter(String filter) {
-	  StringBuilder sb = new StringBuilder(); // If using JDK >= 1.5 consider using StringBuilder
+      StringBuilder sb = new StringBuilder(); // If using JDK >= 1.5 consider using StringBuilder
       for (int i = 0; i < filter.length(); i++) {
           char curChar = filter.charAt(i);
           switch (curChar) {
@@ -725,7 +786,7 @@ public class LDAPAuthenticationContext
   //~--- fields ---------------------------------------------------------------
 
   /** Field description */
-  private LDAPConfig config;
+  private LDAPConfigList config;
 
   /** Field description */
   private LDAPAuthenticationState state;

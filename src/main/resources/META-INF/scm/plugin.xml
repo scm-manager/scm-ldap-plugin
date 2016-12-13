@@ -50,6 +50,7 @@
   <resources>
     <script>/sonia/scm/auth/ldap/sonia.ldap.connectiontest.js</script>
     <script>/sonia/scm/auth/ldap/sonia.ldap.js</script>
+    <script>/sonia/scm/auth/ldap/sonia.ldapconfig.js</script>
   </resources>
 
 </plugin>

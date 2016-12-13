@@ -48,6 +48,7 @@ Sonia.ldap.ConnectionTestForm = Ext.extend(Ext.FormPanel,{
       labelWidth: 80,
       frame: false,
       defaultType: 'textfield',
+      autoScroll: true,
       monitorValid: true,
       bodyCssClass: 'x-panel-mc',
       bodyStyle: 'padding: 5px',
