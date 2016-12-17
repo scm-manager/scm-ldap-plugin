@@ -46,7 +46,9 @@ import static org.junit.Assert.*;
 
 //~--- JDK imports ------------------------------------------------------------
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  *
@@ -70,11 +72,18 @@ public class LDAPAuthenticationHandlerTest extends LDAPServerTestBase
 
     config.setEnabled(false);
 
-    LDAPAuthenticationHandler handler = createLDAPAuthHandler(config);
+    LDAPConfigList configList = createConfigList(config);
+
+    LDAPAuthenticationHandler handler = createLDAPAuthHandler(configList);
     AuthenticationResult ar = handler.authenticate(null, null, "trillian",
                                 "trilli123");
 
     LDAPTestUtil.assertFailed(AuthenticationState.NOT_FOUND, ar);
+
+    AuthenticationResult forced_domain = handler.authenticate(null, null, "LDAP1\\trillian",
+            "trilli123");
+
+    LDAPTestUtil.assertFailed(AuthenticationState.NOT_FOUND, forced_domain);
   }
 
   /**
@@ -93,7 +102,9 @@ public class LDAPAuthenticationHandlerTest extends LDAPServerTestBase
 
     config.setUnitGroup("cn=Other Groups");
 
-    LDAPAuthenticationHandler handler = createLDAPAuthHandler(config);
+    LDAPConfigList configList = createConfigList(config);
+
+    LDAPAuthenticationHandler handler = createLDAPAuthHandler(configList);
     AuthenticationResult ar = handler.authenticate(null, null, "trillian",
                                 "trilli123");
 
@@ -203,4 +214,54 @@ public class LDAPAuthenticationHandlerTest extends LDAPServerTestBase
 
     LDAPTestUtil.assertFailed(AuthenticationState.FAILED, ar);
   }
+
+  /**
+   * Method description
+   *
+   *
+   *
+   *
+   * @throws LDAPException
+   */
+  @Test
+  public void testMultipleConfigs() throws LDAPException
+  {
+    initialize(LDIF_001);
+
+    LDAPConfig config1 = createConfig();
+    config1.setUniqueId("LDAP1");
+    config1.setEnabled(true);
+
+    LDAPConfig config2 = createConfig();
+    config2.setEnabled(false);
+    config2.setUniqueId("LDAP2");
+
+    List<LDAPConfig> configs = new ArrayList<LDAPConfig>();
+    configs.add(config1);
+    configs.add(config2);
+    LDAPConfigList configList = new LDAPConfigList();
+    configList.setLDAPConfigList(configs);
+
+    LDAPAuthenticationHandler handler = createLDAPAuthHandler(configList);
+    AuthenticationResult ar_config2 = handler.authenticate(null, null, "LDAP2\\trillian",
+            "trilli123");
+
+    LDAPTestUtil.assertFailed(AuthenticationState.NOT_FOUND, ar_config2);
+
+    AuthenticationResult ar_config1 = handler.authenticate(null, null, "LDAP1\\trillian",
+            "trilli123");
+    LDAPTestUtil.assertTrillian(ar_config1);
+    Collection<String> groups_config1 = ar_config1.getGroups();
+    assertNotNull(groups_config1);
+    assertTrue(groups_config1.isEmpty());
+
+    AuthenticationResult ar = handler.authenticate(null, null, "trillian",
+            "trilli123");
+    LDAPTestUtil.assertTrillian(ar);
+    Collection<String> groups = ar.getGroups();
+    assertNotNull(groups);
+    assertTrue(groups.isEmpty());
+
+  }
+
 }

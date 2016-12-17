@@ -38,6 +38,8 @@ import java.io.IOException;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -100,6 +102,23 @@ public class LDAPTestBase
     }
 
     return config;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @return
+   */
+  protected LDAPConfigList createConfigList(LDAPConfig config)
+  {
+    LDAPConfigList config_list = new LDAPConfigList();
+    List<LDAPConfig> configs = new ArrayList<LDAPConfig>();
+
+    configs.add(config);
+    config_list.setLDAPConfigList(configs);
+
+    return config_list;
   }
 
   //~--- get methods ----------------------------------------------------------

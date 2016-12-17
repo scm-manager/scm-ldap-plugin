@@ -117,7 +117,7 @@ public class LDAPServerTestBase extends LDAPTestBase
    */
   protected LDAPAuthenticationHandler createLDAPAuthHandler()
   {
-    return createLDAPAuthHandler(createConfig());
+    return createLDAPAuthHandler(createConfigList(createConfig()));
   }
 
   /**
@@ -128,7 +128,7 @@ public class LDAPServerTestBase extends LDAPTestBase
    *
    * @return
    */
-  protected LDAPAuthenticationHandler createLDAPAuthHandler(LDAPConfig config)
+  protected LDAPAuthenticationHandler createLDAPAuthHandler(LDAPConfigList config)
   {
     LDAPAuthenticationHandler handler =
       new LDAPAuthenticationHandler(new MemoryStoreFactory());

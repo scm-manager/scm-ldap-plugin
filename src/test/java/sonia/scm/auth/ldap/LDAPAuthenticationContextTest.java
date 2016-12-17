@@ -69,7 +69,9 @@ public class LDAPAuthenticationContextTest extends LDAPServerTestBase
     config.setConnectionPassword(BIND_PWD);
     config.setSearchFilter("(&(uid={0}))");
 
-    LDAPAuthenticationContext context = new LDAPAuthenticationContext(config);
+    LDAPConfigList configList = createConfigList(config);
+
+    LDAPAuthenticationContext context = new LDAPAuthenticationContext(configList);
     AuthenticationResult ar = context.authenticate("trillian)(objectClass=top",
                                 "trilli123");
 
@@ -93,7 +95,9 @@ public class LDAPAuthenticationContextTest extends LDAPServerTestBase
     config.setConnectionPassword("******");
     config.setSearchFilter("(cn={0})");
 
-    LDAPAuthenticationContext context = new LDAPAuthenticationContext(config);
+    LDAPConfigList configList = createConfigList(config);
+
+    LDAPAuthenticationContext context = new LDAPAuthenticationContext(configList);
     AuthenticationResult ar = context.authenticate("trillian", "trilli");
 
     LDAPTestUtil.assertFailed(AuthenticationState.NOT_FOUND, ar);
@@ -106,7 +110,7 @@ public class LDAPAuthenticationContextTest extends LDAPServerTestBase
 
     // set correct password
     config.setConnectionPassword(BIND_PWD);
-    context = new LDAPAuthenticationContext(config);
+    context = new LDAPAuthenticationContext(configList);
     ar = context.authenticate("trillian", "trilli");
     LDAPTestUtil.assertFailed(AuthenticationState.NOT_FOUND, ar);
     state = context.getState();
@@ -117,7 +121,7 @@ public class LDAPAuthenticationContextTest extends LDAPServerTestBase
 
     // set correct search filter
     config.setSearchFilter("(uid={0})");
-    context = new LDAPAuthenticationContext(config);
+    context = new LDAPAuthenticationContext(configList);
     ar = context.authenticate("trillian", "trilli");
     LDAPTestUtil.assertFailed(AuthenticationState.FAILED, ar);
     state = context.getState();
@@ -127,7 +131,7 @@ public class LDAPAuthenticationContextTest extends LDAPServerTestBase
     assertFalse(state.isUserValid());
 
     // set correct password
-    context = new LDAPAuthenticationContext(config);
+    context = new LDAPAuthenticationContext(configList);
     ar = context.authenticate("trillian", "trilli123");
     LDAPTestUtil.assertTrillian(ar);
     state = context.getState();
@@ -137,7 +141,7 @@ public class LDAPAuthenticationContextTest extends LDAPServerTestBase
     assertTrue(state.isUserValid());
 
     // not valid
-    context = new LDAPAuthenticationContext(config);
+    context = new LDAPAuthenticationContext(configList);
     ar = context.authenticate("prefect", "prefi123");
     state = context.getState();
     assertNotNull(state);
