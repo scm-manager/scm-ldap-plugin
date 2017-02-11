@@ -112,13 +112,13 @@ public class LDAPTestBase
    */
   protected LDAPConfigList createConfigList(LDAPConfig config)
   {
-    LDAPConfigList config_list = new LDAPConfigList();
+    LDAPConfigList configList = new LDAPConfigList();
     List<LDAPConfig> configs = new ArrayList<LDAPConfig>();
 
     configs.add(config);
-    config_list.setLDAPConfigList(configs);
+    configList.setLDAPConfigList(configs);
 
-    return config_list;
+    return configList;
   }
 
   //~--- get methods ----------------------------------------------------------

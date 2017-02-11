@@ -103,12 +103,12 @@ public class LDAPConfigResource
     throws IOException
   {
     LDAPConfig config = testConfig.getConfig();
-    LDAPConfigList config_list = new LDAPConfigList();
-    List<LDAPConfig> test_configs = new ArrayList<LDAPConfig>();
-    test_configs.add(config);
-    config_list.setLDAPConfigList(test_configs);
+    LDAPConfigList configList = new LDAPConfigList();
+    List<LDAPConfig> testConfigs = new ArrayList<LDAPConfig>();
+    testConfigs.add(config);
+    configList.setLDAPConfigList(testConfigs);
 
-    LDAPAuthenticationContext context = new LDAPAuthenticationContext(config_list);
+    LDAPAuthenticationContext context = new LDAPAuthenticationContext(configList);
     AuthenticationResult ar = context.authenticate(testConfig.getUsername(),
                                 testConfig.getPassword());
     LDAPAuthenticationState state = context.getState();

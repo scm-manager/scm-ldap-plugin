@@ -243,17 +243,17 @@ public class LDAPAuthenticationHandlerTest extends LDAPServerTestBase
     configList.setLDAPConfigList(configs);
 
     LDAPAuthenticationHandler handler = createLDAPAuthHandler(configList);
-    AuthenticationResult ar_config2 = handler.authenticate(null, null, "LDAP2\\trillian",
+    AuthenticationResult arConfig2 = handler.authenticate(null, null, "LDAP2\\trillian",
             "trilli123");
 
-    LDAPTestUtil.assertFailed(AuthenticationState.NOT_FOUND, ar_config2);
+    LDAPTestUtil.assertFailed(AuthenticationState.NOT_FOUND, arConfig2);
 
-    AuthenticationResult ar_config1 = handler.authenticate(null, null, "LDAP1\\trillian",
+    AuthenticationResult arConfig1 = handler.authenticate(null, null, "LDAP1\\trillian",
             "trilli123");
-    LDAPTestUtil.assertTrillian(ar_config1);
-    Collection<String> groups_config1 = ar_config1.getGroups();
-    assertNotNull(groups_config1);
-    assertTrue(groups_config1.isEmpty());
+    LDAPTestUtil.assertTrillian(arConfig1);
+    Collection<String> groupsConfig1 = arConfig1.getGroups();
+    assertNotNull(groupsConfig1);
+    assertTrue(groupsConfig1.isEmpty());
 
     AuthenticationResult ar = handler.authenticate(null, null, "trillian",
             "trilli123");

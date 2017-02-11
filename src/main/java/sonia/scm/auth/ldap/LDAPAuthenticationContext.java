@@ -122,18 +122,18 @@ public class LDAPAuthenticationContext
       // If we have a forced domain in the username field then we should use that.
       if (username.indexOf("\\") != -1) {
           String[] items = username.split("\\\\");
-          String forced_domain = items[0];
+          String forcedDomain = items[0];
           for(LDAPConfig config: configs) {
-            if (config.isEnabled() && config.getUniqueId().equals(forced_domain)) {
+            if (config.isEnabled() && config.getUniqueId().equals(forcedDomain)) {
               result = authenticate(config, items[1], password);
               return result;
             }
           }
       }
 
-    for(LDAPConfig sub_config: configs) {
-          if (sub_config.isEnabled()) {
-              result = authenticate(sub_config, username, password);
+    for(LDAPConfig subConfig: configs) {
+          if (subConfig.isEnabled()) {
+              result = authenticate(subConfig, username, password);
 
               // If we have not found the user in this config then we
               // should try the remaining configurations. Else we

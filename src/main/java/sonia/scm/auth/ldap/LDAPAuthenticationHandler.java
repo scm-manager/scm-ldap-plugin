@@ -107,17 +107,17 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
   {
     AuthenticationResult result = AuthenticationResult.NOT_FOUND;
 
-    boolean at_least_one_config_enabled = false;
+    boolean atLeastOneConfigEnabled = false;
     List<LDAPConfig> configs = config.getLDAPConfigList();
-    for(LDAPConfig sub_config: configs) {
-      if (sub_config.isEnabled())
+    for(LDAPConfig subConfig: configs) {
+      if (subConfig.isEnabled())
       {
-        at_least_one_config_enabled = true;
+        atLeastOneConfigEnabled = true;
         break;
       }
     }
 
-  if (at_least_one_config_enabled) {
+  if (atLeastOneConfigEnabled) {
     AssertUtil.assertIsNotEmpty(username);
     AssertUtil.assertIsNotEmpty(password);
     result = new LDAPAuthenticationContext(config).authenticate(username, password);

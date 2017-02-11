@@ -54,7 +54,7 @@ import java.util.Map;
 public class LDAPConfigList implements Validateable
 {
   public LDAPConfigList() {
-    ldap_configs = new ArrayList<LDAPConfig>();
+    ldapConfigs = new ArrayList<LDAPConfig>();
     LDAPConfig config = new LDAPConfig();
     StringBuilder hostUrl = new StringBuilder("");
     hostUrl.append("ldap://localhost:389");
@@ -77,7 +77,7 @@ public class LDAPConfigList implements Validateable
     config.setSearchScope("one");
     config.setUnitGroup("ou=Groups");
     config.setUnitPeople("ou=People");
-    ldap_configs.add(config);
+    ldapConfigs.add(config);
   }
   /**
    * Method description
@@ -88,9 +88,9 @@ public class LDAPConfigList implements Validateable
   @Override
   public boolean isValid()
   {
-    for (LDAPConfig ldap_config : ldap_configs) {
+    for (LDAPConfig ldapConfig : ldapConfigs) {
       // If any one of the configs is not valid then return the list as invalid.
-      if (!ldap_config.isValid()) {
+      if (!ldapConfig.isValid()) {
         return false;
       }
     }
@@ -105,11 +105,11 @@ public class LDAPConfigList implements Validateable
    * Method description
    *
    *
-   * @param ldap_configs
+   * @param ldapConfigs
    */
-  public void setLDAPConfigList(List<LDAPConfig> ldap_configs)
+  public void setLDAPConfigList(List<LDAPConfig> ldapConfigs)
   {
-    this.ldap_configs = ldap_configs;
+    this.ldapConfigs = ldapConfigs;
   }
 
   //~--- get methods ----------------------------------------------------------
@@ -122,7 +122,7 @@ public class LDAPConfigList implements Validateable
    */
   public List<LDAPConfig> getLDAPConfigList()
   {
-    return ldap_configs;
+    return ldapConfigs;
   }
 
   //~--- fields ---------------------------------------------------------------
@@ -130,6 +130,6 @@ public class LDAPConfigList implements Validateable
     /** Field description */
     @XmlElementWrapper(name="ldap-configs")
     @XmlElement(name="ldap-config")
-    List<LDAPConfig> ldap_configs;
+    List<LDAPConfig> ldapConfigs;
 
 }
