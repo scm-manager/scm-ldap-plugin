@@ -46,7 +46,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author Sebastian Sdorra
+ * @author Gaurav Phadke
  */
 public class LDAPConfigListTest
 {

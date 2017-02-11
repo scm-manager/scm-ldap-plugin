@@ -47,7 +47,7 @@ import java.util.Map;
 
 /**
  *
- * @author Thorsten Ludewig
+ * @author Gaurav Phadke
  */
 @XmlRootElement(name = "ldap-config-list")
 @XmlAccessorType(XmlAccessType.FIELD)
