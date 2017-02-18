@@ -52,6 +52,7 @@ import sonia.scm.web.security.AuthenticationResult;
 //~--- JDK imports ------------------------------------------------------------
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -85,7 +86,7 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
   @Inject
   public LDAPAuthenticationHandler(StoreFactory factory)
   {
-    store = factory.getStore(LDAPConfigList.class, TYPE);
+    storageHandler = new LDAPStorageHandler(factory, TYPE);
   }
 
   //~--- methods --------------------------------------------------------------
@@ -151,13 +152,7 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
   @Override
   public void init(SCMContextProvider context)
   {
-    config = store.get();
-
-    if (config == null)
-    {
-      config = new LDAPConfigList();
-      store.set(config);
-    }
+    config = storageHandler.readConfig();
   }
 
   /**
@@ -166,7 +161,7 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
    */
   public void storeConfig()
   {
-    store.set(config);
+    storageHandler.storeConfig(config);
   }
 
   //~--- get methods ----------------------------------------------------------
@@ -213,5 +208,6 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
   private LDAPConfigList config;
 
   /** Field description */
-  private Store<LDAPConfigList> store;
+  private LDAPStorageHandler storageHandler;
+
 }
