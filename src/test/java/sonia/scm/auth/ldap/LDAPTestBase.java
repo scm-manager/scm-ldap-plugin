@@ -34,6 +34,10 @@ package sonia.scm.auth.ldap;
 
 //~--- JDK imports ------------------------------------------------------------
 
+import sonia.scm.store.MemoryStoreFactory;
+import sonia.scm.store.Store;
+import sonia.scm.store.StoreFactory;
+
 import java.io.IOException;
 
 import java.net.InetAddress;
@@ -110,6 +114,22 @@ public class LDAPTestBase
    *
    * @return
    */
+  protected StoreFactory createConfigStoreFactory()
+  {
+    LDAPConfig config = createConfig();
+    StoreFactory storeFactory = new MemoryStoreFactory();
+    Store store = storeFactory.getStore(LDAPConfig.class, LDAPAuthenticationHandler.TYPE);
+    store.set(config);
+
+    return storeFactory;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @return
+   */
   protected LDAPConfigList createConfigList(LDAPConfig config)
   {
     LDAPConfigList configList = new LDAPConfigList();
@@ -119,6 +139,28 @@ public class LDAPTestBase
     configList.setLDAPConfigList(configs);
 
     return configList;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @return
+   */
+  protected StoreFactory createConfigListStoreFactory()
+  {
+    LDAPConfig config = createConfig();
+    LDAPConfigList configList = new LDAPConfigList();
+    List<LDAPConfig> configs = new ArrayList<LDAPConfig>();
+
+    configs.add(config);
+    configList.setLDAPConfigList(configs);
+
+    StoreFactory storeFactory = new MemoryStoreFactory();
+    Store store = storeFactory.getStore(LDAPConfigList.class, LDAPAuthenticationHandler.TYPE);
+    store.set(configList);
+
+    return storeFactory;
   }
 
   //~--- get methods ----------------------------------------------------------

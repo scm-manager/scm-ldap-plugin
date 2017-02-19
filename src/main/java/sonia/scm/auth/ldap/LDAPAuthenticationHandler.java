@@ -43,7 +43,6 @@ import org.slf4j.LoggerFactory;
 
 import sonia.scm.SCMContextProvider;
 import sonia.scm.plugin.ext.Extension;
-import sonia.scm.store.Store;
 import sonia.scm.store.StoreFactory;
 import sonia.scm.util.AssertUtil;
 import sonia.scm.web.security.AuthenticationHandler;
@@ -52,9 +51,7 @@ import sonia.scm.web.security.AuthenticationResult;
 //~--- JDK imports ------------------------------------------------------------
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

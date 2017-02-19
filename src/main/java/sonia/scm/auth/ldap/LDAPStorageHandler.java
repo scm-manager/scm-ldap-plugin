@@ -51,6 +51,10 @@ import java.util.List;
 
 
 /**
+ * LDAPStorageHandler covers storage and retrieve of LDAP configuration saved
+ * by the user.
+ * This class also covers backwards compatibility checks between the old and
+ * the new format of the LDAP configuration
  *
  * @author Gaurav Phadke
  */
@@ -66,10 +70,10 @@ public class LDAPStorageHandler
    * @param factory
    */
   @Inject
-  public LDAPStorageHandler(StoreFactory factory, String type)
+  public LDAPStorageHandler(StoreFactory factory, String name)
   {
-    store = factory.getStore(LDAPConfigList.class, type);
-    legacyStore = factory.getStore(LDAPConfig.class, type);
+    store = factory.getStore(LDAPConfigList.class, name);
+    legacyStore = factory.getStore(LDAPConfig.class, name);
   }
 
   //~--- methods --------------------------------------------------------------
@@ -83,23 +87,23 @@ public class LDAPStorageHandler
   {
     LDAPConfigList config = null;
     try {
+      config = store.get();
+      if (config == null)
+      {
+        config = new LDAPConfigList();
+        store.set(config);
+      }
+    } catch (ClassCastException cce) {
+      config = null;
+    }
+
+    if (config == null) {
       LDAPConfig legacyConfig = legacyStore.get();
       if (legacyConfig != null) {
         List<LDAPConfig> configList = new ArrayList<LDAPConfig>();
         configList.add(legacyConfig);
         config = new LDAPConfigList();
         config.setLDAPConfigList(configList);
-        store.set(config);
-      }
-    } catch (StoreException se) {
-      config = null;
-    }
-
-    if (config == null) {
-      config = store.get();
-      if (config == null)
-      {
-        config = new LDAPConfigList();
         store.set(config);
       }
     }
