@@ -113,41 +113,63 @@ public class LDAPAuthenticationContext
    */
   public AuthenticationResult authenticate(String username, String password)
   {
-      AuthenticationResult result = AuthenticationResult.NOT_FOUND;
-      AssertUtil.assertIsNotEmpty(username);
-      AssertUtil.assertIsNotEmpty(password);
+    AssertUtil.assertIsNotEmpty(username);
+    AssertUtil.assertIsNotEmpty(password);
 
-      List<LDAPConfig> configs = config.getLDAPConfigList();
-
-      // If we have a forced domain in the username field then we should use that.
-      if (username.indexOf("\\") != -1) {
-          String[] items = username.split("\\\\");
-          String forcedDomain = items[0];
-          for(LDAPConfig config: configs) {
-            if (config.isEnabled() && config.getUniqueId().equals(forcedDomain)) {
-              result = authenticate(config, items[1], password);
-              return result;
-            }
-          }
+    // If we have a forced domain in the username field then we should use that.
+    AuthenticationResult result;
+    if (isDomainForced(username)) {
+      result = authenticateWithForcedDomain(username, password);
+    } else {
+      result = authenticateConfigList(username, password);
+    }
+    return result;
+  }
+  
+  private boolean isDomainForced(String username) {
+    return username.contains("\\");
+  }
+  
+  private AuthenticationResult authenticateWithForcedDomain(String username, String password){
+    String[] domainAndUsername = username.split("\\\\");
+    String domain = domainAndUsername[0];
+    String user = domainAndUsername[1];
+    LDAPConfig cfg = findConfigForDomain(domain);
+    
+    if (cfg == null) {
+      logger.debug("we could not find configuration for forced domain %s", domain);
+      return AuthenticationResult.NOT_FOUND;
+    }
+    
+    return authenticate(cfg, user, password);
+  }
+  
+  private LDAPConfig findConfigForDomain(String domain) {
+    for(LDAPConfig cfg: config.getLDAPConfigList()) {
+      if (cfg.isEnabled() && cfg.getUniqueId().equals(domain)) {
+        return cfg;
       }
+    }
+    return null;
+  }
+  
+  private AuthenticationResult authenticateConfigList(String username, String password){
+    AuthenticationResult result = AuthenticationResult.NOT_FOUND;
+    
+    for (LDAPConfig subConfig: config.getLDAPConfigList()) {
+      if (subConfig.isEnabled()) {
+        result = authenticate(subConfig, username, password);
 
-    for(LDAPConfig subConfig: configs) {
-          if (subConfig.isEnabled()) {
-              result = authenticate(subConfig, username, password);
-
-              // If we have not found the user in this config then we
-              // should try the remaining configurations. Else we
-              // should just return the result.
-              if (result.getState() == AuthenticationState.NOT_FOUND) {
-                  continue;
-              } else {
-                  break;
-              }
-          }
-
+        // If we have not found the user in this config then we
+        // should try the remaining configurations. Else we
+        // should just return the result.
+        if (result.getState() != AuthenticationState.NOT_FOUND) {
+          break;
+        }
       }
-
-      return result;
+    }
+    
+    return result;
   }
 
   /**
