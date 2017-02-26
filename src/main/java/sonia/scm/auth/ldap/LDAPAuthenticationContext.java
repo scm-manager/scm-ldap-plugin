@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
 
 import sonia.scm.util.AssertUtil;
 import sonia.scm.web.security.AuthenticationResult;
-import sonia.scm.web.security.AuthenticationState;
 
 /**
  *
@@ -49,22 +48,8 @@ import sonia.scm.web.security.AuthenticationState;
 public class LDAPAuthenticationContext
 {
 
-  /** Field description */
-  public static final String ATTRIBUTE_GROUP_NAME = "cn";
-
-  /** Field description */
-  public static final String NESTEDGROUP_MATCHINGRULE =
-    ":1.2.840.113556.1.4.1941:=";
-
-  /** Field description */
-  public static final String SEARCHTYPE_GROUP = "group";
-
-  /** Field description */
-  public static final String SEARCHTYPE_USER = "user";
-
-  /** the logger for LDAPContext */
-  private static final Logger logger =
-    LoggerFactory.getLogger(LDAPAuthenticationContext.class);
+  /** the logger for LDAPAuthenticationContext */
+  private static final Logger logger = LoggerFactory.getLogger(LDAPAuthenticationContext.class);
 
   //~--- constructors ---------------------------------------------------------
 
@@ -96,78 +81,51 @@ public class LDAPAuthenticationContext
     AssertUtil.assertIsNotEmpty(username);
     AssertUtil.assertIsNotEmpty(password);
 
-    // If we have a forced domain in the username field then we should use that.
-    AuthenticationResult result;
-    if (isDomainForced(username)) {
-      result = authenticateWithForcedDomain(username, password);
-    } else {
-      result = authenticateConfigList(username, password);
+    LDAPAuthenticator authenticator = createAuthenticator(username, password);
+    if (authenticator == null) {
+      return AuthenticationResult.NOT_FOUND;
     }
+    
+    AuthenticationResult result = authenticator.authenticate();
+    state = authenticator.getState();
     return result;
+  }
+  
+  private LDAPAuthenticator createAuthenticator(String username, String password) {
+    LDAPAuthenticator authenticator;
+    if (isDomainForced(username)) {
+      authenticator = createAuthenticatorWithForcedDomain(username, password);
+    } else {
+      authenticator = new LDAPMultiAuthenticator(config, username, password);
+    }
+    return authenticator;
   }
   
   private boolean isDomainForced(String username) {
     return username.contains("\\");
   }
   
-  private AuthenticationResult authenticateWithForcedDomain(String username, String password){
+  private LDAPAuthenticator createAuthenticatorWithForcedDomain(String username, String password) {
     String[] domainAndUsername = username.split("\\\\");
     String domain = domainAndUsername[0];
     String user = domainAndUsername[1];
     LDAPConfig cfg = findConfigForDomain(domain);
     
     if (cfg == null) {
-      logger.debug("we could not find configuration for forced domain %s", domain);
-      return AuthenticationResult.NOT_FOUND;
+      logger.debug("could not find configuration for forced domain {}", domain);
+      return null;
     }
     
-    return authenticate(cfg, user, password);
+    return new LDAPSingleAuthenticator(cfg, user, password);
   }
   
   private LDAPConfig findConfigForDomain(String domain) {
-    for(LDAPConfig cfg: config.getLDAPConfigList()) {
+    for (LDAPConfig cfg: config.getLDAPConfigList()) {
       if (cfg.isEnabled() && cfg.getUniqueId().equals(domain)) {
         return cfg;
       }
     }
     return null;
-  }
-  
-  private AuthenticationResult authenticateConfigList(String username, String password){
-    AuthenticationResult result = AuthenticationResult.NOT_FOUND;
-    
-    for (LDAPConfig subConfig: config.getLDAPConfigList()) {
-      if (subConfig.isEnabled()) {
-        result = authenticate(subConfig, username, password);
-
-        // If we have not found the user in this config then we
-        // should try the remaining configurations. Else we
-        // should just return the result.
-        if (result.getState() != AuthenticationState.NOT_FOUND) {
-          break;
-        }
-      }
-    }
-    
-    return result;
-  }
-
-  /**
-   * Method description
-   *
-   *
-   * @param username
-   * @param password
-   * @param config
-   *
-   * @return
-   */
-  public AuthenticationResult authenticate(LDAPConfig config, String username, String password)
-  {
-    LDAPSingleAuthenticator authenticator = new LDAPSingleAuthenticator(config, username, password);
-    AuthenticationResult result = authenticator.authenticate();
-    state = authenticator.getState();
-    return result;
   }
 
   public LDAPAuthenticationState getState() {
@@ -175,7 +133,7 @@ public class LDAPAuthenticationContext
   }
 
   /** Field description */
-  private LDAPConfigList config;
+  private final LDAPConfigList config;
 
   /** Field description */
   private LDAPAuthenticationState state;

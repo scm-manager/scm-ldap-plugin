@@ -44,10 +44,6 @@ import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static sonia.scm.auth.ldap.LDAPAuthenticationContext.ATTRIBUTE_GROUP_NAME;
-import static sonia.scm.auth.ldap.LDAPAuthenticationContext.NESTEDGROUP_MATCHINGRULE;
-import static sonia.scm.auth.ldap.LDAPAuthenticationContext.SEARCHTYPE_GROUP;
-import static sonia.scm.auth.ldap.LDAPAuthenticationContext.SEARCHTYPE_USER;
 import sonia.scm.user.User;
 import sonia.scm.util.IOUtil;
 import sonia.scm.util.Util;
@@ -57,7 +53,15 @@ import sonia.scm.web.security.AuthenticationResult;
  *
  * @author Sebastian Sdorra
  */
-public class LDAPSingleAuthenticator {
+public class LDAPSingleAuthenticator implements LDAPAuthenticator {
+  
+  private static final String ATTRIBUTE_GROUP_NAME = "cn";
+
+  private static final String NESTEDGROUP_MATCHINGRULE = ":1.2.840.113556.1.4.1941:=";
+
+  private static final String SEARCHTYPE_GROUP = "group";
+
+  private static final String SEARCHTYPE_USER = "user";
   
   /**
    * the logger for LDAPSingleAuthenticator
@@ -76,6 +80,7 @@ public class LDAPSingleAuthenticator {
     this.password = password;
   }
   
+  @Override
   public AuthenticationResult authenticate() {
     AuthenticationResult result = AuthenticationResult.NOT_FOUND;
     LDAPConnection bindConnection = null;
@@ -140,6 +145,7 @@ public class LDAPSingleAuthenticator {
    *
    * @return
    */
+  @Override
   public LDAPAuthenticationState getState()
   {
     return state;
