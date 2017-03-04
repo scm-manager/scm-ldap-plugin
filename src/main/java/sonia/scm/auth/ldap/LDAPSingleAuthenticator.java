@@ -77,8 +77,7 @@ public class LDAPSingleAuthenticator implements LDAPAuthenticator {
   }
   
   @Override
-  public AuthenticationResult authenticate(String username, String password) {
-    AuthenticationResult result = AuthenticationResult.NOT_FOUND;
+  public LDAPAuthenticationState authenticate(String username, String password) {
     LDAPConnection bindConnection = null;
 
     try
@@ -97,8 +96,6 @@ public class LDAPSingleAuthenticator implements LDAPAuthenticator {
 
         if (searchResult != null)
         {
-          result = AuthenticationResult.FAILED;
-
           String userDN = searchResult.getNameInNamespace();
 
           if (authenticateUser(userDN, password))
@@ -110,18 +107,20 @@ public class LDAPSingleAuthenticator implements LDAPAuthenticator {
             {
               logger.trace(
                 "succefully created user from from ldap response: {}", user);
-              state.setUserValid(true);
+              state.userValid();
 
               Set<String> groups = new HashSet<String>();
 
               fetchGroups(bindConnection, groups, userDN, user.getId(),
                 user.getMail());
               getGroups(attributes, groups);
-              result = new AuthenticationResult(user, groups);
+              
+              state.sucess(user, groups);
             }
             else if (logger.isWarnEnabled())
             {
               logger.warn("the returned user is not valid: {}", user);
+              state.userInvalid();
             }
           }    // password wrong ?
         }      // user not found
@@ -132,21 +131,9 @@ public class LDAPSingleAuthenticator implements LDAPAuthenticator {
       IOUtil.close(bindConnection);
     }
 
-    logger.trace("return authentication result: {}", result);
+    logger.trace("return authentication result:\n {}", state);
 
-    return result; 
-  }
-  
-/**
-   * Method description
-   *
-   *
-   * @return
-   */
-  @Override
-  public LDAPAuthenticationState getState()
-  {
-    return state;
+    return state; 
   }
 
   //~--- methods --------------------------------------------------------------
@@ -185,7 +172,7 @@ public class LDAPSingleAuthenticator implements LDAPAuthenticator {
     {
       userConnection = new LDAPConnection(config, userDN, password);
       authenticated = true;
-      state.setAuthenticateUser(true);
+      state.authenticated();
 
       if (logger.isDebugEnabled())
       {
@@ -194,8 +181,7 @@ public class LDAPSingleAuthenticator implements LDAPAuthenticator {
     }
     catch (Exception ex)
     {
-      state.setAuthenticateUser(false);
-      state.setException(ex);
+      state.authenticationFailed(ex);
 
       if (logger.isTraceEnabled())
       {
@@ -231,12 +217,11 @@ public class LDAPSingleAuthenticator implements LDAPAuthenticator {
         config.getConnectionDn(),
         config.getConnectionPassword()
       );
-      state.setBind(true);
+      state.bind();
     }
     catch (Exception ex)
     {
-      state.setBind(false);
-      state.setException(ex);
+      state.bindFailed(ex);
       logger.error(
         "could not bind to ldap with dn ".concat(config.getConnectionDn()), ex);
       IOUtil.close(connection);
@@ -636,7 +621,7 @@ public class LDAPSingleAuthenticator implements LDAPAuthenticator {
             if (searchResultEnm.hasMore())
             {
               result = searchResultEnm.next();
-              state.setSearchUser(true);
+              state.searchUser();
             }
             else if (logger.isWarnEnabled())
             {
@@ -647,8 +632,7 @@ public class LDAPSingleAuthenticator implements LDAPAuthenticator {
       }
       catch (NamingException ex)
       {
-        state.setSearchUser(false);
-        state.setException(ex);
+        state.searchUserFailed(ex);
 
         if (logger.isErrorEnabled())
         {

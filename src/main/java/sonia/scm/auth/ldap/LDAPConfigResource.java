@@ -84,11 +84,6 @@ public class LDAPConfigResource
   /**
    * Method description
    *
-   *
-   *
-   * @param username
-   * @param password
-   *
    * @param testConfig
    *
    * @return
@@ -108,17 +103,7 @@ public class LDAPConfigResource
     configList.setLDAPConfigList(testConfigs);
 
     LDAPAuthenticationContext context = new LDAPAuthenticationContext(configList);
-    AuthenticationResult ar = context.authenticate(testConfig.getUsername(),
-                                testConfig.getPassword());
-    LDAPAuthenticationState state = context.getState();
-
-    if ((ar != null) && (ar.getState() == AuthenticationState.SUCCESS))
-    {
-      state.setUser(ar.getUser());
-      state.setGroups(ar.getGroups());
-    }
-
-    return state;
+    return context.authenticate(testConfig.getUsername(), testConfig.getPassword());
   }
 
   //~--- get methods ----------------------------------------------------------

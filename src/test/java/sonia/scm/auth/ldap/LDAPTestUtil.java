@@ -91,8 +91,8 @@ public class LDAPTestUtil
     assertSuccess(ar, "zaphod", "Zaphod Beeblebrox",
                   "zaphod.beeblebrox@hitchhiker.com");
   }
-
-    /**
+  
+  /**
    * Method description
    *
    *

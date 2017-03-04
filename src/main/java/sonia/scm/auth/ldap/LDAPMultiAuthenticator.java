@@ -32,7 +32,6 @@ package sonia.scm.auth.ldap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sonia.scm.web.security.AuthenticationResult;
 import sonia.scm.web.security.AuthenticationState;
 
 /**
@@ -47,27 +46,24 @@ public class LDAPMultiAuthenticator implements LDAPAuthenticator {
   private static final Logger logger = LoggerFactory.getLogger(LDAPMultiAuthenticator.class);
   
   private final LDAPConfigList configList;
-  
-  private LDAPAuthenticationState state;
 
   public LDAPMultiAuthenticator(LDAPConfigList configList) {
     this.configList = configList;
   }
 
   @Override
-  public AuthenticationResult authenticate(String username, String password) {
-    AuthenticationResult result = AuthenticationResult.NOT_FOUND;
+  public LDAPAuthenticationState authenticate(String username, String password) {
+    LDAPAuthenticationState state = new LDAPAuthenticationState();
     
     for (LDAPConfig config : configList.getLDAPConfigList()) {
       if (config.isEnabled()) {
         LDAPSingleAuthenticator authenticator = new LDAPSingleAuthenticator(config);
-        result = authenticator.authenticate(username, password);
-        state = authenticator.getState();
+        state = authenticator.authenticate(username, password);
 
         // If we have not found the user in this config then we
         // should try the remaining configurations. Else we
         // should just return the result.
-        if (result.getState() != AuthenticationState.NOT_FOUND) {
+        if (state.getAuthenticationState()!= AuthenticationState.NOT_FOUND) {
           break;
         }
       } else {
@@ -75,11 +71,6 @@ public class LDAPMultiAuthenticator implements LDAPAuthenticator {
       }
     }
     
-    return result;
-  }
-
-  @Override
-  public LDAPAuthenticationState getState() {
     return state;
   }
   

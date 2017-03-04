@@ -40,10 +40,13 @@ import sonia.scm.user.User;
 //~--- JDK imports ------------------------------------------------------------
 
 import java.util.Collection;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import sonia.scm.web.security.AuthenticationResult;
+import sonia.scm.web.security.AuthenticationState;
 
 /**
  *
@@ -65,10 +68,10 @@ public class LDAPAuthenticationState
   {
     StringBuilder msg = new StringBuilder();
 
-    msg.append("Bind: ").append(String.valueOf(bind)).append("\n").append(
-        "Search user: ").append(String.valueOf(searchUser)).append("\n").append(
-        "Authenticate user: ").append(String.valueOf(authenticateUser)).append(
-        "\n\n");
+    msg.append("Authentication Result: ").append(authenticationState.toString()).append("\n");
+    msg.append("Bind: ").append(String.valueOf(bind)).append("\n");
+    msg.append("Search user: ").append(String.valueOf(searchUser)).append("\n");
+    msg.append("Authenticate user: ").append(String.valueOf(authenticateUser)).append("\n\n");
 
     if (user != null)
     {
@@ -167,98 +170,63 @@ public class LDAPAuthenticationState
     return userValid;
   }
 
-  //~--- set methods ----------------------------------------------------------
-
-  /**
-   * Method description
-   *
-   *
-   * @param authenticateUser
-   */
-  public void setAuthenticateUser(boolean authenticateUser)
-  {
-    this.authenticateUser = authenticateUser;
+  public AuthenticationState getAuthenticationState() {
+    return authenticationState;
   }
-
-  /**
-   * Method description
-   *
-   *
-   * @param bind
-   */
-  public void setBind(boolean bind)
-  {
-    this.bind = bind;
+  
+  public void authenticated() {
+    this.authenticateUser = true;
   }
-
-  /**
-   * Method description
-   *
-   *
-   * @param exception
-   */
-  public void setException(String exception)
-  {
-    this.exception = exception;
+  
+  public void authenticationFailed(Exception exception) {
+    this.authenticateUser = false;
+    failed(exception);
   }
-
-  /**
-   * Method description
-   *
-   *
-   * @param exception
-   */
-  public void setException(Exception exception)
-  {
+  
+  public void bind() {
+    this.bind = true;
+  }
+  
+  public void bindFailed(Exception exception) {
+    this.bind = false;
+    failed(exception);
+  }
+  
+  public void searchUser() {
+    this.searchUser = true;
+  }
+  
+  public void searchUserFailed(Exception exception) {
+    this.searchUser = false;
+    failed(exception);
+  }
+  
+  public void userValid() {
+    this.userValid = true;
+  }
+  
+  public void userInvalid() {
+    this.userValid = false;
+  }
+  
+  private void failed(Exception exception) {
     this.exception = exception.getMessage();
+    this.authenticationState = AuthenticationState.FAILED;
   }
-
-  /**
-   * Method description
-   *
-   *
-   * @param groups
-   */
-  public void setGroups(Collection<String> groups)
-  {
-    this.groups = groups;
-  }
-
-  /**
-   * Method description
-   *
-   *
-   * @param searchUser
-   */
-  public void setSearchUser(boolean searchUser)
-  {
-    this.searchUser = searchUser;
-  }
-
-  /**
-   * Method description
-   *
-   *
-   * @param user
-   */
-  public void setUser(User user)
-  {
+  
+  public void sucess(User user, Collection<String> groups) {
     this.user = user;
+    this.groups = groups;
+    this.authenticationState = AuthenticationState.SUCCESS;
   }
-
-  /**
-   * Method description
-   *
-   *
-   *
-   * @param userValid
-   */
-  public void setUserValid(boolean userValid)
-  {
-    this.userValid = userValid;
+  
+  public AuthenticationResult createAuthenticationResult() {
+    return new AuthenticationResult(user, groups, authenticationState);
   }
 
   //~--- fields ---------------------------------------------------------------
+
+  private AuthenticationState authenticationState = AuthenticationState.NOT_FOUND;
 
   /** Field description */
   private boolean authenticateUser;

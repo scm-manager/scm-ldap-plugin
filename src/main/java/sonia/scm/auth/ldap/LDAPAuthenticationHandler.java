@@ -116,11 +116,14 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
     }
 
   if (atLeastOneConfigEnabled) {
+    
     AssertUtil.assertIsNotEmpty(username);
     AssertUtil.assertIsNotEmpty(password);
-    result = new LDAPAuthenticationContext(config).authenticate(username, password);
-  } else if (logger.isWarnEnabled())
-  {
+    
+    LDAPAuthenticationContext context = new LDAPAuthenticationContext(config);
+    result = context.authenticate(username, password).createAuthenticationResult();
+    
+  }  else if (logger.isWarnEnabled()) {
     logger.warn("ldap plugin is disabled");
   }
 

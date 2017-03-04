@@ -30,16 +30,12 @@
  */
 package sonia.scm.auth.ldap;
 
-import sonia.scm.web.security.AuthenticationResult;
-
 /**
  *
  * @author Sebastian Sdorra
  */
 public interface LDAPAuthenticator {
   
-  public AuthenticationResult authenticate(String username, String password);
-  
-  public LDAPAuthenticationState getState();
+  public LDAPAuthenticationState authenticate(String username, String password);
   
 }

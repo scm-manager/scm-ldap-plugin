@@ -39,13 +39,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import sonia.scm.util.AssertUtil;
-import sonia.scm.web.security.AuthenticationResult;
 
 /**
  *
  * @author Sebastian Sdorra
  */
-public class LDAPAuthenticationContext
+public class LDAPAuthenticationContext implements LDAPAuthenticator
 {
 
   /** the logger for LDAPAuthenticationContext */
@@ -62,7 +61,6 @@ public class LDAPAuthenticationContext
   public LDAPAuthenticationContext(LDAPConfigList config)
   {
     this.config = config;
-    this.state = new LDAPAuthenticationState();
   }
 
   //~--- methods --------------------------------------------------------------
@@ -76,19 +74,19 @@ public class LDAPAuthenticationContext
    *
    * @return
    */
-  public AuthenticationResult authenticate(String username, String password)
+  @Override
+  public LDAPAuthenticationState authenticate(String username, String password)
   {
     AssertUtil.assertIsNotEmpty(username);
     AssertUtil.assertIsNotEmpty(password);
 
     LDAPAuthenticator authenticator = createAuthenticator(username);
     if (authenticator == null) {
-      return AuthenticationResult.NOT_FOUND;
+      // TODO add flag for configuration not found
+      return new LDAPAuthenticationState();
     }
     
-    AuthenticationResult result = authenticator.authenticate(username, password);
-    state = authenticator.getState();
-    return result;
+    return authenticator.authenticate(username, password);
   }
   
   private LDAPAuthenticator createAuthenticator(String username) {
@@ -126,13 +124,6 @@ public class LDAPAuthenticationContext
     return null;
   }
 
-  public LDAPAuthenticationState getState() {
-    return state;
-  }
-
   /** Field description */
   private final LDAPConfigList config;
-
-  /** Field description */
-  private LDAPAuthenticationState state;
 }
