@@ -47,25 +47,21 @@ public class LDAPMultiAuthenticator implements LDAPAuthenticator {
   private static final Logger logger = LoggerFactory.getLogger(LDAPMultiAuthenticator.class);
   
   private final LDAPConfigList configList;
-  private final String username;
-  private final String password;
   
   private LDAPAuthenticationState state;
 
-  public LDAPMultiAuthenticator(LDAPConfigList configList, String username, String password) {
+  public LDAPMultiAuthenticator(LDAPConfigList configList) {
     this.configList = configList;
-    this.username = username;
-    this.password = password;
   }
 
   @Override
-  public AuthenticationResult authenticate() {
+  public AuthenticationResult authenticate(String username, String password) {
     AuthenticationResult result = AuthenticationResult.NOT_FOUND;
     
     for (LDAPConfig config : configList.getLDAPConfigList()) {
       if (config.isEnabled()) {
-        LDAPSingleAuthenticator authenticator = new LDAPSingleAuthenticator(config, username, password);
-        result = authenticator.authenticate();
+        LDAPSingleAuthenticator authenticator = new LDAPSingleAuthenticator(config);
+        result = authenticator.authenticate(username, password);
         state = authenticator.getState();
 
         // If we have not found the user in this config then we

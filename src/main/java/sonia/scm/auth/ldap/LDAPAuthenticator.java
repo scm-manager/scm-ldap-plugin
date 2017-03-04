@@ -38,7 +38,7 @@ import sonia.scm.web.security.AuthenticationResult;
  */
 public interface LDAPAuthenticator {
   
-  public AuthenticationResult authenticate();
+  public AuthenticationResult authenticate(String username, String password);
   
   public LDAPAuthenticationState getState();
   

@@ -81,34 +81,32 @@ public class LDAPAuthenticationContext
     AssertUtil.assertIsNotEmpty(username);
     AssertUtil.assertIsNotEmpty(password);
 
-    LDAPAuthenticator authenticator = createAuthenticator(username, password);
+    LDAPAuthenticator authenticator = createAuthenticator(username);
     if (authenticator == null) {
       return AuthenticationResult.NOT_FOUND;
     }
     
-    AuthenticationResult result = authenticator.authenticate();
+    AuthenticationResult result = authenticator.authenticate(username, password);
     state = authenticator.getState();
     return result;
   }
   
-  private LDAPAuthenticator createAuthenticator(String username, String password) {
+  private LDAPAuthenticator createAuthenticator(String username) {
     LDAPAuthenticator authenticator;
     if (isDomainForced(username)) {
-      authenticator = createAuthenticatorWithForcedDomain(username, password);
+      authenticator = createAuthenticatorWithForcedDomain(username);
     } else {
-      authenticator = new LDAPMultiAuthenticator(config, username, password);
+      authenticator = new LDAPMultiAuthenticator(config);
     }
     return authenticator;
   }
   
   private boolean isDomainForced(String username) {
-    return username.contains("\\");
+    return Usernames.containsDomain(username);
   }
   
-  private LDAPAuthenticator createAuthenticatorWithForcedDomain(String username, String password) {
-    String[] domainAndUsername = username.split("\\\\");
-    String domain = domainAndUsername[0];
-    String user = domainAndUsername[1];
+  private LDAPAuthenticator createAuthenticatorWithForcedDomain(String username) {
+    String domain = Usernames.extractDomain(username).get();
     LDAPConfig cfg = findConfigForDomain(domain);
     
     if (cfg == null) {
@@ -116,7 +114,7 @@ public class LDAPAuthenticationContext
       return null;
     }
     
-    return new LDAPSingleAuthenticator(cfg, user, password);
+    return new LDAPSingleAuthenticator(cfg);
   }
   
   private LDAPConfig findConfigForDomain(String domain) {

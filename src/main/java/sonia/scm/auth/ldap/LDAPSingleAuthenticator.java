@@ -69,19 +69,15 @@ public class LDAPSingleAuthenticator implements LDAPAuthenticator {
   private static final Logger logger = LoggerFactory.getLogger(LDAPSingleAuthenticator.class);
   
   private final LDAPConfig config;
-  private final String username;
-  private final String password;
   
   private final LDAPAuthenticationState state = new LDAPAuthenticationState();
 
-  public LDAPSingleAuthenticator(LDAPConfig config, String username, String password) {
+  public LDAPSingleAuthenticator(LDAPConfig config) {
     this.config = config;
-    this.username = username;
-    this.password = password;
   }
   
   @Override
-  public AuthenticationResult authenticate() {
+  public AuthenticationResult authenticate(String username, String password) {
     AuthenticationResult result = AuthenticationResult.NOT_FOUND;
     LDAPConnection bindConnection = null;
 
@@ -91,10 +87,12 @@ public class LDAPSingleAuthenticator implements LDAPAuthenticator {
 
       if (bindConnection != null)
       {
+        String usernameWithoutDomain = Usernames.withoutDomain(username);
+        
         SearchResult searchResult = getUserSearchResult(
           config,
           bindConnection,
-          username
+          usernameWithoutDomain
         );
 
         if (searchResult != null)
@@ -389,7 +387,7 @@ public class LDAPSingleAuthenticator implements LDAPAuthenticator {
    *
    * @return
    */
-  private String createUserSearchFilter()
+  private String createUserSearchFilter(String username)
   {
     String filter = null;
 
@@ -601,8 +599,7 @@ public class LDAPSingleAuthenticator implements LDAPAuthenticator {
    *
    * @return
    */
-  private SearchResult getUserSearchResult(LDAPConfig config, LDAPConnection bindConnection,
-                                           String username)
+  private SearchResult getUserSearchResult(LDAPConfig config, LDAPConnection bindConnection, String username)
   {
     SearchResult result = null;
 
@@ -625,7 +622,7 @@ public class LDAPSingleAuthenticator implements LDAPAuthenticator {
         searchControls.setCountLimit(1);
         searchControls.setReturningAttributes(getReturnAttributes(config));
 
-        String filter = createUserSearchFilter();
+        String filter = createUserSearchFilter(username);
 
         if (filter != null)
         {
