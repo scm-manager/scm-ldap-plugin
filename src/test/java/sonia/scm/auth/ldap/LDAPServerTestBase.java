@@ -43,8 +43,7 @@ import com.unboundid.ldif.LDIFReader;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-
-import sonia.scm.store.MemoryStoreFactory;
+import sonia.scm.store.InMemoryConfigurationStoreFactory;
 
 //~--- JDK imports ------------------------------------------------------------
 
@@ -131,7 +130,7 @@ public class LDAPServerTestBase extends LDAPTestBase
   protected LDAPAuthenticationHandler createLDAPAuthHandler(LDAPConfig config)
   {
     LDAPAuthenticationHandler handler =
-      new LDAPAuthenticationHandler(new MemoryStoreFactory());
+      new LDAPAuthenticationHandler(new InMemoryConfigurationStoreFactory());
 
     handler.init(null);
     handler.setConfig(config);

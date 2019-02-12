@@ -37,32 +37,26 @@ package sonia.scm.auth.ldap;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import sonia.scm.SCMContextProvider;
-import sonia.scm.plugin.ext.Extension;
-import sonia.scm.store.Store;
-import sonia.scm.store.StoreFactory;
+import sonia.scm.store.ConfigurationStore;
+import sonia.scm.store.ConfigurationStoreFactory;
 import sonia.scm.util.AssertUtil;
-import sonia.scm.web.security.AuthenticationHandler;
 import sonia.scm.web.security.AuthenticationResult;
-
-//~--- JDK imports ------------------------------------------------------------
-
-import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+//~--- JDK imports ------------------------------------------------------------
 
 /**
  *
  * @author Thorsten Ludewig
  */
 @Singleton
-@Extension
-public class LDAPAuthenticationHandler implements AuthenticationHandler
+public class LDAPAuthenticationHandler
 {
 
   /** Field description */
@@ -81,9 +75,9 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
    * @param factory
    */
   @Inject
-  public LDAPAuthenticationHandler(StoreFactory factory)
+  public LDAPAuthenticationHandler(ConfigurationStoreFactory factory)
   {
-    store = factory.getStore(LDAPConfig.class, TYPE);
+    store = factory.withType(LDAPConfig.class).withName(TYPE).build();
   }
 
   //~--- methods --------------------------------------------------------------
@@ -99,7 +93,6 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
    *
    * @return
    */
-  @Override
   public AuthenticationResult authenticate(HttpServletRequest request,
     HttpServletResponse response, String username, String password)
   {
@@ -126,7 +119,6 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
    *
    * @throws IOException
    */
-  @Override
   public void close() throws IOException
   {
 
@@ -139,7 +131,6 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
    *
    * @param context
    */
-  @Override
   public void init(SCMContextProvider context)
   {
     config = store.get();
@@ -179,7 +170,6 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
    *
    * @return
    */
-  @Override
   public String getType()
   {
     return TYPE;
@@ -204,5 +194,5 @@ public class LDAPAuthenticationHandler implements AuthenticationHandler
   private LDAPConfig config;
 
   /** Field description */
-  private Store<LDAPConfig> store;
+  private ConfigurationStore<LDAPConfig> store;
 }
