@@ -33,18 +33,11 @@
 
 package sonia.scm.auth.ldap;
 
-//~--- non-JDK imports --------------------------------------------------------
-
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-
 import sonia.scm.util.AssertUtil;
 import sonia.scm.web.security.AuthenticationResult;
 import sonia.scm.web.security.AuthenticationState;
-
-//~--- JDK imports ------------------------------------------------------------
-
-import java.io.IOException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -56,48 +49,26 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-/**
- *
- * @author Thorsten Ludewig
- */
 @Singleton
-@Path("config/auth/ldap")
+@Path("v2/config/ldap")
 public class LDAPConfigResource
 {
 
-  /**
-   * Constructs ...
-   *
-   *
-   * @param authenticationHandler
-   */
+  private final LDAPAuthenticationHandler authenticationHandler;
+  private final LDAPConfigMapper mapper;
+
   @Inject
-  public LDAPConfigResource(LDAPAuthenticationHandler authenticationHandler)
+  public LDAPConfigResource(LDAPAuthenticationHandler authenticationHandler, LDAPConfigMapperImpl mapper)
   {
     this.authenticationHandler = authenticationHandler;
+    this.mapper = mapper;
   }
 
-  //~--- methods --------------------------------------------------------------
-
-  /**
-   * Method description
-   *
-   *
-   *
-   * @param username
-   * @param password
-   *
-   * @param testConfig
-   *
-   * @return
-   *
-   * @throws IOException
-   */
   @POST
   @Path("test")
-  @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+  @Consumes({ MediaType.APPLICATION_JSON })
+  @Produces({ MediaType.APPLICATION_JSON })
   public LDAPAuthenticationState testConfig(LDAPTestConfig testConfig)
-    throws IOException
   {
     LDAPConfig config = testConfig.getConfig();
     LDAPAuthenticationContext context = new LDAPAuthenticationContext(config);
@@ -114,38 +85,17 @@ public class LDAPConfigResource
     return state;
   }
 
-  //~--- get methods ----------------------------------------------------------
-
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
   @GET
-  @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-  public LDAPConfig getConfig()
+  @Produces({ MediaType.APPLICATION_JSON })
+  public LDAPConfigDto getConfig()
   {
-    return authenticationHandler.getConfig();
+    LDAPConfig config = authenticationHandler.getConfig();
+    return mapper.map(config);
   }
 
-  //~--- set methods ----------------------------------------------------------
-
-  /**
-   * Method description
-   *
-   *
-   * @param uriInfo
-   * @param config
-   *
-   * @return
-   *
-   * @throws IOException
-   */
   @POST
-  @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+  @Consumes({ MediaType.APPLICATION_JSON })
   public Response setConfig(@Context UriInfo uriInfo, LDAPConfig config)
-    throws IOException
   {
     AssertUtil.assertIsValid(config);
     authenticationHandler.setConfig(config);
@@ -153,9 +103,4 @@ public class LDAPConfigResource
 
     return Response.created(uriInfo.getRequestUri()).build();
   }
-
-  //~--- fields ---------------------------------------------------------------
-
-  /** Field description */
-  private LDAPAuthenticationHandler authenticationHandler;
 }

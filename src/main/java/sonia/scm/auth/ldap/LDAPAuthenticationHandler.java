@@ -78,6 +78,7 @@ public class LDAPAuthenticationHandler
   public LDAPAuthenticationHandler(ConfigurationStoreFactory factory)
   {
     store = factory.withType(LDAPConfig.class).withName(TYPE).build();
+    init();
   }
 
   //~--- methods --------------------------------------------------------------
@@ -125,13 +126,7 @@ public class LDAPAuthenticationHandler
     // do nothing
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @param context
-   */
-  public void init(SCMContextProvider context)
+  public void init()
   {
     config = store.get();
 
