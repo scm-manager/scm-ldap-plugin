@@ -81,12 +81,14 @@ public class LDAPConfigResource {
   }
 
   @GET
+  @Path("")
   @Produces(MediaType.APPLICATION_JSON)
   public LDAPConfigDto getConfig() {
     return mapper.map(authenticationHandler.getConfig());
   }
 
   @PUT
+  @Path("")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response setConfig(@Context UriInfo uriInfo, @Valid LDAPConfigDto config) {
     LDAPConfig newConfig = mapper.map(config, authenticationHandler.getConfig());
