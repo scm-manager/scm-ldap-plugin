@@ -63,13 +63,12 @@ public class LDAPConfigResource {
 
   @POST
   @Path("test")
-  @Consumes({MediaType.APPLICATION_JSON})
-  @Produces({MediaType.APPLICATION_JSON})
-  public LDAPAuthenticationState testConfig(LDAPTestConfig testConfig) {
-    LDAPConfig config = testConfig.getConfig();
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public LDAPAuthenticationState testConfig(@Valid LDAPTestConfigDto testConfig) {
+    LDAPConfig config = mapper.map(testConfig.getConfig(),authenticationHandler.getConfig());
     LDAPAuthenticationContext context = new LDAPAuthenticationContext(config);
-    AuthenticationResult ar = context.authenticate(testConfig.getUsername(),
-      testConfig.getPassword());
+    AuthenticationResult ar = context.authenticate(testConfig.getUsername(), testConfig.getPassword());
     LDAPAuthenticationState state = context.getState();
 
     if ((ar != null) && (ar.getState() == AuthenticationState.SUCCESS)) {
