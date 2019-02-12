@@ -22,3 +22,6 @@ Desktop DF$
 \.project
 \.classpath
 \.settings
+# IDEA files
+\.idea
+\.iml
