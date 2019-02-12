@@ -15,6 +15,8 @@ public abstract class LDAPConfigMapper {
 
     public abstract LDAPConfigDto map(LDAPConfig config);
 
+    public abstract LDAPConfig map(LDAPConfigDto dto, @Context LDAPConfig oldConfig);
+
     @AfterMapping
     void replaceDummyWithOldPassword(@MappingTarget LDAPConfig target, @Context LDAPConfig oldConfiguration) {
         if (DUMMY_PASSWORD.equals(target.getConnectionPassword())) {
