@@ -23,7 +23,13 @@
       "enabled": "Enabled",
       "options": {
         "profile": {
-          "Custom": "Custom"
+          "Custom": "Custom",
+          "AD": "ActiveDirectory",
+          "Apache": "Apache Directory Server",
+          "OpenDJ": "OpenDS/OpenDJ",
+          "OpenLDAP": "OpenLDAP",
+          "posix": "OpenLDAP (Posix)",
+          "sun": "Sun/Oracle Directory Server"
         },
         "searchScope": {
           "one": "one"
