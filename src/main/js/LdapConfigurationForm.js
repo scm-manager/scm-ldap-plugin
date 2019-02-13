@@ -135,10 +135,10 @@ class LdapConfigurationForm extends React.Component<Props, State> {
 
   ifActive = (name: string, component: any) => {
     console.log("active fields:", this.state.activeFields);
-    if (this.state.activeFields.length === 0 || this.state.activeFields.includes(name)) {
-      return component;
-    } else {
+    if (this.state.activeFields.includes(name)) {
       return null;
+    } else {
+      return component;
     }
   };
 
