@@ -19,6 +19,7 @@ import static de.otto.edison.hal.Links.linkingTo;
 @Mapper
 public abstract class LDAPConfigMapper {
 
+  @SuppressWarnings("squid:S2068") // No, this is definitely no password
   private static final String DUMMY_PASSWORD = "__DUMMY__";
 
   @Inject

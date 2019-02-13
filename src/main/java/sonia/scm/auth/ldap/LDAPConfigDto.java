@@ -10,6 +10,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Getter
 @Setter
 @NoArgsConstructor
+@SuppressWarnings("squid:S2160") // No need for equals and hash code here, never compared, never hashed
 public class LDAPConfigDto extends HalRepresentation {
   @NotEmpty
   private String attributeNameFullname;
