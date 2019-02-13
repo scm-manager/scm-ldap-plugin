@@ -1,0 +1,37 @@
+{
+  "scm-ldap-plugin": {
+    "nav-link": "LDAP",
+    "form": {
+      "header": "LDAP Configuration",
+      "profile": "Profile",
+      "attributeNameId": "ID Attribute Name",
+      "attributeNameFullname": "Fullname Attribute Name",
+      "attributeNameMail": "Mail Attribute Name",
+      "attributeNameGroup": "Group Attribute Name",
+      "baseDn": "Base DN",
+      "connectionDn": "Connection DN",
+      "connectionPassword": "Connection Password",
+      "hostUrl": "Host URL",
+      "searchFilter": "Search Filter",
+      "searchFilterGroup": "Group Search Filter",
+      "searchScope": "Search Scope",
+      "unitPeople": "People Unit",
+      "unitGroup": "Groups Unit",
+      "referralStrategy": "Referral Strategy",
+      "enableNestedADGroups": "Enable nested ad groups",
+      "enableStartTls": "Use StartTLS",
+      "enabled": "Enabled",
+      "options": {
+        "profile": {
+          "Custom": "Custom"
+        },
+        "searchScope": {
+          "one": "one"
+        },
+        "referralStrategy": {
+          "FOLLOW": "FOLLOW"
+        }
+      }
+    }
+  }
+}
