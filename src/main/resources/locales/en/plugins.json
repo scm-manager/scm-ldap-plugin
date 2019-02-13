@@ -59,7 +59,15 @@
           "IGNORE": "IGNORE",
           "THROW": "THROW"
         }
-      }
+      },
+      "testButton": "Test connection"
+    },
+    "testForm": {
+      "title": "LDAP Connection Test",
+      "username": "Username",
+      "password": "Password",
+      "submit": "Test",
+      "abort": "Cancel"
     }
   }
 }

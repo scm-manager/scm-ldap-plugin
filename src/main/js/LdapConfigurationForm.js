@@ -1,8 +1,9 @@
 //@flow
 
 import React from "react";
-import {Checkbox, Configuration, InputField, Select} from "@scm-manager/ui-components";
+import {Button, Checkbox, Configuration, InputField, Select} from "@scm-manager/ui-components";
 import {translate} from "react-i18next";
+import TestConnectionDialog from "./TestConnectionDialog";
 
 type LdapConfiguration = {
   profile: string,
@@ -33,7 +34,8 @@ type Props = {
 }
 
 type State = LdapConfiguration & {
-  activeFields: string[]
+  activeFields: string[],
+  showTestDialog: boolean
 }
 
 class LdapConfigurationForm extends React.Component<Props, State> {
@@ -42,7 +44,8 @@ class LdapConfigurationForm extends React.Component<Props, State> {
     super(props);
     this.state = {
       ...props.initialConfiguration,
-      activeFields: []
+      activeFields: [],
+      showTestDialog: false
     };
   }
 
@@ -63,6 +66,14 @@ class LdapConfigurationForm extends React.Component<Props, State> {
   render(): React.ReactNode {
     const {t} = this.props;
     const profiles = Object.keys(this.profiles);
+
+    const testDialog = this.state.showTestDialog ? (
+      <TestConnectionDialog
+        config={this.state}
+        testLink={this.props.initialConfiguration._links.test.href}
+        onClose={() => this.setState({showTestDialog: false})}
+      />
+    ) : null;
 
     return (
       <>
@@ -89,9 +100,15 @@ class LdapConfigurationForm extends React.Component<Props, State> {
         {this.createCheckbox("enableNestedADGroups")}
         {this.createCheckbox("enableStartTls")}
         {this.createCheckbox("enabled")}
+        <Button label={t("scm-ldap-plugin.form.testButton")} disabled={!this.props.initialConfiguration._links.test} action={this.testConnection}/>
+        {testDialog}
       </>
     );
   }
+
+  testConnection = () => {
+    this.setState({showTestDialog: true});
+  };
 
   createDropDown = (name: string, options: string[], handler = this.valueChangeHandler) => {
     const {t} = this.props;

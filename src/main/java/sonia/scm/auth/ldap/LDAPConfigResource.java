@@ -37,6 +37,7 @@ import sonia.scm.web.security.AuthenticationResult;
 import sonia.scm.web.security.AuthenticationState;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -89,7 +90,7 @@ public class LDAPConfigResource {
   @PUT
   @Path("")
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response setConfig(@Context UriInfo uriInfo, @Valid LDAPConfigDto config) {
+  public Response setConfig(@Context UriInfo uriInfo, @NotNull @Valid LDAPConfigDto config) {
     LDAPConfig newConfig = mapper.map(config, authenticationHandler.getConfig());
     authenticationHandler.setConfig(newConfig);
     authenticationHandler.storeConfig();
