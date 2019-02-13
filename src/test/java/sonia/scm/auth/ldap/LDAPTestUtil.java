@@ -84,18 +84,6 @@ public class LDAPTestUtil
    * Method description
    *
    *
-   * @param ar
-   */
-  public static void assertZaphod(AuthenticationResult ar)
-  {
-    assertSuccess(ar, "zaphod", "Zaphod Beeblebrox",
-                  "zaphod.beeblebrox@hitchhiker.com");
-  }
-
-    /**
-   * Method description
-   *
-   *
    * @param state
    * @param ar
    */
