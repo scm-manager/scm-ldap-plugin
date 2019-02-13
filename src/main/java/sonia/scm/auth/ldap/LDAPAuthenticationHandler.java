@@ -1,19 +1,19 @@
 /**
  * Copyright (c) 2010, Sebastian Sdorra
  * All rights reserved.
- *
+ * <p>
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * <p>
  * 1. Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
+ * this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  * 3. Neither the name of SCM-Manager; nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- *
+ * contributors may be used to endorse or promote products derived from this
+ * software without specific prior written permission.
+ * <p>
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -24,169 +24,89 @@
  * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * <p>
  * http://bitbucket.org/sdorra/scm-manager
- *
  */
-
 
 
 package sonia.scm.auth.ldap;
 
-//~--- non-JDK imports --------------------------------------------------------
-
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authc.credential.AllowAllCredentialsMatcher;
+import org.apache.shiro.realm.AuthenticatingRealm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sonia.scm.plugin.Extension;
+import sonia.scm.security.SyncingRealmHelper;
 import sonia.scm.store.ConfigurationStore;
 import sonia.scm.store.ConfigurationStoreFactory;
-import sonia.scm.util.AssertUtil;
 import sonia.scm.web.security.AuthenticationResult;
+import sonia.scm.web.security.AuthenticationState;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import static com.google.common.base.Preconditions.checkArgument;
 
-//~--- JDK imports ------------------------------------------------------------
-
-/**
- *
- * @author Thorsten Ludewig
- */
 @Singleton
-public class LDAPAuthenticationHandler
-{
+@Extension
+public class LDAPAuthenticationHandler extends AuthenticatingRealm {
 
-  /** Field description */
   public static final String TYPE = "ldap";
 
-  /** the logger for PAMAuthenticationHandler */
-  private static final Logger logger =
-    LoggerFactory.getLogger(LDAPAuthenticationHandler.class);
+  private static final Logger logger = LoggerFactory.getLogger(LDAPAuthenticationHandler.class);
 
-  //~--- constructors ---------------------------------------------------------
+  private final ConfigurationStore<LDAPConfig> store;
+  private final SyncingRealmHelper syncingRealmHelper;
 
-  /**
-   * Constructs ...
-   *
-   *
-   * @param factory
-   */
+  private LDAPConfig config;
+
   @Inject
-  public LDAPAuthenticationHandler(ConfigurationStoreFactory factory)
-  {
+  public LDAPAuthenticationHandler(ConfigurationStoreFactory factory, SyncingRealmHelper syncingRealmHelper) {
     store = factory.withType(LDAPConfig.class).withName(TYPE).build();
-    init();
-  }
+    this.syncingRealmHelper = syncingRealmHelper;
 
-  //~--- methods --------------------------------------------------------------
-
-  /**
-   * Method description
-   *
-   *
-   * @param request
-   * @param response
-   * @param username
-   * @param password
-   *
-   * @return
-   */
-  public AuthenticationResult authenticate(HttpServletRequest request,
-    HttpServletResponse response, String username, String password)
-  {
-    AuthenticationResult result = AuthenticationResult.NOT_FOUND;
-
-    if (config.isEnabled())
-    {
-      AssertUtil.assertIsNotEmpty(username);
-      AssertUtil.assertIsNotEmpty(password);
-      result = new LDAPAuthenticationContext(config).authenticate(username,
-        password);
-    }
-    else if (logger.isWarnEnabled())
-    {
-      logger.warn("ldap plugin is disabled");
-    }
-
-    return result;
-  }
-
-  /**
-   * Method description
-   *
-   *
-   * @throws IOException
-   */
-  public void close() throws IOException
-  {
-
-    // do nothing
-  }
-
-  public void init()
-  {
     config = store.get();
 
-    if (config == null)
-    {
+    if (config == null) {
       config = new LDAPConfig();
       store.set(config);
     }
+
+    setAuthenticationTokenClass(UsernamePasswordToken.class);
+
+    setCredentialsMatcher(new AllowAllCredentialsMatcher());
   }
 
-  /**
-   * Method description
-   *
-   */
-  public void storeConfig()
-  {
+  @Override
+  protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) {
+    checkArgument(token instanceof UsernamePasswordToken, "%s is required", UsernamePasswordToken.class);
+
+    UsernamePasswordToken upt = (UsernamePasswordToken) token;
+    String username = upt.getUsername();
+    char[] password = upt.getPassword();
+    AuthenticationResult authenticationResult = new LDAPAuthenticationContext(config).authenticate(username,
+      new String(password));
+
+    if (authenticationResult.getState() == AuthenticationState.SUCCESS) {
+      syncingRealmHelper.store(authenticationResult.getUser());
+      return syncingRealmHelper.createAuthenticationInfo(TYPE, authenticationResult.getUser(), authenticationResult.getGroups());
+    } else {
+      return null;
+    }
+  }
+
+  public void storeConfig() {
     store.set(config);
   }
 
-  //~--- get methods ----------------------------------------------------------
-
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public LDAPConfig getConfig()
-  {
+  public LDAPConfig getConfig() {
     return config;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public String getType()
-  {
-    return TYPE;
-  }
-
-  //~--- set methods ----------------------------------------------------------
-
-  /**
-   * Method description
-   *
-   *
-   * @param config
-   */
-  public void setConfig(LDAPConfig config)
-  {
+  public void setConfig(LDAPConfig config) {
     this.config = config;
   }
-
-  //~--- fields ---------------------------------------------------------------
-
-  /** Field description */
-  private LDAPConfig config;
-
-  /** Field description */
-  private ConfigurationStore<LDAPConfig> store;
 }
