@@ -33,7 +33,6 @@ package sonia.scm.auth.ldap;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -82,6 +81,10 @@ public class LDAPAuthenticationHandler extends AuthenticatingRealm {
 
   @Override
   protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) {
+    if (!config.isEnabled()) {
+      logger.debug("ldap not enabled - skipping authentication");
+      return null;
+    }
     checkArgument(token instanceof UsernamePasswordToken, "%s is required", UsernamePasswordToken.class);
 
     UsernamePasswordToken upt = (UsernamePasswordToken) token;

@@ -54,7 +54,10 @@ import java.net.UnknownHostException;
 import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  *
@@ -133,6 +136,8 @@ public class LDAPServerTestBase extends LDAPTestBase
   protected LDAPAuthenticationHandler createLDAPAuthHandler(LDAPConfig config)
   {
     SyncingRealmHelper syncingRealmHelper = mock(SyncingRealmHelper.class);
+    when(syncingRealmHelper.createAuthenticationInfo(any(), any(), any(String[].class))).thenCallRealMethod();
+    when(syncingRealmHelper.createAuthenticationInfo(any(), any(), anyCollection())).thenCallRealMethod();
     LDAPAuthenticationHandler handler =
       new LDAPAuthenticationHandler(new InMemoryConfigurationStoreFactory(), syncingRealmHelper);
 
