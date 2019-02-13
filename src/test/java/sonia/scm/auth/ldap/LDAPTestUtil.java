@@ -110,7 +110,7 @@ public class LDAPTestUtil
 
     Collection<String> groups = ar.getGroups();
 
-    assertNull(groups);
+    assertTrue(groups.isEmpty());
   }
   
 }
