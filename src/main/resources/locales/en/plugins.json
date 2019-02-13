@@ -32,10 +32,14 @@
           "sun": "Sun/Oracle Directory Server"
         },
         "searchScope": {
-          "one": "one"
+          "object": "object",
+          "one": "one",
+          "sub": "sub"
         },
         "referralStrategy": {
-          "FOLLOW": "FOLLOW"
+          "FOLLOW": "FOLLOW",
+          "IGNORE": "IGNORE",
+          "THROW": "THROW"
         }
       }
     }

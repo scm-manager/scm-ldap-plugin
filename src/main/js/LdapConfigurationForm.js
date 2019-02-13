@@ -47,6 +47,7 @@ class LdapConfigurationForm extends React.Component<Props, State> {
   }
 
   valueChangeHandler = (value: any, name: string) => {
+    console.log("value changed for", name, ":", value);
     this.setState({
       [name]: value
     }, () => this.props.onConfigurationChange({...this.state}, true));
@@ -81,10 +82,10 @@ class LdapConfigurationForm extends React.Component<Props, State> {
         {this.createInputField("hostUrl")}
         {this.createInputField("searchFilter")}
         {this.createInputField("searchFilterGroup")}
-        {this.createDropDown("searchScope", ["one"])}
+        {this.createDropDown("searchScope", ["object", "one", "sub"])}
         {this.createInputField("unitPeople")}
         {this.createInputField("unitGroup")}
-        {this.createDropDown("referralStrategy", ["FOLLOW"])}
+        {this.createDropDown("referralStrategy", ["FOLLOW", "IGNORE", "THROW"])}
         {this.createCheckbox("enableNestedADGroups")}
         {this.createCheckbox("enableStartTls")}
         {this.createCheckbox("enabled")}
@@ -97,7 +98,7 @@ class LdapConfigurationForm extends React.Component<Props, State> {
     return this.ifActive(name, (<Select name={name}
                                    label={t("scm-ldap-plugin.form." + name)}
                                    helpText={t("scm-ldap-plugin.form." + name + "Help")}
-                                   value={options[0]}
+                                   value={this.state[name]}
                                    options={this.createOptions(name, options)}
                                    onChange={handler}/>));
   };
