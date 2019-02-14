@@ -29,8 +29,6 @@ class TestConnectionDialog extends React.Component<Props, State> {
     const { username, password } = this.state;
     const valid = username !== "" && password !== "";
 
-    const testButton = (<SubmitButton label={t("scm-ldap-plugin.testForm.submit")} disabled={!valid} />);
-
     const body = (
       <>
         <InputField name="username"
@@ -42,13 +40,15 @@ class TestConnectionDialog extends React.Component<Props, State> {
                     value={password}
                     type="password"
                     onChange={this.passwordChanged}/>
-        <form onSubmit={this.onSubmit}>
-          {testButton}
-          <Button
-            label={t("scm-ldap-plugin.testForm.abort")}
-            action={onClose}
-          />
-        </form>
+        <Button
+          label={t("scm-ldap-plugin.testForm.submit")}
+          disabled={!valid}
+          action={this.onTest}
+        />
+        <Button
+          label={t("scm-ldap-plugin.testForm.abort")}
+          action={onClose}
+        />
       </>
     );
 
@@ -70,7 +70,7 @@ class TestConnectionDialog extends React.Component<Props, State> {
     this.setState({ password: value });
   };
 
-  onSubmit = () => {
+  onTest = () => {
     apiClient.post(this.props.testLink, {username: this.state.username, password: this.state.password, config: this.props.config})
       .then(result => console.log(result))
       .catch(error => console.log(error));
