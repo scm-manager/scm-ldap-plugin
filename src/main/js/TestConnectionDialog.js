@@ -53,6 +53,7 @@ class TestConnectionDialog extends React.Component<Props, State> {
             <InputField name="username"
                         label={t("scm-ldap-plugin.testForm.username")}
                         value={username}
+                        onReturnPressed={this.onTest}
                         onChange={this.usernameChanged}/>
           </div>
           <div className="column">
@@ -60,6 +61,7 @@ class TestConnectionDialog extends React.Component<Props, State> {
                         label={t("scm-ldap-plugin.testForm.password")}
                         value={password}
                         type="password"
+                        onReturnPressed={this.onTest}
                         onChange={this.passwordChanged}/>
           </div>
         </div>
