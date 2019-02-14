@@ -48,15 +48,26 @@ class TestConnectionDialog extends React.Component<Props, State> {
 
     const body = (
       <>
-        <InputField name="username"
-                    label={t("scm-ldap-plugin.testForm.username")}
-                    value={username}
-                    onChange={this.usernameChanged}/>
-        <InputField name="password"
-                    label={t("scm-ldap-plugin.testForm.password")}
-                    value={password}
-                    type="password"
-                    onChange={this.passwordChanged}/>
+        <div className="columns">
+          <div className="column">
+            <InputField name="username"
+                        label={t("scm-ldap-plugin.testForm.username")}
+                        value={username}
+                        onChange={this.usernameChanged}/>
+          </div>
+          <div className="column">
+            <InputField name="password"
+                        label={t("scm-ldap-plugin.testForm.password")}
+                        value={password}
+                        type="password"
+                        onChange={this.passwordChanged}/>
+          </div>
+        </div>
+        {this.renderTestResult()}
+      </>
+    );
+    const footer = (
+      <>
         <Button
           label={t("scm-ldap-plugin.testForm.submit")}
           disabled={!valid}
@@ -67,7 +78,6 @@ class TestConnectionDialog extends React.Component<Props, State> {
           label={t("scm-ldap-plugin.testForm.abort")}
           action={onClose}
         />
-        {this.renderTestResult()}
       </>
     );
 
@@ -76,6 +86,7 @@ class TestConnectionDialog extends React.Component<Props, State> {
         title={t("scm-ldap-plugin.testForm.title")}
         closeFunction={() => onClose()}
         body={body}
+        footer={footer}
         active={true}
       />
     );
