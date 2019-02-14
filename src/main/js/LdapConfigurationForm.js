@@ -50,7 +50,6 @@ class LdapConfigurationForm extends React.Component<Props, State> {
   }
 
   valueChangeHandler = (value: any, name: string) => {
-    console.log("value changed for", name, ":", value);
     this.setState({
       [name]: value
     }, () => this.props.onConfigurationChange({...this.state}, true));
@@ -152,7 +151,6 @@ class LdapConfigurationForm extends React.Component<Props, State> {
   };
 
   ifActive = (name: string, component: any) => {
-    console.log("active fields:", this.state.activeFields);
     if (this.state.activeFields.includes(name)) {
       return null;
     } else {
