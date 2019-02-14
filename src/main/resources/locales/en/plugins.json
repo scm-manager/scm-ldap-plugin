@@ -67,7 +67,20 @@
       "username": "Username",
       "password": "Password",
       "submit": "Test",
-      "abort": "Cancel"
+      "abort": "Cancel",
+      "result": {
+        "header": "Test Result",
+        "connected": "Connection",
+        "userFound": "Search user",
+        "userAuthenticated": "Authenticate user",
+        "userValid": "Returned user is valid",
+        "userDetails": "User",
+        "userDetailsName": "Name",
+        "userDetailsDisplayName": "Display Name",
+        "userDetailsMail": "Mail",
+        "groups": "Groups",
+        "exception": "Exception"
+      }
     }
   }
 }

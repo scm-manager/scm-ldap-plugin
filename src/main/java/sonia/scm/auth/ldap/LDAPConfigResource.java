@@ -66,18 +66,17 @@ public class LDAPConfigResource {
   @Path("test")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public LDAPAuthenticationState testConfig(@Valid LDAPTestConfigDto testConfig) {
+  public TestResultDto testConfig(@Valid LDAPTestConfigDto testConfig) {
     LDAPConfig config = mapper.map(testConfig.getConfig(),authenticationHandler.getConfig());
     LDAPAuthenticationContext context = new LDAPAuthenticationContext(config);
     AuthenticationResult ar = context.authenticate(testConfig.getUsername(), testConfig.getPassword());
     LDAPAuthenticationState state = context.getState();
 
     if ((ar != null) && (ar.getState() == AuthenticationState.SUCCESS)) {
-      state.setUser(ar.getUser());
-      state.setGroups(ar.getGroups());
+      return new TestResultDto(ar.getUser(), ar.getGroups());
+    } else {
+      return new TestResultDto(state.isBind(), state.isSearchUser(), state.isAuthenticateUser(), state.getException());
     }
-
-    return state;
   }
 
   @GET

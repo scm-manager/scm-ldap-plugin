@@ -1,8 +1,24 @@
 // @flow
 
 import React from "react";
-import {apiClient, Button, InputField, Modal, SubmitButton} from "@scm-manager/ui-components";
+import {apiClient, Button, InputField, Modal} from "@scm-manager/ui-components";
 import {translate} from "react-i18next";
+
+type TestResultUser = {
+  valid: boolean,
+  name: string,
+  displayName: string,
+  mailAddress: string
+}
+
+type TestResult = {
+  connected: boolean,
+  userFound: boolean,
+  userAuthenticated: boolean,
+  exception: string,
+  user: TestResultUser,
+  groups: string[]
+}
 
 type Props = {
   config: any,
@@ -14,14 +30,15 @@ type Props = {
 
 type State = {
   username: string,
-  password: string
+  password: string,
+  testResult: TestResult
 };
 
 class TestConnectionDialog extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    this.state = { username: "", password: "" };
+    this.state = { username: "", password: "", testResult: undefined };
   }
 
   render() {
@@ -44,11 +61,13 @@ class TestConnectionDialog extends React.Component<Props, State> {
           label={t("scm-ldap-plugin.testForm.submit")}
           disabled={!valid}
           action={this.onTest}
+          color="primary"
         />
         <Button
           label={t("scm-ldap-plugin.testForm.abort")}
           action={onClose}
         />
+        {this.renderTestResult()}
       </>
     );
 
@@ -62,6 +81,67 @@ class TestConnectionDialog extends React.Component<Props, State> {
     );
   }
 
+  renderTestResult = () => {
+    const { t } = this.props;
+    const { testResult } = this.state;
+
+    if (!testResult) {
+      return null;
+    }
+
+    const success = (<span className="tag is-success">Success</span>);
+    const failure = (<span className="tag is-danger">Failure</span>);
+    const successOrFailure = (r: boolean) => r ? success : failure;
+
+    const testResultDetailRows = testResult.user ? (
+      <>
+        <tr>
+          <td>{t("scm-ldap-plugin.testForm.result.userValid")}</td>
+          <td>{successOrFailure(testResult.user && testResult.user.valid)}</td>
+        </tr>
+        <tr>
+          <td>{t("scm-ldap-plugin.testForm.result.userDetails")}</td>
+          <td>
+            <ul>
+              <li>{t("scm-ldap-plugin.testForm.result.userDetailsName")}: {testResult.user.name}</li>
+              <li>{t("scm-ldap-plugin.testForm.result.userDetailsDisplayName")}: {testResult.user.displayName}</li>
+              <li>{t("scm-ldap-plugin.testForm.result.userDetailsMail")}: {testResult.user.mailAddress}</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td>{t("scm-ldap-plugin.testForm.result.groups")}</td>
+          <td>{testResult.groups.join(", ")}</td>
+        </tr>
+      </>
+    ) : (
+      <>
+        <tr>
+          <td>{t("scm-ldap-plugin.testForm.result.exception")}</td>
+          <td>{testResult.exception}</td>
+        </tr>
+      </>
+    );
+    return <section className="section">
+      <h1 className="title">{t("scm-ldap-plugin.testForm.result.header")}</h1>
+      <table className="table">
+        <tr>
+          <td>{t("scm-ldap-plugin.testForm.result.connected")}</td>
+          <td>{successOrFailure(testResult.connected)}</td>
+        </tr>
+        <tr>
+          <td>{t("scm-ldap-plugin.testForm.result.userFound")}</td>
+          <td>{successOrFailure(testResult.userFound)}</td>
+        </tr>
+        <tr>
+          <td>{t("scm-ldap-plugin.testForm.result.userAuthenticated")}</td>
+          <td>{successOrFailure(testResult.userAuthenticated)}</td>
+        </tr>
+        {testResultDetailRows}
+      </table>
+    </section>;
+  };
+
   usernameChanged = (value: string) => {
     this.setState({ username: value });
   };
@@ -72,7 +152,8 @@ class TestConnectionDialog extends React.Component<Props, State> {
 
   onTest = () => {
     apiClient.post(this.props.testLink, {username: this.state.username, password: this.state.password, config: this.props.config})
-      .then(result => console.log(result))
+      .then(result => result.json())
+      .then(body => this.setState({testResult: body}))
       .catch(error => console.log(error));
   };
 }
