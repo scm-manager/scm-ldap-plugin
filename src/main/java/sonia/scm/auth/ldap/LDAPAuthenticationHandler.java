@@ -44,8 +44,6 @@ import sonia.scm.plugin.Extension;
 import sonia.scm.security.SyncingRealmHelper;
 import sonia.scm.store.ConfigurationStore;
 import sonia.scm.store.ConfigurationStoreFactory;
-import sonia.scm.web.security.AuthenticationResult;
-import sonia.scm.web.security.AuthenticationState;
 
 import static com.google.common.base.Preconditions.checkArgument;
 

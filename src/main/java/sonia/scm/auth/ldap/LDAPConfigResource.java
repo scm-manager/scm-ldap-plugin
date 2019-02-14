@@ -33,8 +33,6 @@ package sonia.scm.auth.ldap;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import sonia.scm.web.security.AuthenticationResult;
-import sonia.scm.web.security.AuthenticationState;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;

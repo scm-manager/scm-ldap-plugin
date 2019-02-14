@@ -32,8 +32,6 @@ package sonia.scm.auth.ldap;
 
 import java.util.Collection;
 import sonia.scm.user.User;
-import sonia.scm.web.security.AuthenticationResult;
-import sonia.scm.web.security.AuthenticationState;
 
 import static org.junit.Assert.*;
 
