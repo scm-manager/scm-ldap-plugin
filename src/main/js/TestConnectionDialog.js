@@ -1,15 +1,20 @@
 // @flow
 
 import React from "react";
-import {apiClient, Button, InputField, Modal} from "@scm-manager/ui-components";
-import {translate} from "react-i18next";
+import {
+  apiClient,
+  Button,
+  InputField,
+  Modal
+} from "@scm-manager/ui-components";
+import { translate } from "react-i18next";
 
 type TestResultUser = {
   valid: boolean,
   name: string,
   displayName: string,
   mailAddress: string
-}
+};
 
 type TestResult = {
   connected: boolean,
@@ -18,7 +23,7 @@ type TestResult = {
   exception: string,
   user: TestResultUser,
   groups: string[]
-}
+};
 
 type Props = {
   config: any,
@@ -50,19 +55,23 @@ class TestConnectionDialog extends React.Component<Props, State> {
       <>
         <div className="columns">
           <div className="column">
-            <InputField name="username"
-                        label={t("scm-ldap-plugin.testForm.username")}
-                        value={username}
-                        onReturnPressed={this.onTest}
-                        onChange={this.usernameChanged}/>
+            <InputField
+              name="username"
+              label={t("scm-ldap-plugin.testForm.username")}
+              value={username}
+              onReturnPressed={this.onTest}
+              onChange={this.usernameChanged}
+            />
           </div>
           <div className="column">
-            <InputField name="password"
-                        label={t("scm-ldap-plugin.testForm.password")}
-                        value={password}
-                        type="password"
-                        onReturnPressed={this.onTest}
-                        onChange={this.passwordChanged}/>
+            <InputField
+              name="password"
+              label={t("scm-ldap-plugin.testForm.password")}
+              value={password}
+              type="password"
+              onReturnPressed={this.onTest}
+              onChange={this.passwordChanged}
+            />
           </div>
         </div>
         {this.renderTestResult()}
@@ -76,10 +85,7 @@ class TestConnectionDialog extends React.Component<Props, State> {
           action={this.onTest}
           color="primary"
         />
-        <Button
-          label={t("scm-ldap-plugin.testForm.abort")}
-          action={onClose}
-        />
+        <Button label={t("scm-ldap-plugin.testForm.abort")} action={onClose} />
       </>
     );
 
@@ -102,9 +108,9 @@ class TestConnectionDialog extends React.Component<Props, State> {
       return null;
     }
 
-    const success = (<span className="tag is-success">Success</span>);
-    const failure = (<span className="tag is-danger">Failure</span>);
-    const successOrFailure = (r: boolean) => r ? success : failure;
+    const success = <span className="tag is-success">Success</span>;
+    const failure = <span className="tag is-danger">Failure</span>;
+    const successOrFailure = (r: boolean) => (r ? success : failure);
 
     const testResultDetailRows = testResult.user ? (
       <>
@@ -116,9 +122,18 @@ class TestConnectionDialog extends React.Component<Props, State> {
           <td>{t("scm-ldap-plugin.testForm.result.userDetails")}</td>
           <td>
             <ul>
-              <li>{t("scm-ldap-plugin.testForm.result.userDetailsName")}: {testResult.user.name}</li>
-              <li>{t("scm-ldap-plugin.testForm.result.userDetailsDisplayName")}: {testResult.user.displayName}</li>
-              <li>{t("scm-ldap-plugin.testForm.result.userDetailsMail")}: {testResult.user.mailAddress}</li>
+              <li>
+                {t("scm-ldap-plugin.testForm.result.userDetailsName")}:{" "}
+                {testResult.user.name}
+              </li>
+              <li>
+                {t("scm-ldap-plugin.testForm.result.userDetailsDisplayName")}:{" "}
+                {testResult.user.displayName}
+              </li>
+              <li>
+                {t("scm-ldap-plugin.testForm.result.userDetailsMail")}:{" "}
+                {testResult.user.mailAddress}
+              </li>
             </ul>
           </td>
         </tr>
@@ -135,24 +150,26 @@ class TestConnectionDialog extends React.Component<Props, State> {
         </tr>
       </>
     );
-    return <section className="section">
-      <h1 className="title">{t("scm-ldap-plugin.testForm.result.header")}</h1>
-      <table className="table">
-        <tr>
-          <td>{t("scm-ldap-plugin.testForm.result.connected")}</td>
-          <td>{successOrFailure(testResult.connected)}</td>
-        </tr>
-        <tr>
-          <td>{t("scm-ldap-plugin.testForm.result.userFound")}</td>
-          <td>{successOrFailure(testResult.userFound)}</td>
-        </tr>
-        <tr>
-          <td>{t("scm-ldap-plugin.testForm.result.userAuthenticated")}</td>
-          <td>{successOrFailure(testResult.userAuthenticated)}</td>
-        </tr>
-        {testResultDetailRows}
-      </table>
-    </section>;
+    return (
+      <section className="section">
+        <h1 className="title">{t("scm-ldap-plugin.testForm.result.header")}</h1>
+        <table className="table">
+          <tr>
+            <td>{t("scm-ldap-plugin.testForm.result.connected")}</td>
+            <td>{successOrFailure(testResult.connected)}</td>
+          </tr>
+          <tr>
+            <td>{t("scm-ldap-plugin.testForm.result.userFound")}</td>
+            <td>{successOrFailure(testResult.userFound)}</td>
+          </tr>
+          <tr>
+            <td>{t("scm-ldap-plugin.testForm.result.userAuthenticated")}</td>
+            <td>{successOrFailure(testResult.userAuthenticated)}</td>
+          </tr>
+          {testResultDetailRows}
+        </table>
+      </section>
+    );
   };
 
   usernameChanged = (value: string) => {
@@ -164,10 +181,15 @@ class TestConnectionDialog extends React.Component<Props, State> {
   };
 
   onTest = () => {
-    apiClient.post(this.props.testLink, {username: this.state.username, password: this.state.password, config: this.props.config})
+    apiClient
+      .post(this.props.testLink, {
+        username: this.state.username,
+        password: this.state.password,
+        config: this.props.config
+      })
       .then(result => result.json())
-      .then(body => this.setState({testResult: body}))
-      .catch(error => console.log(error));
+      .then(body => this.setState({ testResult: body }))
+      .catch(error => this.setState({ testResult: { exception: error } }));
   };
 }
 
