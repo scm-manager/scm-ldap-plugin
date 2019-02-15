@@ -16,7 +16,7 @@
       "baseDn": "Base DN",
       "baseDnHelp": "The basedn for example: dc=example,dc=com",
       "connectionDn": "Connection DN",
-      "connectionDnHelp": "The complete dn of the proxy user. Note: This user needs read an search privileges for the id, mail and fullname attributes.",
+      "connectionDnHelp": "The complete dn of the proxy user. Note: This user needs read and search privileges for the id, mail and fullname attributes.",
       "connectionPassword": "Connection Password",
       "connectionPasswordHelp": "The password for proxy user.",
       "hostUrl": "Host URL",
