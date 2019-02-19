@@ -15,6 +15,7 @@ import javax.inject.Inject;
 
 import static de.otto.edison.hal.Link.link;
 import static de.otto.edison.hal.Links.linkingTo;
+import static sonia.scm.auth.ldap.LDAPModule.PERMISSION_NAME;
 
 @Mapper
 public abstract class LDAPConfigMapper {
@@ -32,7 +33,7 @@ public abstract class LDAPConfigMapper {
   @ObjectFactory
   LDAPConfigDto createDto(LDAPConfig config) {
     Links.Builder linksBuilder = linkingTo().self(self());
-    if (ConfigurationPermissions.write("ldap").isPermitted()) {
+    if (ConfigurationPermissions.write(PERMISSION_NAME).isPermitted()) {
       linksBuilder.single(link("update", update()));
       linksBuilder.single(link("test", test()));
     }

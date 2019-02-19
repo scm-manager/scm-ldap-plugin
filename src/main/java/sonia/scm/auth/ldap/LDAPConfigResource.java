@@ -33,6 +33,7 @@ package sonia.scm.auth.ldap;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import sonia.scm.config.ConfigurationPermissions;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -46,6 +47,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import static sonia.scm.auth.ldap.LDAPModule.PERMISSION_NAME;
 
 @Singleton
 @Path("v2/config/ldap")
@@ -65,8 +68,9 @@ public class LDAPConfigResource {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public TestResultDto testConfig(@Valid LDAPTestConfigDto testConfig) {
+    ConfigurationPermissions.write(PERMISSION_NAME).check();
     LDAPConfig config = mapper.map(testConfig.getConfig(),authenticationHandler.getConfig());
-    LDAPAuthenticationContext context = new LDAPAuthenticationContext(config);
+    LDAPAuthenticationContext context = createContext(config);
     AuthenticationResult ar = context.authenticate(testConfig.getUsername(), testConfig.getPassword());
     LDAPAuthenticationState state = context.getState();
 
@@ -77,10 +81,15 @@ public class LDAPConfigResource {
     }
   }
 
+  LDAPAuthenticationContext createContext(LDAPConfig config) {
+    return new LDAPAuthenticationContext(config);
+  }
+
   @GET
   @Path("")
   @Produces(MediaType.APPLICATION_JSON)
   public LDAPConfigDto getConfig() {
+    ConfigurationPermissions.read(PERMISSION_NAME).check();
     return mapper.map(authenticationHandler.getConfig());
   }
 
@@ -88,6 +97,7 @@ public class LDAPConfigResource {
   @Path("")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response setConfig(@Context UriInfo uriInfo, @NotNull @Valid LDAPConfigDto config) {
+    ConfigurationPermissions.write(PERMISSION_NAME).check();
     LDAPConfig newConfig = mapper.map(config, authenticationHandler.getConfig());
     authenticationHandler.setConfig(newConfig);
     authenticationHandler.storeConfig();

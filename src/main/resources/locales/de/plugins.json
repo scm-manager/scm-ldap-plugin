@@ -82,5 +82,15 @@
         "exception": "Fehler"
       }
     }
+  },
+  "permissions": {
+    "configuration": {
+      "read,write": {
+        "svn": {
+          "displayName": "LDAP Konfiguration ändern",
+          "description": "Darf die LDAP Konfiguration verändern"
+        }
+      }
+    }
   }
 }

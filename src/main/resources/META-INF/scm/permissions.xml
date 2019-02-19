@@ -1,0 +1,5 @@
+<permissions>
+  <permission>
+    <value>configuration:read,write:ldap</value>
+  </permission>
+</permissions>

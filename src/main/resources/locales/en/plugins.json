@@ -82,5 +82,15 @@
         "exception": "Exception"
       }
     }
+  },
+  "permissions": {
+    "configuration": {
+      "read,write": {
+        "svn": {
+          "displayName": "Modify LDAP configuration",
+          "description": "May modify the LDAP configuration"
+        }
+      }
+    }
   }
 }
