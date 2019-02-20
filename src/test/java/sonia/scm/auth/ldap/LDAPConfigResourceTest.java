@@ -2,6 +2,7 @@ package sonia.scm.auth.ldap;
 
 import com.github.sdorra.shiro.ShiroRule;
 import com.github.sdorra.shiro.SubjectAware;
+import org.apache.shiro.authz.UnauthorizedException;
 import org.assertj.core.api.Assertions;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockDispatcherFactory;
@@ -61,10 +62,10 @@ public class LDAPConfigResourceTest {
 
     when(scmPathInfoStore.get()).thenReturn(() -> URI.create("/"));
 
-    dispatcher.getProviderFactory().register(new ExceptionMapper<Exception>() {
+    dispatcher.getProviderFactory().register(new ExceptionMapper<UnauthorizedException>() {
       @Override
-      public Response toResponse(Exception e) {
-        return Response.status(400).entity(e.toString()).build();
+      public Response toResponse(UnauthorizedException e) {
+        return Response.status(403).entity(e.toString()).build();
       }
     });
     when(authenticationContext.getState()).thenReturn(new LDAPAuthenticationState());
@@ -97,7 +98,7 @@ public class LDAPConfigResourceTest {
 
     dispatcher.invoke(request, response);
 
-    assertEquals(400, response.getStatus());
+    assertEquals(403, response.getStatus());
     Assertions.assertThat(response.getContentAsString())
       .contains("UnauthorizedException")
       .contains("configuration:read:ldap");
@@ -134,7 +135,7 @@ public class LDAPConfigResourceTest {
 
     dispatcher.invoke(request, response);
 
-    assertEquals(400, response.getStatus());
+    assertEquals(403, response.getStatus());
     Assertions.assertThat(response.getContentAsString())
       .contains("UnauthorizedException")
       .contains("configuration:write:ldap");
@@ -176,7 +177,7 @@ public class LDAPConfigResourceTest {
 
     dispatcher.invoke(request, response);
 
-    assertEquals(400, response.getStatus());
+    assertEquals(403, response.getStatus());
     Assertions.assertThat(response.getContentAsString())
       .contains("UnauthorizedException")
       .contains("configuration:write:ldap");

@@ -33,6 +33,8 @@ package sonia.scm.auth.ldap;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.webcohesion.enunciate.metadata.rs.ResponseCode;
+import com.webcohesion.enunciate.metadata.rs.StatusCodes;
 import sonia.scm.config.ConfigurationPermissions;
 
 import javax.validation.Valid;
@@ -65,6 +67,11 @@ public class LDAPConfigResource {
 
   @POST
   @Path("test")
+  @StatusCodes({
+    @ResponseCode(code = 200, condition = "success"),
+    @ResponseCode(code = 401, condition = "not authenticated / invalid credentials"),
+    @ResponseCode(code = 403, condition = "not authorized, the current user does not have the privilege"),
+    @ResponseCode(code = 500, condition = "internal server error")})
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public TestResultDto testConfig(@Valid LDAPTestConfigDto testConfig) {
@@ -87,6 +94,11 @@ public class LDAPConfigResource {
 
   @GET
   @Path("")
+  @StatusCodes({
+    @ResponseCode(code = 200, condition = "success"),
+    @ResponseCode(code = 401, condition = "not authenticated / invalid credentials"),
+    @ResponseCode(code = 403, condition = "not authorized, the current user does not have the privilege"),
+    @ResponseCode(code = 500, condition = "internal server error")})
   @Produces(MediaType.APPLICATION_JSON)
   public LDAPConfigDto getConfig() {
     ConfigurationPermissions.read(PERMISSION_NAME).check();
@@ -95,6 +107,11 @@ public class LDAPConfigResource {
 
   @PUT
   @Path("")
+  @StatusCodes({
+    @ResponseCode(code = 204, condition = "success"),
+    @ResponseCode(code = 401, condition = "not authenticated / invalid credentials"),
+    @ResponseCode(code = 403, condition = "not authorized, the current user does not have the privilege"),
+    @ResponseCode(code = 500, condition = "internal server error")})
   @Consumes(MediaType.APPLICATION_JSON)
   public Response setConfig(@Context UriInfo uriInfo, @NotNull @Valid LDAPConfigDto config) {
     ConfigurationPermissions.write(PERMISSION_NAME).check();
