@@ -1,4 +1,4 @@
-package sonia.scm.web.security;
+package sonia.scm.auth.ldap;
 
 import sonia.scm.user.User;
 

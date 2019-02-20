@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
 import sonia.scm.user.User;
 import sonia.scm.util.IOUtil;
 import sonia.scm.util.Util;
-import sonia.scm.web.security.AuthenticationResult;
 
 //~--- JDK imports ------------------------------------------------------------
 

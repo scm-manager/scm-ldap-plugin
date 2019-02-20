@@ -1,0 +1,96 @@
+{
+  "scm-ldap-plugin": {
+    "nav-link": "LDAP",
+    "form": {
+      "header": "LDAP Konfiguration",
+      "profile": "Profil",
+      "profileHelp": "Vordefinierte LDAP-Profile",
+      "attributeNameId": "Attributname: ID",
+      "attributeNameIdHelp": "LDAP Attributname der eindeutigen ID der Accounts (z. B. uid)",
+      "attributeNameFullname": "Atributname: Vollständiger Name",
+      "attributeNameFullnameHelp": "LDAP Attributname des vollständigen Accountnamens (z. B. cn)",
+      "attributeNameMail": "Attributname: eMail-Adresse",
+      "attributeNameMailHelp": "LDAP Attributname der Account-eMail-Adresse (z. B. mail)",
+      "attributeNameGroup": "Attributname: Gruppen",
+      "attributeNameGroupHelp": "Name des LDAP Grupen-Attributes (z.B. group)",
+      "baseDn": "Base DN",
+      "baseDnHelp": "Base DN zum Beispiel: dc=example,dc=com",
+      "connectionDn": "Verbindungs DN",
+      "connectionDnHelp": "Vollständige DN des Proxy-Account. Achtung: Dieser Account benötigt Lese- und Suchberechtigung für die id, mail und fullname Attribute",
+      "connectionPassword": "Verbindungspasswort",
+      "connectionPasswordHelp": "Das Passwort des Proxy-Account.",
+      "hostUrl": "Server URL",
+      "hostUrlHelp": "URL zum LDAP-Server (z. B. ldap://localhost:389/)",
+      "searchFilter": "Suchfilter",
+      "searchFilterHelp": "Personensuchfilter. Achtung:: {0} wird durch den Nutzernamen ersetzt",
+      "searchFilterGroup": "Gruppensuchfilter",
+      "searchFilterGroupHelp": "Gruppensuchfilter. Achtung: {0} wird durch die DN des Benutzers erssetzt; {1} wird durch den Nutzernamen ersetzt; {2} wird durch die E-Mail des Benutzers ersetzt",
+      "searchScope": "Suchtiefe (scope)",
+      "searchScopeHelp": "Suchtiefe (scope) für die Personensuche",
+      "unitPeople": "Personen (ou)",
+      "unitPeopleHelp": "Relativer Personen-Pfad (z. B. ou=People)",
+      "unitGroup": "Gruppen (ou)",
+      "unitGroupHelp": "Relativer Gruppen-Pfad (z. B. ou=Groups)",
+      "referralStrategy": "Referenz Strategie",
+      "referralStrategyHelp": "Strategie wie LDAP-Referenzen behandelt werden. IGNORIEREN: Alle Referenzen werden ignoriert. FOLGEN: Alle Referenzen werden verfolgt. ESKALIEREN: Bei Referenzen wird eine ReferralException geworfen.",
+      "enableNestedADGroups": "Aktiviere verschachtelte AD Gruppen",
+      "enableNestedADGroupsHelp": "Aktiviert / Deaktiviert verschachtelte ActiveDirectory Gruppen. Achtung: Verschachtelte Gruppen funktionieren nur mit einem ActiveDirectory Server.",
+      "enableStartTls": "Verwende StartTLS",
+      "enableStartTlsHelp": "Verwende StartTLS Erweiterung um eine verschlüsselte Verbindung zum DirecotryServer aufzubauen.",
+      "enabled": "Aktiviert",
+      "enabledHelp": "Aktiviert / Deaktiviert die LDAP Authentifizierung",
+      "options": {
+        "profile": {
+          "Custom": "Benutzerdefiniert",
+          "AD": "ActiveDirectory",
+          "Apache": "Apache Directory Server",
+          "OpenDJ": "OpenDS/OpenDJ",
+          "OpenLDAP": "OpenLDAP",
+          "posix": "OpenLDAP (Posix)",
+          "sun": "Sun/Oracle Verzeichnisdienst"
+        },
+        "searchScope": {
+          "object": "object",
+          "one": "one",
+          "sub": "sub"
+        },
+        "referralStrategy": {
+          "FOLLOW": "FOLGEN",
+          "IGNORE": "IGNORIEREN",
+          "THROW": "ESKALIEREN"
+        }
+      },
+      "testButton": "Verbindung testen"
+    },
+    "testForm": {
+      "title": "LDAP Verbindungstest",
+      "username": "Benutzername",
+      "password": "Passwort",
+      "submit": "Testen",
+      "abort": "Abbruch",
+      "result": {
+        "header": "Testergebnis",
+        "connected": "Verbindung",
+        "userFound": "Benutzersuche",
+        "userAuthenticated": "Benutzerauthentifizierung",
+        "userValid": "Gefundener Benutzer ist gültig",
+        "userDetails": "Benutzer",
+        "userDetailsName": "Name",
+        "userDetailsDisplayName": "Vollständiger Name",
+        "userDetailsMail": "E-Mail",
+        "groups": "Gruppen",
+        "exception": "Fehler"
+      }
+    }
+  },
+  "permissions": {
+    "configuration": {
+      "read,write": {
+        "svn": {
+          "displayName": "LDAP Konfiguration ändern",
+          "description": "Darf die LDAP Konfiguration verändern"
+        }
+      }
+    }
+  }
+}

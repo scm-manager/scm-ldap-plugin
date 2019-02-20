@@ -36,17 +36,22 @@ package sonia.scm.auth.ldap;
 //~--- non-JDK imports --------------------------------------------------------
 
 import com.unboundid.ldap.sdk.LDAPException;
-
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.UsernamePasswordToken;
 import org.junit.Test;
-
-import sonia.scm.web.security.AuthenticationResult;
-import sonia.scm.web.security.AuthenticationState;
-
-import static org.junit.Assert.*;
-
-//~--- JDK imports ------------------------------------------------------------
+import sonia.scm.group.GroupNames;
 
 import java.util.Collection;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+//~--- JDK imports ------------------------------------------------------------
 
 /**
  *
@@ -55,12 +60,6 @@ import java.util.Collection;
 public class LDAPAuthenticationHandlerTest extends LDAPServerTestBase
 {
 
-  /**
-   * Method description
-   *
-   *
-   * @throws LDAPException
-   */
   @Test
   public void testDisabled() throws LDAPException
   {
@@ -71,19 +70,12 @@ public class LDAPAuthenticationHandlerTest extends LDAPServerTestBase
     config.setEnabled(false);
 
     LDAPAuthenticationHandler handler = createLDAPAuthHandler(config);
-    AuthenticationResult ar = handler.authenticate(null, null, "trillian",
-                                "trilli123");
+    AuthenticationInfo ai = handler.doGetAuthenticationInfo(createToken("trillian",
+      "trilli123"));
 
-    LDAPTestUtil.assertFailed(AuthenticationState.NOT_FOUND, ar);
+    assertNull(ai);
   }
 
-  /**
-   * Method description
-   *
-   *
-   *
-   * @throws LDAPException
-   */
   @Test
   public void testGroupAttribute() throws LDAPException
   {
@@ -94,12 +86,12 @@ public class LDAPAuthenticationHandlerTest extends LDAPServerTestBase
     config.setUnitGroup("cn=Other Groups");
 
     LDAPAuthenticationHandler handler = createLDAPAuthHandler(config);
-    AuthenticationResult ar = handler.authenticate(null, null, "trillian",
-                                "trilli123");
+    AuthenticationInfo ai = handler.doGetAuthenticationInfo(createToken("trillian",
+      "trilli123"));
 
-    LDAPTestUtil.assertTrillian(ar);
+    assertTrillian(ai);
 
-    Collection<String> groups = ar.getGroups();
+    Collection<String> groups = getGroups(ai);
 
     assertNotNull(groups);
     assertTrue(groups.size() == 3);
@@ -108,99 +100,88 @@ public class LDAPAuthenticationHandlerTest extends LDAPServerTestBase
     assertTrue(groups.contains("HappyVerticalPeopleTransporter"));
   }
 
-  /**
-   * Method description
-   *
-   *
-   *
-   * @throws LDAPException
-   */
   @Test
   public void testGroups() throws LDAPException
   {
     initialize(LDIF_002);
 
     LDAPAuthenticationHandler handler = createLDAPAuthHandler();
-    AuthenticationResult ar = handler.authenticate(null, null, "trillian",
-                                "trilli123");
+    AuthenticationInfo ai = handler.doGetAuthenticationInfo(createToken("trillian",
+      "trilli123"));
 
-    LDAPTestUtil.assertTrillian(ar);
+    assertTrillian(ai);
 
-    Collection<String> groups = ar.getGroups();
+    Collection<String> groups = getGroups(ai);
 
     assertNotNull(groups);
     assertTrue(groups.size() == 2);
     assertTrue(groups.contains("HeartOfGold"));
     assertTrue(groups.contains("RestaurantAtTheEndOfTheUniverse"));
-    ar = handler.authenticate(null, null, "zaphod", "zaphod123");
-    LDAPTestUtil.assertZaphod(ar);
-    groups = ar.getGroups();
+    ai = handler.doGetAuthenticationInfo(createToken("zaphod", "zaphod123"));
+    assertZaphod(ai);
+    groups = getGroups(ai);
     assertNotNull(groups);
     assertTrue(groups.size() == 1);
     assertTrue(groups.contains("HeartOfGold"));
   }
 
-  /**
-   * Method description
-   *
-   *
-   *
-   * @throws LDAPException
-   */
   @Test
   public void testNotFound() throws LDAPException
   {
     initialize(LDIF_001);
 
     LDAPAuthenticationHandler handler = createLDAPAuthHandler();
-    AuthenticationResult ar = handler.authenticate(null, null, "hansolo",
-                                "trilli123");
+    AuthenticationInfo ai = handler.doGetAuthenticationInfo(createToken("hansolo",
+      "trilli123"));
 
-    LDAPTestUtil.assertFailed(AuthenticationState.NOT_FOUND, ar);
+    assertNull(ai);
   }
 
-  /**
-   * Method description
-   *
-   *
-   *
-   *
-   * @throws LDAPException
-   */
   @Test
   public void testSimpleAuthentication() throws LDAPException
   {
     initialize(LDIF_001);
 
     LDAPAuthenticationHandler handler = createLDAPAuthHandler();
-    AuthenticationResult ar = handler.authenticate(null, null, "trillian",
-                                "trilli123");
+    AuthenticationInfo ai = handler.doGetAuthenticationInfo(createToken("trillian",
+      "trilli123"));
 
-    LDAPTestUtil.assertTrillian(ar);
+    assertTrillian(ai);
 
-    Collection<String> groups = ar.getGroups();
+    Collection<String> groups = getGroups(ai);
 
     assertNotNull(groups);
     assertTrue(groups.isEmpty());
   }
 
-  /**
-   * Method description
-   *
-   *
-   *
-   *
-   * @throws LDAPException
-   */
   @Test
   public void testWrongPassword() throws LDAPException
   {
     initialize(LDIF_001);
 
     LDAPAuthenticationHandler handler = createLDAPAuthHandler();
-    AuthenticationResult ar = handler.authenticate(null, null, "trillian",
-                                "trilli1234");
+    AuthenticationInfo ai = handler.doGetAuthenticationInfo(createToken("trillian",
+      "trilli1234"));
 
-    LDAPTestUtil.assertFailed(AuthenticationState.FAILED, ar);
+    assertNull(ai);
+  }
+
+  private Collection<String> getGroups(AuthenticationInfo ai) {
+    return ai.getPrincipals().oneByType(GroupNames.class).getCollection();
+  }
+
+  private void assertTrillian(AuthenticationInfo ai) {
+    assertEquals("trillian", ai.getPrincipals().oneByType(String.class));
+  }
+
+  private void assertZaphod(AuthenticationInfo ai) {
+    assertEquals("zaphod", ai.getPrincipals().oneByType(String.class));
+  }
+
+  private AuthenticationToken createToken(String username, String password) {
+    UsernamePasswordToken authenticationToken = mock(UsernamePasswordToken.class);
+    when(authenticationToken.getUsername()).thenReturn(username);
+    when(authenticationToken.getPassword()).thenReturn(password.toCharArray());
+    return authenticationToken;
   }
 }

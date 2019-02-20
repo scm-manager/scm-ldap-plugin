@@ -32,8 +32,6 @@ package sonia.scm.auth.ldap;
 
 import java.util.Collection;
 import sonia.scm.user.User;
-import sonia.scm.web.security.AuthenticationResult;
-import sonia.scm.web.security.AuthenticationState;
 
 import static org.junit.Assert.*;
 
@@ -84,18 +82,6 @@ public class LDAPTestUtil
    * Method description
    *
    *
-   * @param ar
-   */
-  public static void assertZaphod(AuthenticationResult ar)
-  {
-    assertSuccess(ar, "zaphod", "Zaphod Beeblebrox",
-                  "zaphod.beeblebrox@hitchhiker.com");
-  }
-
-    /**
-   * Method description
-   *
-   *
    * @param state
    * @param ar
    */
@@ -110,7 +96,7 @@ public class LDAPTestUtil
 
     Collection<String> groups = ar.getGroups();
 
-    assertNull(groups);
+    assertTrue(groups.isEmpty());
   }
   
 }

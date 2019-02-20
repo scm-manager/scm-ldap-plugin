@@ -39,9 +39,6 @@ import com.unboundid.ldap.sdk.LDAPException;
 
 import org.junit.Test;
 
-import sonia.scm.web.security.AuthenticationResult;
-import sonia.scm.web.security.AuthenticationState;
-
 import static org.junit.Assert.*;
 
 /**

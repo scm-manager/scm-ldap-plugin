@@ -43,6 +43,7 @@ import com.unboundid.ldif.LDIFReader;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import sonia.scm.security.SyncingRealmHelper;
 import sonia.scm.store.InMemoryConfigurationStoreFactory;
 
 //~--- JDK imports ------------------------------------------------------------
@@ -52,6 +53,9 @@ import java.net.UnknownHostException;
 
 import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  *
@@ -129,10 +133,13 @@ public class LDAPServerTestBase extends LDAPTestBase
    */
   protected LDAPAuthenticationHandler createLDAPAuthHandler(LDAPConfig config)
   {
+    SyncingRealmHelper syncingRealmHelper = mock(SyncingRealmHelper.class);
+    when(syncingRealmHelper.authenticationInfo()).thenCallRealMethod();
+    when(syncingRealmHelper.authenticationInfo()).thenCallRealMethod();
     LDAPAuthenticationHandler handler =
-      new LDAPAuthenticationHandler(new InMemoryConfigurationStoreFactory());
+      new LDAPAuthenticationHandler(new InMemoryConfigurationStoreFactory(), syncingRealmHelper);
 
-    handler.init(null);
+    handler.init();
     handler.setConfig(config);
     handler.storeConfig();
 

@@ -25,3 +25,4 @@ Desktop DF$
 # IDEA files
 \.idea
 \.iml
+node_modules

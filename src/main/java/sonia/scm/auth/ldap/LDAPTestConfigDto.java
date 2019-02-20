@@ -34,85 +34,24 @@ package sonia.scm.auth.ldap;
 
 //~--- JDK imports ------------------------------------------------------------
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.validation.Valid;
 
 /**
  *
  * @author Sebastian Sdorra
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "ldap-test-config")
-public class LDAPTestConfig
+@Getter
+@Setter
+public class LDAPTestConfigDto
 {
-
-  /**
-   * Constructs new LDAPTestConfig. This constructor is only visible for JAXB.
-   *
-   */
-  public LDAPTestConfig() {}
-
-  /**
-   * Constructs ...
-   *
-   *
-   * @param username
-   * @param password
-   * @param config
-   */
-  public LDAPTestConfig(LDAPConfig config, String username, String password)
-  {
-    this.config = config;
-    this.username = username;
-    this.password = password;
-  }
-
-  //~--- get methods ----------------------------------------------------------
-
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public LDAPConfig getConfig()
-  {
-    return config;
-  }
-
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public String getPassword()
-  {
-    return password;
-  }
-
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public String getUsername()
-  {
-    return username;
-  }
-
-  //~--- fields ---------------------------------------------------------------
-
-  /** Field description */
-  @XmlElement(name = "ldap-config")
-  private LDAPConfig config;
-
-  /** Field description */
+  @Valid
+  private LDAPConfigDto config;
+  @NotEmpty
   private String password;
-
-  /** Field description */
+  @NotEmpty
   private String username;
 }
