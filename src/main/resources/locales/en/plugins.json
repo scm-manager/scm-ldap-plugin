@@ -86,7 +86,7 @@
   "permissions": {
     "configuration": {
       "read,write": {
-        "svn": {
+        "ldap": {
           "displayName": "Modify LDAP configuration",
           "description": "May modify the LDAP configuration"
         }
