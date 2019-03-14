@@ -97,7 +97,9 @@ public class LDAPAuthenticationHandler extends AuthenticatingRealm {
         .authenticationInfo()
         .forRealm(TYPE)
         .andUser(authenticationResult.getUser())
-        .withExternalGroups(authenticationResult.getGroups());
+        .withExternalGroups(authenticationResult.getGroups())
+        .withGroups(authenticationResult.getGroups())
+        .build();
     } else {
       return null;
     }
