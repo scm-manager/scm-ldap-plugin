@@ -44,10 +44,7 @@ import sonia.scm.group.GroupNames;
 
 import java.util.Collection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -94,7 +91,8 @@ public class LDAPAuthenticationHandlerTest extends LDAPServerTestBase
     Collection<String> groups = getGroups(ai);
 
     assertNotNull(groups);
-    assertTrue(groups.size() == 3);
+    assertTrue(groups.size() == 4);
+    assertTrue(groups.contains("_authenticated"));
     assertTrue(groups.contains("HeartOfGold"));
     assertTrue(groups.contains("RestaurantAtTheEndOfTheUniverse"));
     assertTrue(groups.contains("HappyVerticalPeopleTransporter"));
@@ -114,14 +112,16 @@ public class LDAPAuthenticationHandlerTest extends LDAPServerTestBase
     Collection<String> groups = getGroups(ai);
 
     assertNotNull(groups);
-    assertTrue(groups.size() == 2);
+    assertTrue(groups.size() == 3);
+    assertTrue(groups.contains("_authenticated"));
     assertTrue(groups.contains("HeartOfGold"));
     assertTrue(groups.contains("RestaurantAtTheEndOfTheUniverse"));
     ai = handler.doGetAuthenticationInfo(createToken("zaphod", "zaphod123"));
     assertZaphod(ai);
     groups = getGroups(ai);
     assertNotNull(groups);
-    assertTrue(groups.size() == 1);
+    assertTrue(groups.size() == 2);
+    assertTrue(groups.contains("_authenticated"));
     assertTrue(groups.contains("HeartOfGold"));
   }
 
@@ -151,7 +151,8 @@ public class LDAPAuthenticationHandlerTest extends LDAPServerTestBase
     Collection<String> groups = getGroups(ai);
 
     assertNotNull(groups);
-    assertTrue(groups.isEmpty());
+    assertEquals(1, groups.size());
+    assertEquals("_authenticated", groups.iterator().next());
   }
 
   @Test
@@ -185,3 +186,4 @@ public class LDAPAuthenticationHandlerTest extends LDAPServerTestBase
     return authenticationToken;
   }
 }
+

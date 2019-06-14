@@ -43,8 +43,13 @@ import com.unboundid.ldif.LDIFReader;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import sonia.scm.group.GroupDAO;
+import sonia.scm.group.GroupManager;
+import sonia.scm.security.LoginAttemptHandler;
 import sonia.scm.security.SyncingRealmHelper;
 import sonia.scm.store.InMemoryConfigurationStoreFactory;
+import sonia.scm.user.UserManager;
+import sonia.scm.web.security.AdministrationContext;
 
 //~--- JDK imports ------------------------------------------------------------
 
@@ -133,9 +138,14 @@ public class LDAPServerTestBase extends LDAPTestBase
    */
   protected LDAPAuthenticationHandler createLDAPAuthHandler(LDAPConfig config)
   {
-    SyncingRealmHelper syncingRealmHelper = mock(SyncingRealmHelper.class);
-    when(syncingRealmHelper.authenticationInfo()).thenCallRealMethod();
-    when(syncingRealmHelper.authenticationInfo()).thenCallRealMethod();
+    SyncingRealmHelper syncingRealmHelper = new SyncingRealmHelper(
+      mock(AdministrationContext.class),
+      mock(UserManager.class),
+      mock(GroupManager.class),
+      mock(GroupDAO.class),
+      mock(LoginAttemptHandler.class)
+    );
+
     LDAPAuthenticationHandler handler =
       new LDAPAuthenticationHandler(new InMemoryConfigurationStoreFactory(), syncingRealmHelper);
 
