@@ -142,8 +142,7 @@ public class LDAPServerTestBase extends LDAPTestBase
       mock(AdministrationContext.class),
       mock(UserManager.class),
       mock(GroupManager.class),
-      mock(GroupDAO.class),
-      mock(LoginAttemptHandler.class)
+      mock(GroupDAO.class)
     );
 
     LDAPAuthenticationHandler handler =
