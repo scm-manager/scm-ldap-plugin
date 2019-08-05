@@ -77,6 +77,30 @@ class LDAPAuthenticatorTest extends LDAPServerTestBaseJunit5 {
     assertThrows(ConfigurationException.class, () -> authenticator.authenticate("trillian", "trilli123"));
   }
 
+  @Test
+  void shouldThrowConfigurationExceptionIfNoUserIdAttributeMappingWasDefined() {
+    config.setAttributeNameId(null);
+    assertThrows(ConfigurationException.class, () -> authenticator.authenticate("trillian", "trilli123"));
+  }
+
+  @Test
+  void shouldReturnUserEvenWithoutMail() {
+    ldif(10);
+
+    Optional<User> optionalUser = authenticator.authenticate("trillian", "trilli123");
+    assertThat(optionalUser).isPresent();
+    assertThat(optionalUser.get().getMail()).isNull();
+  }
+
+  @Test
+  void shouldReturnUserEvenWithoutDisplayName() {
+    ldif(10);
+
+    Optional<User> optionalUser = authenticator.authenticate("zaphod", "zaphod123");
+    assertThat(optionalUser).isPresent();
+    assertThat(optionalUser.get().getDisplayName()).isEqualTo("zaphod");
+  }
+
   private void assertTrillian(User user) {
     assertThat(user.getType()).isEqualTo("ldap");
     assertThat(user.getName()).isEqualTo("trillian");

@@ -1,5 +1,6 @@
 package sonia.scm.auth.ldap;
 
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sonia.scm.user.User;
@@ -12,6 +13,7 @@ import javax.naming.directory.SearchResult;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 class LDAPAuthenticator {
@@ -25,8 +27,8 @@ class LDAPAuthenticator {
 
   Optional<User> authenticate(String username, String password) {
     try (LDAPConnection bindConnection = LDAPConnection.createBindConnection(config)) {
-
-      Optional<SearchResult> optionalSearchResult = getUserSearchResult(bindConnection, username);
+      UserSearcher userSearcher = new UserSearcher(config, bindConnection);
+      Optional<SearchResult> optionalSearchResult = searchUser(username, userSearcher);
       if (optionalSearchResult.isPresent()) {
         SearchResult searchResult = optionalSearchResult.get();
         String userDN = searchResult.getNameInNamespace();
@@ -43,72 +45,14 @@ class LDAPAuthenticator {
     return Optional.empty();
   }
 
-  private Optional<SearchResult> getUserSearchResult(LDAPConnection bindConnection, String username) {
-    SearchControls searchControls = new SearchControls();
-    int scope = LDAPUtil.getSearchScope(config.getSearchScope());
-
-    logger.debug("using scope {} for user search", LDAPUtil.getSearchScope(scope));
-
-    searchControls.setSearchScope(scope);
-    searchControls.setCountLimit(1);
-    searchControls.setReturningAttributes(getReturnAttributes());
-
-    String filter = createUserSearchFilter(username);
-    String baseDn = createUserSearchBaseDN();
-
-    try (AutoCloseableNamingEnumeration<SearchResult> searchResultEnm = bindConnection.search(baseDn, filter, searchControls)) {
-      if (searchResultEnm.hasMore()) {
-        return Optional.of(searchResultEnm.next());
-      } else {
-        logger.warn("no user with username {} found", username);
-        return Optional.empty();
-      }
-    } catch (NamingException ex) {
-      throw new UserSearchFailedException("exception occurred during user search", ex);
+  private Optional<SearchResult> searchUser(String username, UserSearcher userSearcher) {
+    String nameAttribute = config.getAttributeNameId();
+    if (Strings.isNullOrEmpty(nameAttribute)) {
+      throw new ConfigurationException("no name attribute was specified");
     }
+    return userSearcher.search(username, nameAttribute, config.getAttributeNameFullname(), config.getAttributeNameMail());
   }
 
-  private String[] getReturnAttributes() {
-    List<String> list = new ArrayList<>();
-
-    appendAttribute(list, config.getAttributeNameId());
-    appendAttribute(list, config.getAttributeNameFullname());
-    appendAttribute(list, config.getAttributeNameMail());
-    appendAttribute(list, config.getAttributeNameGroup());
-
-    return list.toArray(new String[0]);
-  }
-
-  private void appendAttribute(List<String> list, String attribute) {
-    if (Util.isNotEmpty(attribute)) {
-      list.add(attribute);
-    }
-  }
-
-  private String createUserSearchFilter(String username) {
-    if (Util.isNotEmpty(config.getSearchFilter())) {
-      String filter = MessageFormat.format(
-        config.getSearchFilter(), LDAPUtil.escapeSearchFilter(username)
-      );
-      logger.debug("search-filter for user search: {}", filter);
-      return filter;
-    } else {
-      throw new ConfigurationException("search filter not defined");
-    }
-  }
-
-  private String createUserSearchBaseDN() {
-    if (Util.isNotEmpty(config.getBaseDn())) {
-      String prefix = config.getUnitPeople();
-      if (Util.isNotEmpty(prefix)) {
-        return prefix.concat(",").concat(config.getBaseDn());
-      } else {
-        return config.getBaseDn();
-      }
-    } else {
-      throw new ConfigurationException("base dn was not configured");
-    }
-  }
 
   private void authenticateUser(String userDN, String password) {
     try (LDAPConnection connection = LDAPConnection.createUserConnection(config, userDN, password)) {
@@ -120,8 +64,14 @@ class LDAPAuthenticator {
     User user = new User();
 
     user.setType(LDAPAuthenticationHandler.TYPE);
-    user.setName(LDAPUtil.getAttribute(attributes, config.getAttributeNameId()));
-    user.setDisplayName(LDAPUtil.getAttribute(attributes, config.getAttributeNameFullname()));
+
+    String username = LDAPUtil.getAttribute(attributes, config.getAttributeNameId());
+    user.setName(username);
+    String displayName = LDAPUtil.getAttribute(attributes, config.getAttributeNameFullname());
+    if (Strings.isNullOrEmpty(displayName)) {
+      displayName = username;
+    }
+    user.setDisplayName(displayName);
     user.setMail(LDAPUtil.getAttribute(attributes, config.getAttributeNameMail()));
 
     if (!user.isValid()) {
