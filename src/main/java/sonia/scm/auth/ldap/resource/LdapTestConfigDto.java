@@ -48,10 +48,7 @@ import javax.validation.Valid;
 @Setter
 public class LdapTestConfigDto
 {
-  @Valid
   private LdapConfigDto config;
-  @NotEmpty
   private String password;
-  @NotEmpty
   private String username;
 }

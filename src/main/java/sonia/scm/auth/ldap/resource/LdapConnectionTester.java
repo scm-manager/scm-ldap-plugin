@@ -1,11 +1,13 @@
 package sonia.scm.auth.ldap.resource;
 
 import sonia.scm.auth.ldap.BindConnectionFailedException;
+import sonia.scm.auth.ldap.ConfigurationException;
 import sonia.scm.auth.ldap.InvalidUserException;
 import sonia.scm.auth.ldap.LdapAuthenticator;
 import sonia.scm.auth.ldap.LdapConfig;
 import sonia.scm.auth.ldap.LdapGroupResolver;
 import sonia.scm.auth.ldap.UserAuthenticationFailedException;
+import sonia.scm.auth.ldap.UserSearchFailedException;
 import sonia.scm.user.User;
 
 import java.util.Optional;
@@ -38,6 +40,10 @@ public class LdapConnectionTester {
       return new AuthenticationResult(AuthenticationFailure.authenticationFailed(ex));
     } catch (InvalidUserException ex) {
       return new AuthenticationResult(AuthenticationFailure.invalidUser(ex), ex.getInvalidUser());
+    } catch (ConfigurationException ex) {
+      return new AuthenticationResult(AuthenticationFailure.invalidConfig(ex));
+    } catch (UserSearchFailedException ex) {
+      return new AuthenticationResult(AuthenticationFailure.userNotFound(ex));
     }
   }
 }

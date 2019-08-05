@@ -80,7 +80,7 @@ public class LdapConfigResource {
     @ResponseCode(code = 500, condition = "internal server error")})
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public TestResultDto testConfig(@Valid LdapTestConfigDto testConfig) {
+  public TestResultDto testConfig(LdapTestConfigDto testConfig) {
     ConfigurationPermissions.write(PERMISSION_NAME).check();
     LdapConfig config = mapper.map(testConfig.getConfig(), configStore.get());
 
@@ -94,7 +94,13 @@ public class LdapConfigResource {
       return new TestResultDto(user.get(), result.getGroups());
     } else {
       AuthenticationFailure failure = failureOptional.orElseThrow(() -> new IllegalStateException("no user and no failure"));
-      return new TestResultDto(failure.isConnected(), failure.isUserFound(), failure.isUserAuthenticated(), failure.getException());
+      return new TestResultDto(
+        failure.isConfigured(),
+        failure.isConnected(),
+        failure.isUserFound(),
+        failure.isUserAuthenticated(),
+        failure.getException()
+      );
     }
   }
 

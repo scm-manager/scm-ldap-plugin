@@ -70,6 +70,7 @@
       "abort": "Cancel",
       "result": {
         "header": "Test Result",
+        "configured": "Configuration",
         "connected": "Connection",
         "userFound": "Search user",
         "userAuthenticated": "Authenticate user",

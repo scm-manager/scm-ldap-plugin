@@ -71,5 +71,34 @@ class LdapConnectionTesterTest extends LdapServerTestBaseJunit5 {
     assertThat(result.getUser().get().isValid()).isFalse();
   }
 
+  @Test
+  void shouldReturnInvalidConfiguration() {
+    ldif(5);
+
+    config.setAttributeNameId(null);
+
+    AuthenticationResult result = tester.test("trillian", "trilli123");
+    AuthenticationFailure failure = result.getFailure().get();
+    assertThat(failure.isConfigured()).isFalse();
+    assertThat(failure.isConnected()).isFalse();
+    assertThat(failure.isUserFound()).isFalse();
+    assertThat(failure.isUserAuthenticated()).isFalse();
+    assertThat(failure.getException()).isNotEmpty();
+  }
+
+  @Test
+  void shouldReturnUserNotFoundFailureWithUnknownBaseDN() {
+    ldif(3);
+
+    config.setBaseDn("dc=invalid,dc=org");
+
+    AuthenticationResult result = tester.test("trillain", "trilli123");
+    AuthenticationFailure failure = result.getFailure().get();
+    assertThat(failure.isConfigured()).isTrue();
+    assertThat(failure.isConnected()).isTrue();
+    assertThat(failure.isUserFound()).isFalse();
+    assertThat(failure.isUserAuthenticated()).isFalse();
+    assertThat(failure.getException()).isNotEmpty();
+  }
 
 }
