@@ -9,17 +9,17 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class LDAPGroupResolverTest extends LDAPServerTestBaseJunit5 {
+class LdapGroupResolverTest extends LdapServerTestBaseJunit5 {
 
-  private LDAPConfig config;
-  private LDAPGroupResolver groupResolver;
+  private LdapConfig config;
+  private LdapGroupResolver groupResolver;
 
   @BeforeEach
   void setUpAuthenticator() {
     config = createConfig();
-    LDAPConfigStore ldapConfigStore = new LDAPConfigStore(new InMemoryConfigurationStore<>());
+    LdapConfigStore ldapConfigStore = new LdapConfigStore(new InMemoryConfigurationStore<>());
     ldapConfigStore.set(config);
-    groupResolver = new LDAPGroupResolver(ldapConfigStore);
+    groupResolver = new LdapGroupResolver(ldapConfigStore);
   }
 
   @Test

@@ -1,4 +1,4 @@
-package sonia.scm.auth.ldap;
+package sonia.scm.auth.ldap.resource;
 
 import lombok.Getter;
 import sonia.scm.user.User;

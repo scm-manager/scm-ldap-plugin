@@ -30,41 +30,28 @@
  */
 
 
+package sonia.scm.auth.ldap.resource;
 
-package sonia.scm.auth.ldap;
+//~--- JDK imports ------------------------------------------------------------
 
-//~--- non-JDK imports --------------------------------------------------------
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.validator.constraints.NotEmpty;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import javax.validation.Valid;
 
 /**
  *
  * @author Sebastian Sdorra
  */
-public class LDAPConfigTest
+@Getter
+@Setter
+public class LdapTestConfigDto
 {
-
-  /**
-   * Method description
-   *
-   */
-  @Test
-  public void testIsValid()
-  {
-    LDAPConfig config = new LDAPConfig();
-
-    config.setAttributeNameId("uid");
-    config.setAttributeNameFullname("cn");
-    config.setAttributeNameMail("mail");
-    config.setBaseDn("dc=scm-manager,dc=org");
-    config.setSearchFilter("(uid={0})");
-    config.setHostUrl("ldap://localhost:389");
-    assertTrue(config.isValid());
-    config.setAttributeNameId(null);
-    assertFalse(config.isValid());
-    config.setAttributeNameId("");
-    assertFalse(config.isValid());
-  }
+  @Valid
+  private LdapConfigDto config;
+  @NotEmpty
+  private String password;
+  @NotEmpty
+  private String username;
 }

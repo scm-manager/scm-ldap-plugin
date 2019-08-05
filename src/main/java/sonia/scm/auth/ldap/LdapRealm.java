@@ -45,8 +45,6 @@ import sonia.scm.plugin.Extension;
 import sonia.scm.security.SyncingRealmHelper;
 import sonia.scm.user.User;
 
-import java.util.Optional;
-
 import static com.google.common.base.Preconditions.checkArgument;
 
 @Singleton
@@ -58,10 +56,10 @@ public class LdapRealm extends AuthenticatingRealm {
   private static final Logger logger = LoggerFactory.getLogger(LdapRealm.class);
 
   private final SyncingRealmHelper syncingRealmHelper;
-  private final LDAPConfigStore configStore;
+  private final LdapConfigStore configStore;
 
   @Inject
-  public LdapRealm(LDAPConfigStore configStore, SyncingRealmHelper syncingRealmHelper) {
+  public LdapRealm(LdapConfigStore configStore, SyncingRealmHelper syncingRealmHelper) {
     this.configStore = configStore;
     this.syncingRealmHelper = syncingRealmHelper;
     setAuthenticationTokenClass(UsernamePasswordToken.class);
@@ -70,7 +68,7 @@ public class LdapRealm extends AuthenticatingRealm {
 
   @Override
   protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) {
-    LDAPConfig config = configStore.get();
+    LdapConfig config = configStore.get();
     if (!config.isEnabled()) {
       logger.debug("ldap not enabled - skipping authentication");
       return null;
@@ -82,7 +80,7 @@ public class LdapRealm extends AuthenticatingRealm {
     String username = upt.getUsername();
     char[] password = upt.getPassword();
 
-    LDAPAuthenticator authenticator = new LDAPAuthenticator(config);
+    LdapAuthenticator authenticator = new LdapAuthenticator(config);
     User user = authenticator.authenticate(username, new String(password))
       .orElseThrow(() -> new UnknownAccountException("could not find account with name " + username));
 

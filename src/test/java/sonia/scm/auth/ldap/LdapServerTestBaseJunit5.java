@@ -17,11 +17,7 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-class LDAPServerTestBaseJunit5 extends LDAPTestBase {
-
-  static final String LDIF_001 = "/ldif/001.ldif";
-  static final String LDIF_002 = "/ldif/002.ldif";
-  static final String LDIF_003 = "/ldif/003.ldif";
+public class LdapServerTestBaseJunit5 extends LdapTestBase {
 
   protected static InMemoryDirectoryServer ldapServer;
 
@@ -42,7 +38,7 @@ class LDAPServerTestBaseJunit5 extends LDAPTestBase {
       InetAddress.getByName(HOST), PORT, ServerSocketFactory.getDefault(),
       SocketFactory.getDefault(), null));
 
-    // disable schema check, becase of memberOf attribute
+    // disable schema check, because of memberOf attribute
     config.setSchema(null);
     ldapServer = new InMemoryDirectoryServer(config);
     ldapServer.startListening();
@@ -51,7 +47,7 @@ class LDAPServerTestBaseJunit5 extends LDAPTestBase {
 
   protected void ldif(int number) {
     String ldif = String.format("/ldif/%03d.ldif", number);
-    try (InputStream stream = LDAPServerTestBase.class.getResourceAsStream(ldif)) {
+    try (InputStream stream = LdapServerTestBase.class.getResourceAsStream(ldif)) {
       LDIFReader reader = new LDIFReader(stream);
 
       ldapServer.importFromLDIF(true, reader);

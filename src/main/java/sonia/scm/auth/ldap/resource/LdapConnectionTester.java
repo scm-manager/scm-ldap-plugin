@@ -1,21 +1,26 @@
-package sonia.scm.auth.ldap;
+package sonia.scm.auth.ldap.resource;
 
-import com.google.inject.util.Providers;
+import sonia.scm.auth.ldap.BindConnectionFailedException;
+import sonia.scm.auth.ldap.InvalidUserException;
+import sonia.scm.auth.ldap.LdapAuthenticator;
+import sonia.scm.auth.ldap.LdapConfig;
+import sonia.scm.auth.ldap.LdapGroupResolver;
+import sonia.scm.auth.ldap.UserAuthenticationFailedException;
 import sonia.scm.user.User;
 
 import java.util.Optional;
 import java.util.Set;
 
-class LdapConnectionTester {
+public class LdapConnectionTester {
 
-  private final LDAPConfig config;
+  private final LdapConfig config;
 
-  LdapConnectionTester(LDAPConfig config) {
+  LdapConnectionTester(LdapConfig config) {
     this.config = config;
   }
 
   AuthenticationResult test(String username, String password) {
-    LDAPAuthenticator authenticator = new LDAPAuthenticator(config);
+    LdapAuthenticator authenticator = new LdapAuthenticator(config);
     try {
       Optional<User> optionalUser = authenticator.authenticate(username, password);
 
@@ -23,7 +28,7 @@ class LdapConnectionTester {
         return new AuthenticationResult(AuthenticationFailure.userNotFound());
       }
 
-      LDAPGroupResolver groupResolver = new LDAPGroupResolver(Providers.of(config));
+      LdapGroupResolver groupResolver = LdapGroupResolver.from(config);
       Set<String> groups = groupResolver.resolve(username);
 
       return new AuthenticationResult(optionalUser.get(), groups);

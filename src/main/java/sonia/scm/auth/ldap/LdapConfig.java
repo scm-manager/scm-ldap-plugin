@@ -52,7 +52,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlRootElement(name = "ldap-config")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class LDAPConfig implements Validateable
+public class LdapConfig implements Validateable
 {
 
   /**

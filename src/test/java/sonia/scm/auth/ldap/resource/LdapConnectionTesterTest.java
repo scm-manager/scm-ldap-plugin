@@ -1,15 +1,15 @@
-package sonia.scm.auth.ldap;
+package sonia.scm.auth.ldap.resource;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.Optional;
+import sonia.scm.auth.ldap.LdapConfig;
+import sonia.scm.auth.ldap.LdapServerTestBaseJunit5;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class LdapConnectionTesterTest extends LDAPServerTestBaseJunit5 {
+class LdapConnectionTesterTest extends LdapServerTestBaseJunit5 {
 
-  private LDAPConfig config;
+  private LdapConfig config;
   private LdapConnectionTester tester;
 
   @BeforeEach

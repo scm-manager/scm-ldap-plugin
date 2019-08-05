@@ -54,21 +54,19 @@ import javax.naming.ldap.StartTlsResponse;
  *
  * @author Sebastian Sdorra
  */
-public class LDAPUtil {
+class LdapUtil {
 
-  /** Field description */
-  public static final String SCOPE_OBJECT = "object";
+  private static final String SCOPE_OBJECT = "object";
+  private static final String SCOPE_ONE = "one";
+  private static final String SCOPE_SUB = "sub";
 
-  /** Field description */
-  public static final String SCOPE_ONE = "one";
-
-  /** Field description */
-  public static final String SCOPE_SUB = "sub";
-
-  /** the logger for LdapUtil */
-  private static final Logger logger = LoggerFactory.getLogger(LDAPUtil.class);
+  private static final Logger logger = LoggerFactory.getLogger(LdapUtil.class);
 
   //~--- methods --------------------------------------------------------------
+
+
+  private LdapUtil() {
+  }
 
   /**
    * Sanitize LDAP search filter to prevent LDAP injection.
@@ -78,7 +76,7 @@ public class LDAPUtil {
    * @param filter
    * @return
    */
-  public static final String escapeSearchFilter(String filter) {
+  static String escapeSearchFilter(String filter) {
     StringBuilder sb = new StringBuilder();
 
     for (int i = 0; i < filter.length(); i++) {
@@ -279,7 +277,7 @@ public class LDAPUtil {
     return scopeString;
   }
 
-  static String createDN(LDAPConfig config, String prefix) {
+  static String createDN(LdapConfig config, String prefix) {
     if (Util.isNotEmpty(config.getBaseDn())) {
       if (Util.isNotEmpty(prefix)) {
         return prefix.concat(",").concat(config.getBaseDn());

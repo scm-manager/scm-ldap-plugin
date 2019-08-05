@@ -57,14 +57,13 @@ import static org.mockito.Mockito.when;
 //~--- JDK imports ------------------------------------------------------------
 
 /**
- *
  * @author Sebastian Sdorra
  */
 @ExtendWith(MockitoExtension.class)
-class LdapRealmTest extends LDAPServerTestBaseJunit5 {
+class LdapRealmTest extends LdapServerTestBaseJunit5 {
 
   @Mock
-  private LDAPConfigStore configStore;
+  private LdapConfigStore configStore;
 
   @Mock
   private SyncingRealmHelper syncingRealmHelper;
@@ -72,7 +71,7 @@ class LdapRealmTest extends LDAPServerTestBaseJunit5 {
   @InjectMocks
   private LdapRealm realm;
 
-  private LDAPConfig config;
+  private LdapConfig config;
 
   @BeforeEach
   void setUpRealm() {
@@ -115,7 +114,6 @@ class LdapRealmTest extends LDAPServerTestBaseJunit5 {
 
     assertThrows(UserAuthenticationFailedException.class, () -> realm.doGetAuthenticationInfo(createToken("trillian", "trilli1234")));
   }
-
 
   private AuthenticationToken createToken(String username, String password) {
     return new UsernamePasswordToken(username, password);

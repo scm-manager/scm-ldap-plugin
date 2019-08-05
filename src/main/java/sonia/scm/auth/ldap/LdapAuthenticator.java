@@ -9,17 +9,17 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchResult;
 import java.util.Optional;
 
-class LDAPAuthenticator {
+public class LdapAuthenticator {
 
-  private final LDAPConfig config;
-  private static final Logger logger = LoggerFactory.getLogger(LDAPAuthenticator.class);
+  private final LdapConfig config;
+  private static final Logger logger = LoggerFactory.getLogger(LdapAuthenticator.class);
 
-  LDAPAuthenticator(LDAPConfig config) {
+  public LdapAuthenticator(LdapConfig config) {
     this.config = config;
   }
 
-  Optional<User> authenticate(String username, String password) {
-    try (LDAPConnection bindConnection = LDAPConnection.createBindConnection(config)) {
+  public Optional<User> authenticate(String username, String password) {
+    try (LdapConnection bindConnection = LdapConnection.createBindConnection(config)) {
       UserSearcher userSearcher = new UserSearcher(config, bindConnection);
       Optional<SearchResult> optionalSearchResult = searchUser(username, userSearcher);
       if (optionalSearchResult.isPresent()) {
@@ -48,7 +48,7 @@ class LDAPAuthenticator {
 
 
   private void authenticateUser(String userDN, String password) {
-    try (LDAPConnection connection = LDAPConnection.createUserConnection(config, userDN, password)) {
+    try (LdapConnection connection = LdapConnection.createUserConnection(config, userDN, password)) {
       logger.debug("user {} successfully authenticated", userDN);
     }
   }
@@ -58,14 +58,14 @@ class LDAPAuthenticator {
 
     user.setType(LdapRealm.TYPE);
 
-    String username = LDAPUtil.getAttribute(attributes, config.getAttributeNameId());
+    String username = LdapUtil.getAttribute(attributes, config.getAttributeNameId());
     user.setName(username);
-    String displayName = LDAPUtil.getAttribute(attributes, config.getAttributeNameFullname());
+    String displayName = LdapUtil.getAttribute(attributes, config.getAttributeNameFullname());
     if (Strings.isNullOrEmpty(displayName)) {
       displayName = username;
     }
     user.setDisplayName(displayName);
-    user.setMail(LDAPUtil.getAttribute(attributes, config.getAttributeNameMail()));
+    user.setMail(LdapUtil.getAttribute(attributes, config.getAttributeNameMail()));
 
     if (!user.isValid()) {
       throw new InvalidUserException("invalid user object: " + user.toString(), user);

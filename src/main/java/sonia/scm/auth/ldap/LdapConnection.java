@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
 import sonia.scm.util.Util;
 
 import javax.naming.Context;
-import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
@@ -51,7 +50,6 @@ import javax.naming.ldap.StartTlsResponse;
 import javax.net.ssl.SSLContext;
 import java.io.Closeable;
 import java.io.IOException;
-import java.net.BindException;
 import java.util.Hashtable;
 
 //~--- JDK imports ------------------------------------------------------------
@@ -60,7 +58,7 @@ import java.util.Hashtable;
  *
  * @author Sebastian Sdorra
  */
-public class LDAPConnection implements Closeable
+public class LdapConnection implements Closeable
 {
 
   /** property for ldap connect timeout */
@@ -81,7 +79,7 @@ public class LDAPConnection implements Closeable
    * the logger for LDAPConnection
    */
   private static final Logger logger =
-    LoggerFactory.getLogger(LDAPConnection.class);
+    LoggerFactory.getLogger(LdapConnection.class);
 
   //~--- constructors ---------------------------------------------------------
 
@@ -94,24 +92,24 @@ public class LDAPConnection implements Closeable
    * @throws IOException
    * @throws NamingException
    */
-  public LDAPConnection(LDAPConfig config) throws NamingException, IOException
+  public LdapConnection(LdapConfig config) throws NamingException, IOException
   {
     this(config, null, null, null);
   }
 
-  public static LDAPConnection createBindConnection(LDAPConfig config) {
+  public static LdapConnection createBindConnection(LdapConfig config) {
     try {
-      return new LDAPConnection(config, null, config.getConnectionDn(), config.getConnectionPassword());
+      return new LdapConnection(config, null, config.getConnectionDn(), config.getConnectionPassword());
     }
     catch (IOException | NamingException ex) {
       throw new BindConnectionFailedException("failed to create bind connection for " + config.getConnectionDn() , ex);
     }
   }
 
-  public static LDAPConnection createUserConnection(LDAPConfig config, String userDn, String password){
+  public static LdapConnection createUserConnection(LdapConfig config, String userDn, String password){
 
     try {
-      return new LDAPConnection(config, null, userDn, password);
+      return new LdapConnection(config, null, userDn, password);
     }
     catch (IOException | NamingException ex) {
       throw new UserAuthenticationFailedException("failed to authenticate user " + userDn, ex);
@@ -128,7 +126,7 @@ public class LDAPConnection implements Closeable
    * @throws IOException
    * @throws NamingException
    */
-  public LDAPConnection(LDAPConfig config, String userDN, String password)
+  public LdapConnection(LdapConfig config, String userDN, String password)
     throws NamingException, IOException
   {
     this(config, null, userDN, password);
@@ -146,8 +144,8 @@ public class LDAPConnection implements Closeable
    * @throws IOException
    * @throws NamingException
    */
-  public LDAPConnection(LDAPConfig config, SSLContext sslContext,
-    String userDN, String password)
+  public LdapConnection(LdapConfig config, SSLContext sslContext,
+                        String userDN, String password)
     throws NamingException, IOException
   {
     context = new InitialLdapContext(createBasicProperties(config, userDN,
@@ -201,8 +199,8 @@ public class LDAPConnection implements Closeable
   @Override
   public void close()
   {
-    LDAPUtil.close(tls);
-    LDAPUtil.close(context);
+    LdapUtil.close(tls);
+    LdapUtil.close(context);
   }
 
   /**
@@ -234,8 +232,8 @@ public class LDAPConnection implements Closeable
    *
    * @return
    */
-  private Hashtable<String, String> createBasicProperties(LDAPConfig config,
-    String userDN, String password)
+  private Hashtable<String, String> createBasicProperties(LdapConfig config,
+                                                          String userDN, String password)
   {
     Hashtable<String, String> ldapProperties = new Hashtable<String,
                                                  String>(11);

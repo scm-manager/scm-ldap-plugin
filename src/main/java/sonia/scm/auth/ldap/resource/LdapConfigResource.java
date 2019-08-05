@@ -29,13 +29,15 @@
  */
 
 
-package sonia.scm.auth.ldap;
+package sonia.scm.auth.ldap.resource;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.webcohesion.enunciate.metadata.rs.ResponseCode;
 import com.webcohesion.enunciate.metadata.rs.StatusCodes;
+import sonia.scm.auth.ldap.LdapConfig;
+import sonia.scm.auth.ldap.LdapConfigStore;
 import sonia.scm.config.ConfigurationPermissions;
 import sonia.scm.user.User;
 
@@ -54,17 +56,17 @@ import javax.ws.rs.core.UriInfo;
 
 import java.util.Optional;
 
-import static sonia.scm.auth.ldap.LDAPModule.PERMISSION_NAME;
+import static sonia.scm.auth.ldap.resource.LdapModule.PERMISSION_NAME;
 
 @Singleton
 @Path("v2/config/ldap")
-public class LDAPConfigResource {
+public class LdapConfigResource {
 
-  private final LDAPConfigStore configStore;
-  private final LDAPConfigMapper mapper;
+  private final LdapConfigStore configStore;
+  private final LdapConfigMapper mapper;
 
   @Inject
-  public LDAPConfigResource(LDAPConfigStore configStore, LDAPConfigMapper mapper) {
+  public LdapConfigResource(LdapConfigStore configStore, LdapConfigMapper mapper) {
     this.configStore = configStore;
     this.mapper = mapper;
   }
@@ -78,9 +80,9 @@ public class LDAPConfigResource {
     @ResponseCode(code = 500, condition = "internal server error")})
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public TestResultDto testConfig(@Valid LDAPTestConfigDto testConfig) {
+  public TestResultDto testConfig(@Valid LdapTestConfigDto testConfig) {
     ConfigurationPermissions.write(PERMISSION_NAME).check();
-    LDAPConfig config = mapper.map(testConfig.getConfig(), configStore.get());
+    LdapConfig config = mapper.map(testConfig.getConfig(), configStore.get());
 
     LdapConnectionTester tester = createConnectionTester(config);
 
@@ -97,7 +99,7 @@ public class LDAPConfigResource {
   }
 
   @VisibleForTesting
-  LdapConnectionTester createConnectionTester(LDAPConfig config) {
+  LdapConnectionTester createConnectionTester(LdapConfig config) {
     return new LdapConnectionTester(config);
   }
 
@@ -109,7 +111,7 @@ public class LDAPConfigResource {
     @ResponseCode(code = 403, condition = "not authorized, the current user does not have the privilege"),
     @ResponseCode(code = 500, condition = "internal server error")})
   @Produces(MediaType.APPLICATION_JSON)
-  public LDAPConfigDto getConfig() {
+  public LdapConfigDto getConfig() {
     ConfigurationPermissions.read(PERMISSION_NAME).check();
     return mapper.map(configStore.get());
   }
@@ -122,9 +124,9 @@ public class LDAPConfigResource {
     @ResponseCode(code = 403, condition = "not authorized, the current user does not have the privilege"),
     @ResponseCode(code = 500, condition = "internal server error")})
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response setConfig(@Context UriInfo uriInfo, @NotNull @Valid LDAPConfigDto config) {
+  public Response setConfig(@Context UriInfo uriInfo, @NotNull @Valid LdapConfigDto config) {
     ConfigurationPermissions.write(PERMISSION_NAME).check();
-    LDAPConfig newConfig = mapper.map(config, configStore.get());
+    LdapConfig newConfig = mapper.map(config, configStore.get());
     configStore.set(newConfig);
 
     return Response.noContent().build();

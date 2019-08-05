@@ -1,6 +1,7 @@
 package sonia.scm.auth.ldap;
 
 import com.google.common.base.Strings;
+import com.google.inject.util.Providers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sonia.scm.group.GroupResolver;
@@ -22,30 +23,34 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import static sonia.scm.auth.ldap.LDAPUtil.*;
+import static sonia.scm.auth.ldap.LdapUtil.*;
 
 @Extension
-public class LDAPGroupResolver implements GroupResolver {
+public class LdapGroupResolver implements GroupResolver {
 
-  private static final Logger LOG = LoggerFactory.getLogger(LDAPGroupResolver.class);
+  private static final Logger LOG = LoggerFactory.getLogger(LdapGroupResolver.class);
 
   private static final String ATTRIBUTE_GROUP_NAME = "cn";
   private static final String NESTEDGROUP_MATCHINGRULE = ":1.2.840.113556.1.4.1941:=";
 
-  private final Provider<LDAPConfig> store;
+  private final Provider<LdapConfig> store;
 
   @Inject
-  public LDAPGroupResolver(LDAPConfigStore store) {
-    this((Provider<LDAPConfig>)store);
+  public LdapGroupResolver(LdapConfigStore store) {
+    this((Provider<LdapConfig>)store);
   }
 
-  LDAPGroupResolver(Provider<LDAPConfig> store) {
+  private LdapGroupResolver(Provider<LdapConfig> store) {
     this.store = store;
+  }
+
+  public static LdapGroupResolver from(LdapConfig config) {
+    return new LdapGroupResolver(Providers.of(config));
   }
 
   @Override
   public Set<String> resolve(String principal) {
-    LDAPConfig config = store.get();
+    LdapConfig config = store.get();
     if (config.isEnabled()) {
       Set<String> groups = resolveGroups(config, principal);
       if (groups != null) return groups;
@@ -55,8 +60,8 @@ public class LDAPGroupResolver implements GroupResolver {
     return Collections.emptySet();
   }
 
-  private Set<String> resolveGroups(LDAPConfig config, String principal) {
-    try (LDAPConnection bindConnection = LDAPConnection.createBindConnection(config)) {
+  private Set<String> resolveGroups(LdapConfig config, String principal) {
+    try (LdapConnection bindConnection = LdapConnection.createBindConnection(config)) {
       UserSearcher searcher = new UserSearcher(config, bindConnection);
       Optional<SearchResult> optionalSearchResult = searcher.search(principal, config.getAttributeNameGroup(), config.getAttributeNameMail());
       if (optionalSearchResult.isPresent()) {
@@ -76,7 +81,7 @@ public class LDAPGroupResolver implements GroupResolver {
   private Set<String> getGroups(Attributes attributes) {
     Set<String> groups = new HashSet<>();
 
-    LDAPConfig config = store.get();
+    LdapConfig config = store.get();
     String groupAttribute = config.getAttributeNameGroup();
 
     if (Util.isNotEmpty(groupAttribute)) {
@@ -109,7 +114,7 @@ public class LDAPGroupResolver implements GroupResolver {
     return groups;
   }
 
-  private Set<String> fetchGroups(LDAPConnection connection, String userDN, String uid, String mail) {
+  private Set<String> fetchGroups(LdapConnection connection, String userDN, String uid, String mail) {
     Set<String> groups = new HashSet<>();
 
     Optional<String> optionalFilter = createGroupSearchFilter(userDN, uid, mail);
@@ -127,8 +132,8 @@ public class LDAPGroupResolver implements GroupResolver {
 
       String filter = optionalFilter.get();
 
-      LDAPConfig config = store.get();
-      String searchDN = LDAPUtil.createDN(config, config.getUnitGroup());
+      LdapConfig config = store.get();
+      String searchDN = LdapUtil.createDN(config, config.getUnitGroup());
       LOG.debug("search groups for user {} at {} with filter {}", userDN, searchDN, filter);
 
       try (AutoCloseableNamingEnumeration<SearchResult> searchResultEnm = connection.search(searchDN, filter, searchControls)) {
@@ -155,7 +160,7 @@ public class LDAPGroupResolver implements GroupResolver {
   }
 
   private Optional<String> createGroupSearchFilter(String userDN, String uid, String mail) {
-    LDAPConfig config = store.get();
+    LdapConfig config = store.get();
     String filterPattern = config.getSearchFilterGroup();
 
     if (Util.isNotEmpty(filterPattern)) {

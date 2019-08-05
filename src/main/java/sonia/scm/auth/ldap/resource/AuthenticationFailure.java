@@ -1,9 +1,12 @@
-package sonia.scm.auth.ldap;
+package sonia.scm.auth.ldap.resource;
 
 import com.google.common.base.Throwables;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import sonia.scm.auth.ldap.BindConnectionFailedException;
+import sonia.scm.auth.ldap.InvalidUserException;
+import sonia.scm.auth.ldap.UserAuthenticationFailedException;
 
 @Getter
 @EqualsAndHashCode

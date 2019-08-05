@@ -9,15 +9,15 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class LDAPAuthenticatorTest extends LDAPServerTestBaseJunit5 {
+class LdapAuthenticatorTest extends LdapServerTestBaseJunit5 {
 
-  private LDAPConfig config;
-  private LDAPAuthenticator authenticator;
+  private LdapConfig config;
+  private LdapAuthenticator authenticator;
 
   @BeforeEach
   void setUpAuthenticator() {
     config = createConfig();
-    authenticator = new LDAPAuthenticator(config);
+    authenticator = new LdapAuthenticator(config);
   }
 
   @Test

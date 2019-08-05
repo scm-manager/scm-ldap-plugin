@@ -16,26 +16,26 @@ class UserSearcher {
 
   private static final Logger logger = LoggerFactory.getLogger(UserSearcher.class);
 
-  private final LDAPConfig config;
-  private final LDAPConnection connection;
+  private final LdapConfig config;
+  private final LdapConnection connection;
 
-  UserSearcher(LDAPConfig config, LDAPConnection connection) {
+  UserSearcher(LdapConfig config, LdapConnection connection) {
     this.config = config;
     this.connection = connection;
   }
 
   Optional<SearchResult> search(String username, String... attributes) {
     SearchControls searchControls = new SearchControls();
-    int scope = LDAPUtil.getSearchScope(config.getSearchScope());
+    int scope = LdapUtil.getSearchScope(config.getSearchScope());
 
-    logger.debug("using scope {} for user search", LDAPUtil.getSearchScope(scope));
+    logger.debug("using scope {} for user search", LdapUtil.getSearchScope(scope));
 
     searchControls.setSearchScope(scope);
     searchControls.setCountLimit(1);
     searchControls.setReturningAttributes(getReturnAttributes(attributes));
 
     String filter = createUserSearchFilter(username);
-    String baseDn = LDAPUtil.createDN(config, config.getUnitPeople());
+    String baseDn = LdapUtil.createDN(config, config.getUnitPeople());
 
     try (AutoCloseableNamingEnumeration<SearchResult> searchResultEnm = connection.search(baseDn, filter, searchControls)) {
       if (searchResultEnm.hasMore()) {
@@ -66,7 +66,7 @@ class UserSearcher {
   private String createUserSearchFilter(String username) {
     if (Util.isNotEmpty(config.getSearchFilter())) {
       String filter = MessageFormat.format(
-        config.getSearchFilter(), LDAPUtil.escapeSearchFilter(username)
+        config.getSearchFilter(), LdapUtil.escapeSearchFilter(username)
       );
       logger.debug("search-filter for user search: {}", filter);
       return filter;
