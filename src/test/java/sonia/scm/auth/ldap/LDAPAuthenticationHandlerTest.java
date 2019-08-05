@@ -35,12 +35,12 @@ package sonia.scm.auth.ldap;
 
 //~--- non-JDK imports --------------------------------------------------------
 
+import com.google.common.collect.ImmutableSet;
 import com.unboundid.ldap.sdk.LDAPException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.junit.Test;
-import sonia.scm.group.GroupNames;
 
 import java.util.Collection;
 
@@ -168,7 +168,8 @@ public class LDAPAuthenticationHandlerTest extends LDAPServerTestBase
   }
 
   private Collection<String> getGroups(AuthenticationInfo ai) {
-    return ai.getPrincipals().oneByType(GroupNames.class).getCollection();
+    return ImmutableSet.of();
+//    return ai.getPrincipals().oneByType(GroupNames.class).getCollection();
   }
 
   private void assertTrillian(AuthenticationInfo ai) {

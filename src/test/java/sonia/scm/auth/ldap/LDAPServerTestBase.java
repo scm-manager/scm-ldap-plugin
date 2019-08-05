@@ -141,8 +141,7 @@ public class LDAPServerTestBase extends LDAPTestBase
     SyncingRealmHelper syncingRealmHelper = new SyncingRealmHelper(
       mock(AdministrationContext.class),
       mock(UserManager.class),
-      mock(GroupManager.class),
-      mock(GroupDAO.class)
+      mock(GroupManager.class)
     );
 
     LDAPAuthenticationHandler handler =

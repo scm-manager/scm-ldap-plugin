@@ -94,12 +94,7 @@ public class LDAPAuthenticationHandler extends AuthenticatingRealm {
     if (authenticationResult.getState() == AuthenticationState.SUCCESS) {
       syncingRealmHelper.store(authenticationResult.getUser());
       return syncingRealmHelper
-        .authenticationInfo()
-        .forRealm(TYPE)
-        .andUser(authenticationResult.getUser())
-        .withExternalGroups(authenticationResult.getGroups())
-        .withGroups(authenticationResult.getGroups())
-        .build();
+        .createAuthenticationInfo(TYPE, authenticationResult.getUser());
     } else {
       return null;
     }

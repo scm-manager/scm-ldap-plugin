@@ -37,15 +37,7 @@ package sonia.scm.auth.ldap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import sonia.scm.util.Util;
-
-//~--- JDK imports ------------------------------------------------------------
-
-import java.io.Closeable;
-import java.io.IOException;
-
-import java.util.Hashtable;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -56,8 +48,13 @@ import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 import javax.naming.ldap.StartTlsRequest;
 import javax.naming.ldap.StartTlsResponse;
-
 import javax.net.ssl.SSLContext;
+import java.io.Closeable;
+import java.io.IOException;
+import java.net.BindException;
+import java.util.Hashtable;
+
+//~--- JDK imports ------------------------------------------------------------
 
 /**
  *
@@ -102,6 +99,24 @@ public class LDAPConnection implements Closeable
     this(config, null, null, null);
   }
 
+  public static LDAPConnection createBindConnection(LDAPConfig config) {
+    try {
+      return new LDAPConnection(config, null, config.getConnectionDn(), config.getConnectionPassword());
+    }
+    catch (IOException | NamingException ex) {
+      throw new BindConnectionFailedException("failed to create bind connection for " + config.getConnectionDn() , ex);
+    }
+  }
+
+  public static LDAPConnection createUserConnection(LDAPConfig config, String userDn, String password){
+
+    try {
+      return new LDAPConnection(config, null, userDn, password);
+    }
+    catch (IOException | NamingException ex) {
+      throw new UserAuthenticationFailedException("failed to authenticate user " + userDn, ex);
+    }
+  }
   /**
    * Constructs ...
    *
@@ -183,14 +198,8 @@ public class LDAPConnection implements Closeable
 
   //~--- methods --------------------------------------------------------------
 
-  /**
-   * Method description
-   *
-   *
-   * @throws IOException
-   */
   @Override
-  public void close() throws IOException
+  public void close()
   {
     LDAPUtil.close(tls);
     LDAPUtil.close(context);
@@ -208,11 +217,11 @@ public class LDAPConnection implements Closeable
    *
    * @throws NamingException
    */
-  public NamingEnumeration<SearchResult> search(String name, String filter,
+  public AutoCloseableNamingEnumeration<SearchResult> search(String name, String filter,
     SearchControls cons)
     throws NamingException
   {
-    return context.search(name, filter, cons);
+    return new AutoCloseableNamingEnumeration<>(context.search(name, filter, cons));
   }
 
   /**
