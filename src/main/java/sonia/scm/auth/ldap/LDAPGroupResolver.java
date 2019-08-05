@@ -8,6 +8,7 @@ import sonia.scm.plugin.Extension;
 import sonia.scm.util.Util;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -31,10 +32,14 @@ public class LDAPGroupResolver implements GroupResolver {
   private static final String ATTRIBUTE_GROUP_NAME = "cn";
   private static final String NESTEDGROUP_MATCHINGRULE = ":1.2.840.113556.1.4.1941:=";
 
-  private final LDAPConfigStore store;
+  private final Provider<LDAPConfig> store;
 
   @Inject
   public LDAPGroupResolver(LDAPConfigStore store) {
+    this((Provider<LDAPConfig>)store);
+  }
+
+  LDAPGroupResolver(Provider<LDAPConfig> store) {
     this.store = store;
   }
 

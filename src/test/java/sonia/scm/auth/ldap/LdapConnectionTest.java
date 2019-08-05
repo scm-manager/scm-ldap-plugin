@@ -115,7 +115,7 @@ public class LdapConnectionTest extends LDAPTestBase
     try
     {
       reader =
-        new LDIFReader(LdapConnectionTest.class.getResourceAsStream(LDIF));
+        new LDIFReader(LdapConnectionTester.class.getResourceAsStream(LDIF));
       ds.importFromLDIF(false, reader);
     }
     finally
@@ -199,7 +199,7 @@ public class LdapConnectionTest extends LDAPTestBase
     try
     {
       input =
-        LdapConnectionTest.class.getResourceAsStream("/security/keystore.jks");
+        LdapConnectionTester.class.getResourceAsStream("/security/keystore.jks");
       ouput = new FileOutputStream(keystore);
 
       IOUtil.copy(input, ouput);

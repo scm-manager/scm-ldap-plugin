@@ -31,11 +31,13 @@
 
 package sonia.scm.auth.ldap;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.webcohesion.enunciate.metadata.rs.ResponseCode;
 import com.webcohesion.enunciate.metadata.rs.StatusCodes;
 import sonia.scm.config.ConfigurationPermissions;
+import sonia.scm.user.User;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -50,18 +52,20 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import java.util.Optional;
+
 import static sonia.scm.auth.ldap.LDAPModule.PERMISSION_NAME;
 
 @Singleton
 @Path("v2/config/ldap")
 public class LDAPConfigResource {
 
-  private final LDAPAuthenticationHandler authenticationHandler;
+  private final LDAPConfigStore configStore;
   private final LDAPConfigMapper mapper;
 
   @Inject
-  public LDAPConfigResource(LDAPAuthenticationHandler authenticationHandler, LDAPConfigMapper mapper) {
-    this.authenticationHandler = authenticationHandler;
+  public LDAPConfigResource(LDAPConfigStore configStore, LDAPConfigMapper mapper) {
+    this.configStore = configStore;
     this.mapper = mapper;
   }
 
@@ -76,20 +80,25 @@ public class LDAPConfigResource {
   @Produces(MediaType.APPLICATION_JSON)
   public TestResultDto testConfig(@Valid LDAPTestConfigDto testConfig) {
     ConfigurationPermissions.write(PERMISSION_NAME).check();
-    LDAPConfig config = mapper.map(testConfig.getConfig(),authenticationHandler.getConfig());
-    LDAPAuthenticationContext context = createContext(config);
-    AuthenticationResult ar = context.authenticate(testConfig.getUsername(), testConfig.getPassword());
-    LDAPAuthenticationState state = context.getState();
+    LDAPConfig config = mapper.map(testConfig.getConfig(), configStore.get());
 
-    if ((ar != null) && (ar.getState() == AuthenticationState.SUCCESS)) {
-      return new TestResultDto(ar.getUser(), ar.getGroups());
+    LdapConnectionTester tester = createConnectionTester(config);
+
+    AuthenticationResult result = tester.test(testConfig.getUsername(), testConfig.getPassword());
+    Optional<User> user = result.getUser();
+    Optional<AuthenticationFailure> failureOptional = result.getFailure();
+
+    if (user.isPresent()) {
+      return new TestResultDto(user.get(), result.getGroups());
     } else {
-      return new TestResultDto(state.isBind(), state.isSearchUser(), state.isAuthenticateUser(), state.getException());
+      AuthenticationFailure failure = failureOptional.orElseThrow(() -> new IllegalStateException("no user and no failure"));
+      return new TestResultDto(failure.isConnected(), failure.isUserFound(), failure.isUserAuthenticated(), failure.getException());
     }
   }
 
-  LDAPAuthenticationContext createContext(LDAPConfig config) {
-    return new LDAPAuthenticationContext(config);
+  @VisibleForTesting
+  LdapConnectionTester createConnectionTester(LDAPConfig config) {
+    return new LdapConnectionTester(config);
   }
 
   @GET
@@ -102,7 +111,7 @@ public class LDAPConfigResource {
   @Produces(MediaType.APPLICATION_JSON)
   public LDAPConfigDto getConfig() {
     ConfigurationPermissions.read(PERMISSION_NAME).check();
-    return mapper.map(authenticationHandler.getConfig());
+    return mapper.map(configStore.get());
   }
 
   @PUT
@@ -115,9 +124,8 @@ public class LDAPConfigResource {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response setConfig(@Context UriInfo uriInfo, @NotNull @Valid LDAPConfigDto config) {
     ConfigurationPermissions.write(PERMISSION_NAME).check();
-    LDAPConfig newConfig = mapper.map(config, authenticationHandler.getConfig());
-    authenticationHandler.setConfig(newConfig);
-    authenticationHandler.storeConfig();
+    LDAPConfig newConfig = mapper.map(config, configStore.get());
+    configStore.set(newConfig);
 
     return Response.noContent().build();
   }

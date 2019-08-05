@@ -4,16 +4,9 @@ import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sonia.scm.user.User;
-import sonia.scm.util.Util;
 
-import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
-import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 class LDAPAuthenticator {
@@ -63,7 +56,7 @@ class LDAPAuthenticator {
   private User createUser(Attributes attributes) {
     User user = new User();
 
-    user.setType(LDAPAuthenticationHandler.TYPE);
+    user.setType(LdapRealm.TYPE);
 
     String username = LDAPUtil.getAttribute(attributes, config.getAttributeNameId());
     user.setName(username);
@@ -75,7 +68,7 @@ class LDAPAuthenticator {
     user.setMail(LDAPUtil.getAttribute(attributes, config.getAttributeNameMail()));
 
     if (!user.isValid()) {
-      throw new InvalidUserException("invalid user object: " + user.toString());
+      throw new InvalidUserException("invalid user object: " + user.toString(), user);
     }
 
     return user;

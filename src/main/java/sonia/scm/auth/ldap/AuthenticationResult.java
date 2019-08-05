@@ -4,37 +4,42 @@ import sonia.scm.user.User;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 
-public class AuthenticationResult {
-    public static final AuthenticationResult NOT_FOUND = new AuthenticationResult(AuthenticationState.NOT_FOUND);
-    public static final AuthenticationResult FAILED = new AuthenticationResult(AuthenticationState.FAILED);
+class AuthenticationResult {
 
-    private final AuthenticationState state;
+    private final AuthenticationFailure failure;
     private final Collection<String> groups;
     private final User user;
 
-    public AuthenticationResult(User user, Set<String> groups) {
-        this.state = AuthenticationState.SUCCESS;
+    AuthenticationResult(User user, Set<String> groups) {
+        this.failure = null;
         this.user = user;
         this.groups = groups;
     }
 
-    public AuthenticationResult(AuthenticationState state) {
-        this.state = state;
-        this.user = null;
+    AuthenticationResult(AuthenticationFailure failure, User user) {
+        this.failure = failure;
+        this.user = user;
         this.groups = Collections.emptyList();
     }
+
+  AuthenticationResult(AuthenticationFailure failure) {
+    this.failure = failure;
+    this.user = null;
+    this.groups = Collections.emptyList();
+  }
 
     public Collection<String> getGroups() {
         return groups;
     }
 
-    public AuthenticationState getState() {
-        return state;
+    public Optional<AuthenticationFailure> getFailure() {
+        return Optional.ofNullable(failure);
     }
 
-    public User getUser() {
-        return user;
+    public Optional<User> getUser() {
+        return Optional.ofNullable(user);
     }
 }

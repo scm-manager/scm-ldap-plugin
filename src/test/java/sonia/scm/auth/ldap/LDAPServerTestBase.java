@@ -43,10 +43,10 @@ import com.unboundid.ldif.LDIFReader;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import sonia.scm.group.GroupDAO;
 import sonia.scm.group.GroupManager;
-import sonia.scm.security.LoginAttemptHandler;
 import sonia.scm.security.SyncingRealmHelper;
+import sonia.scm.store.ConfigurationStoreFactory;
+import sonia.scm.store.InMemoryConfigurationStore;
 import sonia.scm.store.InMemoryConfigurationStoreFactory;
 import sonia.scm.user.UserManager;
 import sonia.scm.web.security.AdministrationContext;
@@ -60,7 +60,6 @@ import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  *
@@ -123,7 +122,7 @@ public class LDAPServerTestBase extends LDAPTestBase
    *
    * @return
    */
-  protected LDAPAuthenticationHandler createLDAPAuthHandler()
+  protected LdapRealm createLDAPAuthHandler()
   {
     return createLDAPAuthHandler(createConfig());
   }
@@ -136,7 +135,7 @@ public class LDAPServerTestBase extends LDAPTestBase
    *
    * @return
    */
-  protected LDAPAuthenticationHandler createLDAPAuthHandler(LDAPConfig config)
+  protected LdapRealm createLDAPAuthHandler(LDAPConfig config)
   {
     SyncingRealmHelper syncingRealmHelper = new SyncingRealmHelper(
       mock(AdministrationContext.class),
@@ -144,12 +143,14 @@ public class LDAPServerTestBase extends LDAPTestBase
       mock(GroupManager.class)
     );
 
-    LDAPAuthenticationHandler handler =
-      new LDAPAuthenticationHandler(new InMemoryConfigurationStoreFactory(), syncingRealmHelper);
+    InMemoryConfigurationStore<LDAPConfig> configStore = new InMemoryConfigurationStore<>();
+    configStore.set(config);
+    LDAPConfigStore store = new LDAPConfigStore(configStore);
+
+    LdapRealm handler = new LdapRealm(store, syncingRealmHelper);
 
     handler.init();
-    handler.setConfig(config);
-    handler.storeConfig();
+
 
     return handler;
   }

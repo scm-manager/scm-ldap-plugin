@@ -5,10 +5,11 @@ import sonia.scm.store.ConfigurationStore;
 import sonia.scm.store.ConfigurationStoreFactory;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 @Singleton
-public class LDAPConfigStore {
+public class LDAPConfigStore implements Provider<LDAPConfig> {
 
   private final ConfigurationStore<LDAPConfig> configurationStore;
 
@@ -22,8 +23,8 @@ public class LDAPConfigStore {
     this.configurationStore = configurationStore;
   }
 
-  LDAPConfig get() {
-    return configurationStore.get();
+  public LDAPConfig get() {
+    return configurationStore.getOptional().orElse(new LDAPConfig());
   }
 
   void set(LDAPConfig config) {

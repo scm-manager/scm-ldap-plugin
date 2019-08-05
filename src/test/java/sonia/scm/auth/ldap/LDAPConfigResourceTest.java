@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import sonia.scm.api.v2.resources.ScmPathInfoStore;
+import sonia.scm.user.UserTestData;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -23,6 +24,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,11 +40,13 @@ public class LDAPConfigResourceTest {
   public final ShiroRule shiroRule = new ShiroRule();
 
   @Mock
-  private LDAPAuthenticationHandler authenticationHandler;
+  private LDAPConfigStore configStore;
   @Mock
   private ScmPathInfoStore scmPathInfoStore;
+
   @Mock
-  private LDAPAuthenticationContext authenticationContext;
+  private LdapConnectionTester connectionTester;
+
   @InjectMocks
   private LDAPConfigMapperImpl mapper;
 
@@ -50,10 +54,10 @@ public class LDAPConfigResourceTest {
 
   @Before
   public void init() {
-    LDAPConfigResource resource = new LDAPConfigResource(authenticationHandler, mapper) {
+    LDAPConfigResource resource = new LDAPConfigResource(configStore, mapper) {
       @Override
-      LDAPAuthenticationContext createContext(LDAPConfig config) {
-        return authenticationContext;
+      LdapConnectionTester createConnectionTester(LDAPConfig config) {
+        return connectionTester;
       }
     };
 
@@ -68,13 +72,13 @@ public class LDAPConfigResourceTest {
         return Response.status(403).entity(e.toString()).build();
       }
     });
-    when(authenticationContext.getState()).thenReturn(new LDAPAuthenticationState());
+    // when(connectionTester.getState()).thenReturn(new LDAPAuthenticationState());
   }
 
   @Test
   @SubjectAware(username = "admin", password = "secret")
   public void adminShouldGetConfig() throws URISyntaxException, UnsupportedEncodingException {
-    when(authenticationHandler.getConfig()).thenReturn(new LDAPConfig());
+    when(configStore.get()).thenReturn(new LDAPConfig());
 
     MockHttpRequest request = MockHttpRequest.get("/v2/config/ldap");
     MockHttpResponse response = new MockHttpResponse();
@@ -91,7 +95,7 @@ public class LDAPConfigResourceTest {
   @Test
   @SubjectAware(username = "trillian", password = "secret")
   public void normalUserShouldNotGetConfig() throws URISyntaxException, UnsupportedEncodingException {
-    when(authenticationHandler.getConfig()).thenReturn(new LDAPConfig());
+    when(configStore.get()).thenReturn(new LDAPConfig());
 
     MockHttpRequest request = MockHttpRequest.get("/v2/config/ldap");
     MockHttpResponse response = new MockHttpResponse();
@@ -107,7 +111,7 @@ public class LDAPConfigResourceTest {
   @Test
   @SubjectAware(username = "admin", password = "secret")
   public void adminShouldSetConfig() throws URISyntaxException {
-    when(authenticationHandler.getConfig()).thenReturn(new LDAPConfig());
+    when(configStore.get()).thenReturn(new LDAPConfig());
 
     MockHttpRequest request = MockHttpRequest
       .put("/v2/config/ldap")
@@ -118,14 +122,13 @@ public class LDAPConfigResourceTest {
     dispatcher.invoke(request, response);
 
     assertEquals(204, response.getStatus());
-    verify(authenticationHandler).setConfig(any());
-    verify(authenticationHandler).storeConfig();
+    verify(configStore).set(any());
   }
 
   @Test
   @SubjectAware(username = "trillian", password = "secret")
   public void normalUserShouldNotSetConfig() throws URISyntaxException, UnsupportedEncodingException {
-    when(authenticationHandler.getConfig()).thenReturn(new LDAPConfig());
+    when(configStore.get()).thenReturn(new LDAPConfig());
 
     MockHttpRequest request = MockHttpRequest
       .put("/v2/config/ldap")
@@ -139,14 +142,16 @@ public class LDAPConfigResourceTest {
     Assertions.assertThat(response.getContentAsString())
       .contains("UnauthorizedException")
       .contains("configuration:write:ldap");
-    verify(authenticationHandler, never()).setConfig(any());
-    verify(authenticationHandler, never()).storeConfig();
+    verify(configStore, never()).set(any());
   }
 
   @Test
   @SubjectAware(username = "admin", password = "secret")
   public void adminShouldTestConfig() throws URISyntaxException, UnsupportedEncodingException {
-    when(authenticationHandler.getConfig()).thenReturn(new LDAPConfig());
+    when(configStore.get()).thenReturn(new LDAPConfig());
+
+    AuthenticationResult result = new AuthenticationResult(UserTestData.createSlarti(), Collections.emptySet());
+    when(connectionTester.test(any(), any())).thenReturn(result);
 
     MockHttpRequest request = MockHttpRequest
       .post("/v2/config/ldap/test")
@@ -160,14 +165,13 @@ public class LDAPConfigResourceTest {
     Assertions.assertThat(response.getContentAsString())
       .contains("connected")
       .contains("userFound");
-    verify(authenticationHandler, never()).setConfig(any());
-    verify(authenticationHandler, never()).storeConfig();
+    verify(configStore, never()).set(any());
   }
 
   @Test
   @SubjectAware(username = "trillian", password = "secret")
   public void normalUserShouldNotTestConfig() throws URISyntaxException, UnsupportedEncodingException {
-    when(authenticationHandler.getConfig()).thenReturn(new LDAPConfig());
+    when(configStore.get()).thenReturn(new LDAPConfig());
 
     MockHttpRequest request = MockHttpRequest
       .put("/v2/config/ldap")
@@ -181,7 +185,6 @@ public class LDAPConfigResourceTest {
     Assertions.assertThat(response.getContentAsString())
       .contains("UnauthorizedException")
       .contains("configuration:write:ldap");
-    verify(authenticationHandler, never()).setConfig(any());
-    verify(authenticationHandler, never()).storeConfig();
+    verify(configStore, never()).set(any());
   }
 }
