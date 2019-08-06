@@ -66,6 +66,8 @@ import javax.naming.NamingException;
 
 import javax.net.ssl.SSLContext;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * @author Sebastian Sdorra
  */
@@ -129,6 +131,7 @@ public class LdapConnectionTest extends LdapTestBase {
    * @throws NamingException
    */
   @Test
+  @SuppressWarnings("squid:S2699") // test throws exception if it fails
   public void testTlsConnection() throws NamingException, IOException {
     LdapConfig config = createConfig();
 

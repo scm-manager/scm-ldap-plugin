@@ -37,7 +37,7 @@ public class LdapGroupResolver implements GroupResolver {
 
   @Inject
   public LdapGroupResolver(LdapConfigStore store) {
-    this((Provider<LdapConfig>)store);
+    this((Provider<LdapConfig>) store);
   }
 
   private LdapGroupResolver(Provider<LdapConfig> store) {
@@ -52,8 +52,7 @@ public class LdapGroupResolver implements GroupResolver {
   public Set<String> resolve(String principal) {
     LdapConfig config = store.get();
     if (config.isEnabled()) {
-      Set<String> groups = resolveGroups(config, principal);
-      if (groups != null) return groups;
+      return resolveGroups(config, principal);
     } else {
       LOG.debug("ldap is disabled, returning empty set of groups");
     }
@@ -75,7 +74,7 @@ public class LdapGroupResolver implements GroupResolver {
         return groups;
       }
     }
-    return null;
+    return Collections.emptySet();
   }
 
   private Set<String> getGroups(Attributes attributes) {

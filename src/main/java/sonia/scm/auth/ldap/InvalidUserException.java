@@ -3,6 +3,7 @@ package sonia.scm.auth.ldap;
 import org.apache.shiro.authc.AuthenticationException;
 import sonia.scm.user.User;
 
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class InvalidUserException extends AuthenticationException {
 
   private final User invalidUser;

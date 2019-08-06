@@ -51,7 +51,6 @@ import javax.naming.directory.SearchControls;
 import javax.naming.ldap.StartTlsResponse;
 
 /**
- *
  * @author Sebastian Sdorra
  */
 class LdapUtil {
@@ -119,7 +118,6 @@ class LdapUtil {
   /**
    * Method description
    *
-   *
    * @param context
    */
   public static void close(Context context) {
@@ -135,7 +133,6 @@ class LdapUtil {
   /**
    * Method description
    *
-   *
    * @param tls
    */
   public static void close(StartTlsResponse tls) {
@@ -150,7 +147,6 @@ class LdapUtil {
 
   /**
    * Method description
-   *
    *
    * @param enm
    */
@@ -169,12 +165,9 @@ class LdapUtil {
   /**
    * Method description
    *
-   *
    * @param attributes
    * @param name
-   *
    * @return
-   *
    */
   public static String getAttribute(Attributes attributes, String name) {
     String value = null;
@@ -199,19 +192,17 @@ class LdapUtil {
   /**
    * Method description
    *
-   *
    * @param dn
-   *
    * @return
    */
   public static String getName(String dn) {
     String name = dn;
-    int start = dn.indexOf("=");
+    int start = dn.indexOf('=');
 
     if (start > 0) {
       start++;
 
-      int end = dn.indexOf(",");
+      int end = dn.indexOf(',');
 
       if (end > 0) {
         name = dn.substring(start, end);
@@ -226,9 +217,7 @@ class LdapUtil {
   /**
    * Method description
    *
-   *
    * @param scopeString
-   *
    * @return
    */
   public static int getSearchScope(String scopeString) {
@@ -256,22 +245,16 @@ class LdapUtil {
   /**
    * Method description
    *
-   *
    * @param scope
-   *
    * @return
    */
   public static String getSearchScope(int scope) {
     String scopeString = SCOPE_SUB;
 
-    switch (scope) {
-      case SearchControls.ONELEVEL_SCOPE:
-        scopeString = SCOPE_ONE;
-
-        break;
-
-      case SearchControls.OBJECT_SCOPE:
-        scopeString = SCOPE_OBJECT;
+    if (scope == SearchControls.ONELEVEL_SCOPE) {
+      scopeString = SCOPE_ONE;
+    } else if (scope == SearchControls.OBJECT_SCOPE) {
+      scopeString = SCOPE_OBJECT;
     }
 
     return scopeString;

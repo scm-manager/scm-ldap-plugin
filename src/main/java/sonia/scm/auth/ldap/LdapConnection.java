@@ -232,11 +232,11 @@ public class LdapConnection implements Closeable
    *
    * @return
    */
+  @SuppressWarnings("squid:S1149") // we have to use hashtable, because it is required by jndi
   private Hashtable<String, String> createBasicProperties(LdapConfig config,
                                                           String userDN, String password)
   {
-    Hashtable<String, String> ldapProperties = new Hashtable<String,
-                                                 String>(11);
+    Hashtable<String, String> ldapProperties = new Hashtable<>(11);
 
     ldapProperties.put(Context.INITIAL_CONTEXT_FACTORY,
       "com.sun.jndi.ldap.LdapCtxFactory");
