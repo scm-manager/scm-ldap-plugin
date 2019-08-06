@@ -70,6 +70,7 @@
       "abort": "Abbruch",
       "result": {
         "header": "Testergebnis",
+        "configured": "Konfiguration",
         "connected": "Verbindung",
         "userFound": "Benutzersuche",
         "userAuthenticated": "Benutzerauthentifizierung",

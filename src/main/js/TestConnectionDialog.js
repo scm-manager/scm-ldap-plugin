@@ -17,6 +17,7 @@ type TestResultUser = {
 };
 
 type TestResult = {
+  configured: boolean,
   connected: boolean,
   userFound: boolean,
   userAuthenticated: boolean,
@@ -154,6 +155,10 @@ class TestConnectionDialog extends React.Component<Props, State> {
       <section className="section">
         <h1 className="title">{t("scm-ldap-plugin.testForm.result.header")}</h1>
         <table className="table">
+          <tr>
+            <td>{t("scm-ldap-plugin.testForm.result.configured")}</td>
+            <td>{successOrFailure(testResult.configured)}</td>
+          </tr>
           <tr>
             <td>{t("scm-ldap-plugin.testForm.result.connected")}</td>
             <td>{successOrFailure(testResult.connected)}</td>

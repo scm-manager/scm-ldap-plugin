@@ -1,4 +1,4 @@
-package sonia.scm.auth.ldap;
+package sonia.scm.auth.ldap.resource;
 
 import sonia.scm.api.v2.resources.Enrich;
 import sonia.scm.api.v2.resources.HalAppender;
@@ -13,7 +13,7 @@ import sonia.scm.plugin.Extension;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import static sonia.scm.auth.ldap.LDAPModule.PERMISSION_NAME;
+import static sonia.scm.auth.ldap.resource.LdapModule.PERMISSION_NAME;
 
 @Extension
 @Enrich(Index.class)
@@ -29,7 +29,7 @@ public class IndexLinkEnricher implements HalEnricher {
   @Override
   public void enrich(HalEnricherContext context, HalAppender appender) {
     if (ConfigurationPermissions.read(PERMISSION_NAME).isPermitted()) {
-      String globalLdapConfigUrl = new LinkBuilder(scmPathInfoStore.get().get(), LDAPConfigResource.class)
+      String globalLdapConfigUrl = new LinkBuilder(scmPathInfoStore.get().get(), LdapConfigResource.class)
         .method("getConfig")
         .parameters()
         .href();

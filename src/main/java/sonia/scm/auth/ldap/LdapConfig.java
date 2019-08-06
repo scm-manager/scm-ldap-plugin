@@ -52,7 +52,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlRootElement(name = "ldap-config")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class LDAPConfig implements Validateable
+public class LdapConfig implements Validateable
 {
 
   /**
@@ -521,6 +521,7 @@ public class LDAPConfig implements Validateable
   private String connectionDn = "cn=Directory Manager";
 
   /** Field description */
+  @SuppressWarnings("squid:S2068") // suppress hardcoded password
   @XmlElement(name = "connection-password")
   @XmlJavaTypeAdapter(XmlCipherAdapter.class)
   private String connectionPassword = "password";

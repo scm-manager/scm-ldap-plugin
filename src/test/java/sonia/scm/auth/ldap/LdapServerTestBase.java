@@ -1,19 +1,19 @@
 /**
  * Copyright (c) 2010, Sebastian Sdorra
  * All rights reserved.
- *
+ * <p>
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * <p>
  * 1. Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
+ * this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  * 3. Neither the name of SCM-Manager; nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- *
+ * contributors may be used to endorse or promote products derived from this
+ * software without specific prior written permission.
+ * <p>
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -24,11 +24,9 @@
  * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * <p>
  * http://bitbucket.org/sdorra/scm-manager
- *
  */
-
 
 
 package sonia.scm.auth.ldap;
@@ -39,17 +37,9 @@ import com.unboundid.ldap.listener.InMemoryDirectoryServer;
 import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig;
 import com.unboundid.ldap.listener.InMemoryListenerConfig;
 import com.unboundid.ldap.sdk.LDAPException;
-import com.unboundid.ldif.LDIFReader;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import sonia.scm.group.GroupDAO;
-import sonia.scm.group.GroupManager;
-import sonia.scm.security.LoginAttemptHandler;
-import sonia.scm.security.SyncingRealmHelper;
-import sonia.scm.store.InMemoryConfigurationStoreFactory;
-import sonia.scm.user.UserManager;
-import sonia.scm.web.security.AdministrationContext;
 
 //~--- JDK imports ------------------------------------------------------------
 
@@ -60,26 +50,13 @@ import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  *
  * @author Sebastian Sdorra
  */
-public class LDAPServerTestBase extends LDAPTestBase
-{
-
-  /** Field description */
-  public static final String LDIF_001 = "/ldif/001.ldif";
-
-  /** Field description */
-  public static final String LDIF_002 = "/ldif/002.ldif";
-
-  /** Field description */
-  public static final String LDIF_003 = "/ldif/003.ldif";
-
-  /** Field description */
-  protected static InMemoryDirectoryServer ldapServer;
+public class LdapServerTestBase extends LdapTestBase {
+  private static InMemoryDirectoryServer ldapServer;
 
   //~--- methods --------------------------------------------------------------
 
@@ -88,8 +65,7 @@ public class LDAPServerTestBase extends LDAPTestBase
    *
    */
   @AfterClass
-  public static void shutdownLDAP()
-  {
+  public static void shutdownLDAP() {
     ldapServer.shutDown(true);
   }
 
@@ -101,8 +77,7 @@ public class LDAPServerTestBase extends LDAPTestBase
    * @throws UnknownHostException
    */
   @BeforeClass
-  public static void startLDAP() throws LDAPException, UnknownHostException
-  {
+  public static void startLDAP() throws LDAPException, UnknownHostException {
     InMemoryDirectoryServerConfig config =
       new InMemoryDirectoryServerConfig(BASE_DN);
 
@@ -111,63 +86,9 @@ public class LDAPServerTestBase extends LDAPTestBase
       InetAddress.getByName(HOST), PORT, ServerSocketFactory.getDefault(),
       SocketFactory.getDefault(), null));
 
-    // disable schema check, becase of memberOf attribute
+    // disable schema check, because of memberOf attribute
     config.setSchema(null);
     ldapServer = new InMemoryDirectoryServer(config);
     ldapServer.startListening();
-  }
-
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  protected LDAPAuthenticationHandler createLDAPAuthHandler()
-  {
-    return createLDAPAuthHandler(createConfig());
-  }
-
-  /**
-   * Method description
-   *
-   *
-   * @param config
-   *
-   * @return
-   */
-  protected LDAPAuthenticationHandler createLDAPAuthHandler(LDAPConfig config)
-  {
-    SyncingRealmHelper syncingRealmHelper = new SyncingRealmHelper(
-      mock(AdministrationContext.class),
-      mock(UserManager.class),
-      mock(GroupManager.class),
-      mock(GroupDAO.class)
-    );
-
-    LDAPAuthenticationHandler handler =
-      new LDAPAuthenticationHandler(new InMemoryConfigurationStoreFactory(), syncingRealmHelper);
-
-    handler.init();
-    handler.setConfig(config);
-    handler.storeConfig();
-
-    return handler;
-  }
-
-  /**
-   * Method description
-   *
-   *
-   * @param ldif
-   *
-   * @throws LDAPException
-   */
-  protected void initialize(String ldif) throws LDAPException
-  {
-    LDIFReader reader =
-      new LDIFReader(LDAPServerTestBase.class.getResourceAsStream(ldif));
-
-    ldapServer.importFromLDIF(true, reader);
   }
 }

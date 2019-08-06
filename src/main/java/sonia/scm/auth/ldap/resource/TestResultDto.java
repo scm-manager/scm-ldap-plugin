@@ -1,4 +1,4 @@
-package sonia.scm.auth.ldap;
+package sonia.scm.auth.ldap.resource;
 
 import lombok.Getter;
 import sonia.scm.user.User;
@@ -8,6 +8,7 @@ import java.util.Collections;
 
 @Getter
 public class TestResultDto {
+  private final boolean configured;
   private final boolean connected;
   private final boolean userFound;
   private final boolean userAuthenticated;
@@ -16,6 +17,7 @@ public class TestResultDto {
   private final Collection<String> groups;
 
   TestResultDto(User user, Collection<String> groups) {
+    this.configured = true;
     this.connected = true;
     this.userFound = true;
     this.userAuthenticated = true;
@@ -24,7 +26,8 @@ public class TestResultDto {
     this.groups = groups;
   }
 
-  TestResultDto(boolean connected, boolean userFound, boolean userAuthenticated, String exception) {
+  TestResultDto(boolean configured, boolean connected, boolean userFound, boolean userAuthenticated, String exception) {
+    this.configured = configured;
     this.connected = connected;
     this.userFound = userFound;
     this.userAuthenticated = userAuthenticated;

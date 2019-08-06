@@ -35,6 +35,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authc.credential.AllowAllCredentialsMatcher;
 import org.apache.shiro.realm.AuthenticatingRealm;
@@ -42,78 +43,48 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sonia.scm.plugin.Extension;
 import sonia.scm.security.SyncingRealmHelper;
-import sonia.scm.store.ConfigurationStore;
-import sonia.scm.store.ConfigurationStoreFactory;
+import sonia.scm.user.User;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
 @Singleton
 @Extension
-public class LDAPAuthenticationHandler extends AuthenticatingRealm {
+public class LdapRealm extends AuthenticatingRealm {
 
   public static final String TYPE = "ldap";
 
-  private static final Logger logger = LoggerFactory.getLogger(LDAPAuthenticationHandler.class);
+  private static final Logger logger = LoggerFactory.getLogger(LdapRealm.class);
 
-  private final ConfigurationStore<LDAPConfig> store;
   private final SyncingRealmHelper syncingRealmHelper;
-
-  private LDAPConfig config;
+  private final LdapConfigStore configStore;
 
   @Inject
-  public LDAPAuthenticationHandler(ConfigurationStoreFactory factory, SyncingRealmHelper syncingRealmHelper) {
-    store = factory.withType(LDAPConfig.class).withName(TYPE).build();
+  public LdapRealm(LdapConfigStore configStore, SyncingRealmHelper syncingRealmHelper) {
+    this.configStore = configStore;
     this.syncingRealmHelper = syncingRealmHelper;
-
-    config = store.get();
-
-    if (config == null) {
-      config = new LDAPConfig();
-      store.set(config);
-    }
-
     setAuthenticationTokenClass(UsernamePasswordToken.class);
-
     setCredentialsMatcher(new AllowAllCredentialsMatcher());
   }
 
   @Override
   protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) {
+    LdapConfig config = configStore.get();
     if (!config.isEnabled()) {
       logger.debug("ldap not enabled - skipping authentication");
       return null;
     }
+
     checkArgument(token instanceof UsernamePasswordToken, "%s is required", UsernamePasswordToken.class);
 
     UsernamePasswordToken upt = (UsernamePasswordToken) token;
     String username = upt.getUsername();
     char[] password = upt.getPassword();
-    AuthenticationResult authenticationResult = new LDAPAuthenticationContext(config).authenticate(username,
-      new String(password));
 
-    if (authenticationResult.getState() == AuthenticationState.SUCCESS) {
-      syncingRealmHelper.store(authenticationResult.getUser());
-      return syncingRealmHelper
-        .authenticationInfo()
-        .forRealm(TYPE)
-        .andUser(authenticationResult.getUser())
-        .withExternalGroups(authenticationResult.getGroups())
-        .withGroups(authenticationResult.getGroups())
-        .build();
-    } else {
-      return null;
-    }
-  }
+    LdapAuthenticator authenticator = new LdapAuthenticator(config);
+    User user = authenticator.authenticate(username, new String(password))
+      .orElseThrow(() -> new UnknownAccountException("could not find account with name " + username));
 
-  public void storeConfig() {
-    store.set(config);
-  }
-
-  public LDAPConfig getConfig() {
-    return config;
-  }
-
-  public void setConfig(LDAPConfig config) {
-    this.config = config;
+    syncingRealmHelper.store(user);
+    return syncingRealmHelper.createAuthenticationInfo(TYPE, user);
   }
 }

@@ -1,19 +1,19 @@
 /**
  * Copyright (c) 2010, Sebastian Sdorra
  * All rights reserved.
- *
+ * <p>
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * <p>
  * 1. Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
+ * this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  * 3. Neither the name of SCM-Manager; nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- *
+ * contributors may be used to endorse or promote products derived from this
+ * software without specific prior written permission.
+ * <p>
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -24,9 +24,8 @@
  * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * <p>
  * http://bitbucket.org/sdorra/scm-manager
- *
  */
 
 
@@ -48,6 +47,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import sonia.scm.auth.ldap.resource.LdapConnectionTester;
 import sonia.scm.util.IOUtil;
 
 //~--- JDK imports ------------------------------------------------------------
@@ -66,29 +66,19 @@ import javax.naming.NamingException;
 
 import javax.net.ssl.SSLContext;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
- *
  * @author Sebastian Sdorra
  */
-public class LdapConnectionTest extends LDAPTestBase
-{
+public class LdapConnectionTest extends LdapTestBase {
 
-  /** Field description */
   private static final String LDIF = "/ldif/004.ldif";
 
   //~--- methods --------------------------------------------------------------
 
-  /**
-   * Method description
-   *
-   *
-   *
-   *
-   * @throws Exception
-   */
   @Before
-  public void startServer() throws Exception
-  {
+  public void startServer() throws Exception {
 
     // System.setProperty("javax.net.debug", "all");
 
@@ -105,23 +95,19 @@ public class LdapConnectionTest extends LDAPTestBase
     config.setListenerConfigs(
       InMemoryListenerConfig.createLDAPConfig(
         "tls-listener-1", getInetAddress(), PORT,
-          sslContext.getSocketFactory()));
+        sslContext.getSocketFactory()));
     config.addAdditionalBindCredentials(BIND_DN, BIND_PWD);
 
     ds = new InMemoryDirectoryServer(config);
 
     LDIFReader reader = null;
 
-    try
-    {
+    try {
       reader =
-        new LDIFReader(LdapConnectionTest.class.getResourceAsStream(LDIF));
+        new LDIFReader(LdapConnectionTester.class.getResourceAsStream(LDIF));
       ds.importFromLDIF(false, reader);
-    }
-    finally
-    {
-      if (reader != null)
-      {
+    } finally {
+      if (reader != null) {
         reader.close();
       }
     }
@@ -131,81 +117,57 @@ public class LdapConnectionTest extends LDAPTestBase
 
   /**
    * Method description
-   *
    */
   @After
-  public void stopServer()
-  {
+  public void stopServer() {
     ds.shutDown(true);
   }
 
   /**
    * Method description
    *
-   *
    * @throws IOException
    * @throws InterruptedException
    * @throws NamingException
    */
   @Test
-  public void testTlsConnection() throws NamingException, IOException
-  {
-    LDAPConfig config = createConfig();
+  @SuppressWarnings("squid:S2699") // test throws exception if it fails
+  public void testTlsConnection() throws NamingException, IOException {
+    LdapConfig config = createConfig();
 
     config.setEnableStartTls(true);
 
-    LDAPConnection connection = new LDAPConnection(config, sslContext, BIND_DN,
-                                  BIND_PWD);
+    LdapConnection connection = new LdapConnection(config, sslContext, BIND_DN,
+      BIND_PWD);
 
     connection.close();
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @throws IOException
-   * @throws InterruptedException
-   * @throws NamingException
-   */
   @Test(expected = AuthenticationException.class)
-  public void testWithWrongPassword() throws NamingException, IOException
-  {
-    LDAPConfig config = createConfig();
+  public void testWithWrongPassword() throws NamingException, IOException {
+    LdapConfig config = createConfig();
 
     config.setEnableStartTls(true);
 
-    LDAPConnection connection = new LDAPConnection(config, sslContext, BIND_DN,
-                                  "test-123");
+    LdapConnection connection = new LdapConnection(config, sslContext, BIND_DN,
+      "test-123");
 
     connection.close();
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   *
-   * @throws Exception
-   */
-  private SSLContext createSSLContext() throws Exception
-  {
+  private SSLContext createSSLContext() throws Exception {
     InputStream input = null;
     OutputStream ouput = null;
 
     File keystore = tempFolder.newFile("keystore.jks");
 
-    try
-    {
+    try {
       input =
-        LdapConnectionTest.class.getResourceAsStream("/security/keystore.jks");
+        LdapConnectionTester.class.getResourceAsStream("/security/keystore.jks");
       ouput = new FileOutputStream(keystore);
 
       IOUtil.copy(input, ouput);
-    }
-    finally
-    {
+    } finally {
       IOUtil.close(input);
       IOUtil.close(ouput);
     }
@@ -219,46 +181,22 @@ public class LdapConnectionTest extends LDAPTestBase
 
   //~--- inner classes --------------------------------------------------------
 
-  /**
-   * Class description
-   *
-   *
-   * @version        Enter version here..., 12/07/02
-   * @author         Enter your name here...
-   */
-  private static class AccessLogHandler extends Handler
-  {
+  private static class AccessLogHandler extends Handler {
 
-    /**
-     * Method description
-     *
-     *
-     * @throws SecurityException
-     */
     @Override
-    public void close() throws SecurityException {}
+    public void close() throws SecurityException {
+    }
 
-    /**
-     * Method description
-     *
-     */
     @Override
-    public void flush() {}
+    public void flush() {
+    }
 
-    /**
-     * Method description
-     *
-     *
-     * @param record
-     */
     @Override
-    public void publish(LogRecord record)
-    {
+    public void publish(LogRecord record) {
       String msg = record.getMessage();
       int index = msg.indexOf("] ");
 
-      if (index > 0)
-      {
+      if (index > 0) {
         msg = msg.substring(index + 2);
       }
 
@@ -269,16 +207,12 @@ public class LdapConnectionTest extends LDAPTestBase
 
   //~--- fields ---------------------------------------------------------------
 
-  /** Field description */
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
-  /** Field description */
   private Handler accesslogHandler;
 
-  /** Field description */
   private InMemoryDirectoryServer ds;
 
-  /** Field description */
   private SSLContext sslContext;
 }

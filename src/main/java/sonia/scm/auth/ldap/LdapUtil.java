@@ -1,19 +1,19 @@
 /**
  * Copyright (c) 2010, Sebastian Sdorra
  * All rights reserved.
- *
+ * <p>
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * <p>
  * 1. Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
+ * this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  * 3. Neither the name of SCM-Manager; nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- *
+ * contributors may be used to endorse or promote products derived from this
+ * software without specific prior written permission.
+ * <p>
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -24,11 +24,9 @@
  * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * <p>
  * http://bitbucket.org/sdorra/scm-manager
- *
  */
-
 
 
 package sonia.scm.auth.ldap;
@@ -53,70 +51,63 @@ import javax.naming.directory.SearchControls;
 import javax.naming.ldap.StartTlsResponse;
 
 /**
- *
  * @author Sebastian Sdorra
  */
-public class LDAPUtil
-{
+class LdapUtil {
 
-  /** Field description */
-  public static final String SCOPE_OBJECT = "object";
+  private static final String SCOPE_OBJECT = "object";
+  private static final String SCOPE_ONE = "one";
+  private static final String SCOPE_SUB = "sub";
 
-  /** Field description */
-  public static final String SCOPE_ONE = "one";
-
-  /** Field description */
-  public static final String SCOPE_SUB = "sub";
-
-  /** the logger for LdapUtil */
-  private static final Logger logger = LoggerFactory.getLogger(LDAPUtil.class);
+  private static final Logger logger = LoggerFactory.getLogger(LdapUtil.class);
 
   //~--- methods --------------------------------------------------------------
 
+
+  private LdapUtil() {
+  }
+
   /**
-   * Method description
-   *
+   * Sanitize LDAP search filter to prevent LDAP injection.
+   * Source: https://www.owasp.org/index.php/Preventing_LDAP_Injection_in_Java
+   * \\\\ is there because java.MessageFormat.format() is suppressing \\ to \
    *
    * @param filter
-   *
    * @return
    */
-  public static final String escapeSearchFilter(String filter)
-  {
+  static String escapeSearchFilter(String filter) {
     StringBuilder sb = new StringBuilder();
 
-    for (int i = 0; i < filter.length(); i++)
-    {
+    for (int i = 0; i < filter.length(); i++) {
       char curChar = filter.charAt(i);
 
-      switch (curChar)
-      {
-        case '\\' :
+      switch (curChar) {
+        case '\\':
           sb.append("\\5c");
 
           break;
 
-        case '*' :
+        case '*':
           sb.append("\\2a");
 
           break;
 
-        case '(' :
+        case '(':
           sb.append("\\28");
 
           break;
 
-        case ')' :
+        case ')':
           sb.append("\\29");
 
           break;
 
-        case '\u0000' :
+        case '\u0000':
           sb.append("\\00");
 
           break;
 
-        default :
+        default:
           sb.append(curChar);
       }
     }
@@ -127,19 +118,13 @@ public class LDAPUtil
   /**
    * Method description
    *
-   *
    * @param context
    */
-  public static void close(Context context)
-  {
-    if (context != null)
-    {
-      try
-      {
+  public static void close(Context context) {
+    if (context != null) {
+      try {
         context.close();
-      }
-      catch (NamingException ex)
-      {
+      } catch (NamingException ex) {
         logger.error("could not close context", ex);
       }
     }
@@ -148,19 +133,13 @@ public class LDAPUtil
   /**
    * Method description
    *
-   *
    * @param tls
    */
-  public static void close(StartTlsResponse tls)
-  {
-    if (tls != null)
-    {
-      try
-      {
+  public static void close(StartTlsResponse tls) {
+    if (tls != null) {
+      try {
         tls.close();
-      }
-      catch (IOException ex)
-      {
+      } catch (IOException ex) {
         logger.error("could not close tls response", ex);
       }
     }
@@ -169,19 +148,13 @@ public class LDAPUtil
   /**
    * Method description
    *
-   *
    * @param enm
    */
-  public static void close(NamingEnumeration<?> enm)
-  {
-    if (enm != null)
-    {
-      try
-      {
+  public static void close(NamingEnumeration<?> enm) {
+    if (enm != null) {
+      try {
         enm.close();
-      }
-      catch (NamingException ex)
-      {
+      } catch (NamingException ex) {
         logger.error("could not close enumeration", ex);
       }
     }
@@ -192,35 +165,24 @@ public class LDAPUtil
   /**
    * Method description
    *
-   *
    * @param attributes
    * @param name
-   *
    * @return
-   *
    */
-  public static String getAttribute(Attributes attributes, String name)
-  {
+  public static String getAttribute(Attributes attributes, String name) {
     String value = null;
 
-    try
-    {
-      if (Util.isNotEmpty(name))
-      {
+    try {
+      if (Util.isNotEmpty(name)) {
         Attribute attribute = attributes.get(name);
 
-        if (attribute != null)
-        {
+        if (attribute != null) {
           value = (String) attribute.get();
-        }
-        else
-        {
+        } else {
           logger.debug("could not find attribute {}", name);
         }
       }
-    }
-    catch (NamingException ex)
-    {
+    } catch (NamingException ex) {
       logger.warn("could not fetch attribute ".concat(name), ex);
     }
 
@@ -230,28 +192,21 @@ public class LDAPUtil
   /**
    * Method description
    *
-   *
    * @param dn
-   *
    * @return
    */
-  public static String getName(String dn)
-  {
+  public static String getName(String dn) {
     String name = dn;
-    int start = dn.indexOf("=");
+    int start = dn.indexOf('=');
 
-    if (start > 0)
-    {
+    if (start > 0) {
       start++;
 
-      int end = dn.indexOf(",");
+      int end = dn.indexOf(',');
 
-      if (end > 0)
-      {
+      if (end > 0) {
         name = dn.substring(start, end);
-      }
-      else
-      {
+      } else {
         name = dn.substring(start);
       }
     }
@@ -262,38 +217,25 @@ public class LDAPUtil
   /**
    * Method description
    *
-   *
    * @param scopeString
-   *
    * @return
    */
-  public static int getSearchScope(String scopeString)
-  {
+  public static int getSearchScope(String scopeString) {
     int scope = SearchControls.SUBTREE_SCOPE;
 
-    if (Util.isNotEmpty(scopeString))
-    {
+    if (Util.isNotEmpty(scopeString)) {
       scopeString = scopeString.trim();
 
-      if (SCOPE_SUB.equalsIgnoreCase(scopeString))
-      {
+      if (SCOPE_SUB.equalsIgnoreCase(scopeString)) {
         scope = SearchControls.SUBTREE_SCOPE;
-      }
-      else if (SCOPE_ONE.equalsIgnoreCase(scopeString))
-      {
+      } else if (SCOPE_ONE.equalsIgnoreCase(scopeString)) {
         scope = SearchControls.ONELEVEL_SCOPE;
-      }
-      else if (SCOPE_OBJECT.equalsIgnoreCase(scopeString))
-      {
+      } else if (SCOPE_OBJECT.equalsIgnoreCase(scopeString)) {
         scope = SearchControls.OBJECT_SCOPE;
-      }
-      else if (logger.isWarnEnabled())
-      {
+      } else if (logger.isWarnEnabled()) {
         logger.warn("unknown scope {}, using subtree scope", scopeString);
       }
-    }
-    else if (logger.isWarnEnabled())
-    {
+    } else if (logger.isWarnEnabled()) {
       logger.warn("no search scope defined, using subtree scope");
     }
 
@@ -303,26 +245,30 @@ public class LDAPUtil
   /**
    * Method description
    *
-   *
    * @param scope
-   *
    * @return
    */
-  public static String getSearchScope(int scope)
-  {
+  public static String getSearchScope(int scope) {
     String scopeString = SCOPE_SUB;
 
-    switch (scope)
-    {
-      case SearchControls.ONELEVEL_SCOPE :
-        scopeString = SCOPE_ONE;
-
-        break;
-
-      case SearchControls.OBJECT_SCOPE :
-        scopeString = SCOPE_OBJECT;
+    if (scope == SearchControls.ONELEVEL_SCOPE) {
+      scopeString = SCOPE_ONE;
+    } else if (scope == SearchControls.OBJECT_SCOPE) {
+      scopeString = SCOPE_OBJECT;
     }
 
     return scopeString;
+  }
+
+  static String createDN(LdapConfig config, String prefix) {
+    if (Util.isNotEmpty(config.getBaseDn())) {
+      if (Util.isNotEmpty(prefix)) {
+        return prefix.concat(",").concat(config.getBaseDn());
+      } else {
+        return config.getBaseDn();
+      }
+    } else {
+      throw new ConfigurationException("base dn was not configured");
+    }
   }
 }

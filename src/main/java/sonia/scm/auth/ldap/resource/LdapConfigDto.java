@@ -1,4 +1,4 @@
-package sonia.scm.auth.ldap;
+package sonia.scm.auth.ldap.resource;
 
 import de.otto.edison.hal.HalRepresentation;
 import de.otto.edison.hal.Links;
@@ -11,7 +11,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Setter
 @NoArgsConstructor
 @SuppressWarnings("squid:S2160") // No need for equals and hash code here, never compared, never hashed
-public class LDAPConfigDto extends HalRepresentation {
+public class LdapConfigDto extends HalRepresentation {
   @NotEmpty
   private String attributeNameFullname;
   private String attributeNameGroup;
@@ -37,7 +37,7 @@ public class LDAPConfigDto extends HalRepresentation {
   private boolean enableStartTls;
   private boolean enableNestedADGroups;
 
-  public LDAPConfigDto(Links links) {
+  public LdapConfigDto(Links links) {
     super(links);
   }
 }

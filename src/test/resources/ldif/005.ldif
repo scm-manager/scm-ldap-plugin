@@ -1,0 +1,24 @@
+version: 1
+
+dn: dc=scm-manager,dc=org
+objectClass: domain
+objectClass: top
+dc: scm-manager
+
+dn: ou=People,dc=scm-manager,dc=org
+objectClass: organizationalUnit
+objectClass: top
+ou: People
+
+dn: uid=trillian,ou=People,dc=scm-manager,dc=org
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Tricia McMillan
+sn: McMillan
+givenName: Tricia
+uid: trillian
+userPassword: trilli123
+mail: tricia.mcmillan
+
