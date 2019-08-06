@@ -1,19 +1,19 @@
 /**
  * Copyright (c) 2010, Sebastian Sdorra
  * All rights reserved.
- *
+ * <p>
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * <p>
  * 1. Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
+ * this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  * 3. Neither the name of SCM-Manager; nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- *
+ * contributors may be used to endorse or promote products derived from this
+ * software without specific prior written permission.
+ * <p>
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -24,17 +24,16 @@
  * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * <p>
  * http://bitbucket.org/sdorra/scm-manager
- *
  */
-
 
 
 package sonia.scm.auth.ldap;
 
 //~--- non-JDK imports --------------------------------------------------------
 
+import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sonia.scm.util.Util;
@@ -55,24 +54,30 @@ import java.util.Hashtable;
 //~--- JDK imports ------------------------------------------------------------
 
 /**
- *
  * @author Sebastian Sdorra
  */
-public class LdapConnection implements Closeable
-{
+class LdapConnection implements Closeable {
 
-  /** property for ldap connect timeout */
+  /**
+   * property for ldap connect timeout
+   */
   private static final String PROPERTY_TIMEOUT_CONNECT =
     "com.sun.jndi.ldap.connect.timeout";
 
-  /** property for ldap read timeout */
+  /**
+   * property for ldap read timeout
+   */
   private static final String PROPERTY_TIMEOUT_READ =
     "com.sun.jndi.ldap.read.timeout";
 
-  /** connect timeout: 5sec */
+  /**
+   * connect timeout: 5sec
+   */
   private static final String TIMEOUT_CONNECT = "5000";
 
-  /** read timeout: 2min */
+  /**
+   * read timeout: 2min
+   */
   private static final String TIMEOUT_READ = "120000";
 
   /**
@@ -81,165 +86,69 @@ public class LdapConnection implements Closeable
   private static final Logger logger =
     LoggerFactory.getLogger(LdapConnection.class);
 
-  //~--- constructors ---------------------------------------------------------
+  private final LdapContext context;
+  private StartTlsResponse tls;
 
-  /**
-   * Constructs ...
-   *
-   *
-   * @param config
-   *
-   * @throws IOException
-   * @throws NamingException
-   */
-  public LdapConnection(LdapConfig config) throws NamingException, IOException
-  {
-    this(config, null, null, null);
-  }
-
-  public static LdapConnection createBindConnection(LdapConfig config) {
+  static LdapConnection createBindConnection(LdapConfig config) {
     try {
       return new LdapConnection(config, null, config.getConnectionDn(), config.getConnectionPassword());
-    }
-    catch (IOException | NamingException ex) {
-      throw new BindConnectionFailedException("failed to create bind connection for " + config.getConnectionDn() , ex);
+    } catch (IOException | NamingException ex) {
+      throw new BindConnectionFailedException("failed to create bind connection for " + config.getConnectionDn(), ex);
     }
   }
 
-  public static LdapConnection createUserConnection(LdapConfig config, String userDn, String password){
-
+  static LdapConnection createUserConnection(LdapConfig config, String userDn, String password) {
     try {
       return new LdapConnection(config, null, userDn, password);
-    }
-    catch (IOException | NamingException ex) {
+    } catch (IOException | NamingException ex) {
       throw new UserAuthenticationFailedException("failed to authenticate user " + userDn, ex);
     }
   }
-  /**
-   * Constructs ...
-   *
-   *
-   * @param config
-   * @param userDN
-   * @param password
-   *
-   * @throws IOException
-   * @throws NamingException
-   */
-  public LdapConnection(LdapConfig config, String userDN, String password)
-    throws NamingException, IOException
-  {
-    this(config, null, userDN, password);
-  }
 
-  /**
-   * Constructs ...
-   *
-   *
-   * @param config
-   * @param sslContext
-   * @param userDN
-   * @param password
-   *
-   * @throws IOException
-   * @throws NamingException
-   */
-  public LdapConnection(LdapConfig config, SSLContext sslContext,
-                        String userDN, String password)
-    throws NamingException, IOException
-  {
-    context = new InitialLdapContext(createBasicProperties(config, userDN,
-      password), null);
+  @VisibleForTesting
+  LdapConnection(LdapConfig config, SSLContext sslContext, String userDN, String password) throws NamingException, IOException {
+    context = new InitialLdapContext(createConnectionProperties(config, userDN, password), null);
 
-    if (config.isEnableStartTls())
-    {
-      logger.debug("send starttls request");
-
-      tls = (StartTlsResponse) context.extendedOperation(new StartTlsRequest());
-
-      if (sslContext != null)
-      {
-        tls.negotiate(sslContext.getSocketFactory());
-      }
-      else
-      {
-        tls.negotiate();
-      }
-
-      // authenticate after bind
-      if (userDN != null)
-      {
-        logger.debug("set bind credentials for dn {}", userDN);
-
-        context.addToEnvironment(Context.SECURITY_AUTHENTICATION, "simple");
-        context.addToEnvironment(Context.SECURITY_PRINCIPAL, userDN);
-
-        if (password != null)
-        {
-          context.addToEnvironment(Context.SECURITY_CREDENTIALS, password);
-        }
-        else if (logger.isDebugEnabled())
-        {
-          logger.debug("try to bind user {} without password", userDN);
-        }
-
-        // force bind
-        if (logger.isTraceEnabled())
-        {
-          logger.trace("fetch dn of {} to force bind", config.getBaseDn());
-        }
-
-        context.getAttributes(config.getBaseDn(), new String[] { "dn" });
-      }
+    if (config.isEnableStartTls()) {
+      startTLS(config, sslContext, userDN, password);
     }
   }
 
-  //~--- methods --------------------------------------------------------------
+  private void startTLS(LdapConfig config, SSLContext sslContext, String userDN, String password) throws NamingException, IOException {
+    logger.debug("send starttls request");
 
-  @Override
-  public void close()
-  {
-    LdapUtil.close(tls);
-    LdapUtil.close(context);
+    tls = (StartTlsResponse) context.extendedOperation(new StartTlsRequest());
+
+    if (sslContext != null) {
+      tls.negotiate(sslContext.getSocketFactory());
+    } else {
+      tls.negotiate();
+    }
+
+    // authenticate after bind
+    if (userDN != null) {
+      logger.debug("set bind credentials for dn {}", userDN);
+
+      context.addToEnvironment(Context.SECURITY_AUTHENTICATION, "simple");
+      context.addToEnvironment(Context.SECURITY_PRINCIPAL, userDN);
+
+      if (password != null) {
+        context.addToEnvironment(Context.SECURITY_CREDENTIALS, password);
+      } else {
+        logger.debug("try to bind user {} without password", userDN);
+      }
+
+      // force bind
+      logger.trace("fetch dn of {} to force bind", config.getBaseDn());
+      context.getAttributes(config.getBaseDn(), new String[]{"dn"});
+    }
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @param name
-   * @param filter
-   * @param cons
-   *
-   * @return
-   *
-   * @throws NamingException
-   */
-  public AutoCloseableNamingEnumeration<SearchResult> search(String name, String filter,
-    SearchControls cons)
-    throws NamingException
-  {
-    return new AutoCloseableNamingEnumeration<>(context.search(name, filter, cons));
-  }
-
-  /**
-   * Method description
-   *
-   *
-   * @param config
-   * @param userDN
-   * @param password
-   *
-   * @return
-   */
   @SuppressWarnings("squid:S1149") // we have to use hashtable, because it is required by jndi
-  private Hashtable<String, String> createBasicProperties(LdapConfig config,
-                                                          String userDN, String password)
-  {
+  private Hashtable<String, String> createConnectionProperties(LdapConfig config, String userDN, String password) {
     Hashtable<String, String> ldapProperties = new Hashtable<>(11);
 
-    ldapProperties.put(Context.INITIAL_CONTEXT_FACTORY,
-      "com.sun.jndi.ldap.LdapCtxFactory");
+    ldapProperties.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
     ldapProperties.put(Context.PROVIDER_URL, config.getHostUrl());
 
     // apply timeout for read and connect
@@ -247,20 +156,13 @@ public class LdapConnection implements Closeable
     ldapProperties.put(PROPERTY_TIMEOUT_CONNECT, TIMEOUT_CONNECT);
     ldapProperties.put(PROPERTY_TIMEOUT_READ, TIMEOUT_READ);
 
-    if (Util.isNotEmpty(userDN) && Util.isNotEmpty(password)
-      &&!config.isEnableStartTls())
-    {
-      if (logger.isDebugEnabled())
-      {
-        logger.debug("create context for dn {}", userDN);
-      }
+    if (Util.isNotEmpty(userDN) && Util.isNotEmpty(password) && !config.isEnableStartTls()) {
+      logger.debug("create context for dn {}", userDN);
 
       ldapProperties.put(Context.SECURITY_AUTHENTICATION, "simple");
       ldapProperties.put(Context.SECURITY_PRINCIPAL, userDN);
       ldapProperties.put(Context.SECURITY_CREDENTIALS, password);
-    }
-    else if (logger.isDebugEnabled())
-    {
+    } else {
       logger.debug("create anonymous context");
     }
 
@@ -274,11 +176,14 @@ public class LdapConnection implements Closeable
     return ldapProperties;
   }
 
-  //~--- fields ---------------------------------------------------------------
+  AutoCloseableNamingEnumeration<SearchResult> search(String name, String filter, SearchControls cons)
+    throws NamingException {
+    return new AutoCloseableNamingEnumeration<>(context.search(name, filter, cons));
+  }
 
-  /** Field description */
-  private LdapContext context = null;
-
-  /** Field description */
-  private StartTlsResponse tls;
+  @Override
+  public void close() {
+    LdapUtil.close(tls);
+    LdapUtil.close(context);
+  }
 }
