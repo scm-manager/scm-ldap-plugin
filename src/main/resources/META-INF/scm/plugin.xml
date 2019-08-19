@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE plugin SYSTEM "https://download.scm-manager.org/dtd/plugin/2.0.0-01.dtd">
 <!--
 
@@ -34,8 +34,10 @@
 -->
 <plugin>
 
+  <scm-version>2</scm-version>
+
   <information>
-    <description>SCM-Manager LDAP Plugin</description>
+    <displayName>LDAP</displayName>
     <author>Thorsten Ludewig</author>
     <category>Authentication</category>
   </information>

@@ -2,7 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <artifactId>scm-plugins</artifactId>
     <groupId>sonia.scm.plugins</groupId>
@@ -14,7 +13,7 @@
   <packaging>smp</packaging>
   <version>2.0.0-SNAPSHOT</version>
   <name>${project.artifactId}</name>
-  <description>scm manager auth ldap plugin</description>
+  <description>Authentication for SCM-Manager using LDAP</description>
 
   <url>https://bitbucket.org/scm-manager/scm-auth-ldap-plugin</url>
 
