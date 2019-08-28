@@ -9,7 +9,7 @@
   </parent>
 
   <groupId>sonia.scm.plugins</groupId>
-  <artifactId>scm-auth-ldap-plugin</artifactId>
+  <artifactId>scm-ldap-plugin</artifactId>
   <packaging>smp</packaging>
   <version>2.0.0-SNAPSHOT</version>
   <name>${project.artifactId}</name>
