@@ -15,12 +15,12 @@
   <name>${project.artifactId}</name>
   <description>Authentication for SCM-Manager using LDAP</description>
 
-  <url>https://bitbucket.org/scm-manager/scm-auth-ldap-plugin</url>
+  <url>https://github.com/scm-manager/scm-ldap-plugin</url>
 
   <scm>
-    <connection>scm:hg:https://bitbucket.org/scm-manager/scm-auth-ldap-plugin</connection>
-    <developerConnection>scm:hg:https://bitbucket.org/scm-manager/scm-auth-ldap-plugin</developerConnection>
-    <url>https://bitbucket.org/scm-manager/scm-auth-ldap-plugin</url>
+    <connection>scm:git:https://github.com/scm-manager/scm-ldap-plugin</connection>
+    <developerConnection>scm:git:https://github.com/scm-manager/scm-ldap-plugin</developerConnection>
+    <url>https://github.com/scm-manager/scm-ldap-plugin</url>
   </scm>
 
   <dependencies>
