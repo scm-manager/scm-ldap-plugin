@@ -166,9 +166,9 @@ public class LdapGroupResolver implements GroupResolver {
 
       if (config.isEnableNestedADGroups()) {
         filterPattern = prepareFilterPatternForNestedGroups(filterPattern,
-          escapeSearchFilter(userDN));
+          escapeLDAPSearchFilter(userDN));
       }
-      String filter = MessageFormat.format(filterPattern, escapeSearchFilter(userDN), uid, Strings.nullToEmpty(mail));
+      String filter = MessageFormat.format(filterPattern, escapeLDAPSearchFilter(userDN), uid, Strings.nullToEmpty(mail));
       LOG.debug("search-filter for group search: {}", filter);
 
       return Optional.of(filter);
@@ -183,4 +183,38 @@ public class LdapGroupResolver implements GroupResolver {
       NESTEDGROUP_MATCHINGRULE.concat(userDN));
   }
 
+  /**
+   * Sanitize LDAP search filter to prevent LDAP injection.
+   * Source: https://www.owasp.org/index.php/Preventing_LDAP_Injection_in_Java
+   * \\\\ is there because java.MessageFormat.format() is suppressing \\ to \
+   *
+   * @param filter
+   * @return
+   */
+  public String escapeLDAPSearchFilter(String filter) {
+	  StringBuilder sb = new StringBuilder();
+      for (int i = 0; i < filter.length(); i++) {
+          char curChar = filter.charAt(i);
+          switch (curChar) {
+              case '\\':
+                  sb.append("\\\\5c");
+                  break;
+              case '*':
+                  sb.append("\\\\2a");
+                  break;
+              case '(':
+                  sb.append("\\\\28");
+                  break;
+              case ')':
+                  sb.append("\\\\29");
+                  break;
+              case '\u0000':
+                  sb.append("\\\\00");
+                  break;
+              default:
+                  sb.append(curChar);
+          }
+      }
+      return sb.toString();
+  }
 }
