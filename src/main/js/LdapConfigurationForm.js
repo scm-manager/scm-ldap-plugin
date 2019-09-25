@@ -85,15 +85,17 @@ class LdapConfigurationForm extends React.Component<Props, State> {
     ) : null;
 
     return (
-      <>
-        <Select
-          name="profile"
-          label={t("scm-ldap-plugin.form.profile")}
-          helpText={t("scm-ldap-plugin.form.profileHelp")}
-          value={this.state.profile}
-          options={this.createOptions("profile", profileNames)}
-          onChange={this.profileChangedHandler}
-        />
+      <div className="columns is-multiline">
+        <div className="column is-full">
+          <Select
+            name="profile"
+            label={t("scm-ldap-plugin.form.profile")}
+            helpText={t("scm-ldap-plugin.form.profileHelp")}
+            value={this.state.profile}
+            options={this.createOptions("profile", profileNames)}
+            onChange={this.profileChangedHandler}
+          />
+        </div>
         {this.createInputField("attributeNameId")}
         {this.createInputField("attributeNameFullname")}
         {this.createInputField("attributeNameMail")}
@@ -108,16 +110,20 @@ class LdapConfigurationForm extends React.Component<Props, State> {
         {this.createInputField("unitPeople")}
         {this.createInputField("unitGroup")}
         {this.createDropDown("referralStrategy", ["FOLLOW", "IGNORE", "THROW"])}
-        {this.createCheckbox("enableNestedADGroups")}
-        {this.createCheckbox("enableStartTls")}
-        {this.createCheckbox("enabled")}
-        <Button
-          label={t("scm-ldap-plugin.form.testButton")}
-          disabled={!this.props.initialConfiguration._links.test}
-          action={this.testConnection}
-        />
+        <div className="column is-full">
+          {this.createCheckbox("enableNestedADGroups")}
+          {this.createCheckbox("enableStartTls")}
+          {this.createCheckbox("enabled")}
+        </div>
+        <div className="column is-full">
+          <Button
+            label={t("scm-ldap-plugin.form.testButton")}
+            disabled={!this.props.initialConfiguration._links.test}
+            action={this.testConnection}
+          />
+        </div>
         {testDialog}
-      </>
+      </div>
     );
   }
 
@@ -133,14 +139,16 @@ class LdapConfigurationForm extends React.Component<Props, State> {
     const { t } = this.props;
     return this.ifActive(
       name,
-      <Select
-        name={name}
-        label={t("scm-ldap-plugin.form." + name)}
-        helpText={t("scm-ldap-plugin.form." + name + "Help")}
-        value={this.state[name]}
-        options={this.createOptions(name, options)}
-        onChange={handler}
-      />
+      <div className="column is-half">
+        <Select
+          name={name}
+          label={t("scm-ldap-plugin.form." + name)}
+          helpText={t("scm-ldap-plugin.form." + name + "Help")}
+          value={this.state[name]}
+          options={this.createOptions(name, options)}
+          onChange={handler}
+        />
+      </div>
     );
   };
 
@@ -158,15 +166,17 @@ class LdapConfigurationForm extends React.Component<Props, State> {
     const { t, readOnly } = this.props;
     return this.ifActive(
       name,
-      <InputField
-        name={name}
-        label={t("scm-ldap-plugin.form." + name)}
-        helpText={t("scm-ldap-plugin.form." + name + "Help")}
-        disabled={readOnly}
-        value={this.state[name]}
-        type={type}
-        onChange={this.valueChangeHandler}
-      />
+      <div className="column is-half">
+        <InputField
+          name={name}
+          label={t("scm-ldap-plugin.form." + name)}
+          helpText={t("scm-ldap-plugin.form." + name + "Help")}
+          disabled={readOnly}
+          value={this.state[name]}
+          type={type}
+          onChange={this.valueChangeHandler}
+        />
+      </div>
     );
   };
 

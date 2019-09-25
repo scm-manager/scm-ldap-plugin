@@ -5,7 +5,8 @@ import {
   apiClient,
   Button,
   InputField,
-  Modal
+  Modal,
+  Tag
 } from "@scm-manager/ui-components";
 import { translate } from "react-i18next";
 
@@ -109,8 +110,8 @@ class TestConnectionDialog extends React.Component<Props, State> {
       return null;
     }
 
-    const success = <span className="tag is-success">Success</span>;
-    const failure = <span className="tag is-danger">Failure</span>;
+    const success = <Tag color="success" label="Success" />;
+    const failure = <Tag color="danger" label="Failure" />;
     const successOrFailure = (r: boolean) => (r ? success : failure);
 
     const testResultDetailRows = testResult.user ? (
