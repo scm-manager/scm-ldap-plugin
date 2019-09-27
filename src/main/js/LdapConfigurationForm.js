@@ -55,6 +55,10 @@ class LdapConfigurationForm extends React.Component<Props, State> {
     };
   }
 
+  componentDidMount() {
+    this.profileChangedHandler(this.state.profile);
+  }
+
   valueChangeHandler = (value: any, name: string) => {
     this.setState(
       {
