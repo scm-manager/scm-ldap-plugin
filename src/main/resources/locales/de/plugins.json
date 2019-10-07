@@ -7,7 +7,7 @@
       "profileHelp": "Vordefinierte LDAP-Profile",
       "attributeNameId": "Attributname: ID",
       "attributeNameIdHelp": "LDAP Attributname der eindeutigen ID der Accounts (z. B. uid)",
-      "attributeNameFullname": "Atributname: Vollständiger Name",
+      "attributeNameFullname": "Attributname: Vollständiger Name",
       "attributeNameFullnameHelp": "LDAP Attributname des vollständigen Accountnamens (z. B. cn)",
       "attributeNameMail": "Attributname: eMail-Adresse",
       "attributeNameMailHelp": "LDAP Attributname der Account-eMail-Adresse (z. B. mail)",
