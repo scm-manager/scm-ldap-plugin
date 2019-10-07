@@ -67,7 +67,7 @@
       "username": "Benutzername",
       "password": "Passwort",
       "submit": "Testen",
-      "abort": "Abbruch",
+      "abort": "Abbrechen",
       "result": {
         "header": "Testergebnis",
         "configured": "Konfiguration",
