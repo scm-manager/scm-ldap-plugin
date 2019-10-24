@@ -1,5 +1,3 @@
-// @flow
-
 export const PROFILES = {
   AD: {
     attributeNameId: "sAMAccountName",

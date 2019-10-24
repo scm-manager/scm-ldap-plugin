@@ -1,12 +1,10 @@
-// @flow
 import React from "react";
 import { Title, Configuration } from "@scm-manager/ui-components";
 import LdapConfigurationForm from "./LdapConfigurationForm";
-import { translate } from "react-i18next";
+import { withTranslation, WithTranslation } from "react-i18next";
 
-type Props = {
-  link: string,
-  t: string => string
+type Props = WithTranslation & {
+  link: string;
 };
 
 class LdapConfiguration extends React.Component<Props> {
@@ -15,14 +13,10 @@ class LdapConfiguration extends React.Component<Props> {
     return (
       <>
         <Title title={t("scm-ldap-plugin.form.header")} />
-        <Configuration
-          link={link}
-          t={t}
-          render={props => <LdapConfigurationForm {...props} />}
-        />
+        <Configuration link={link} t={t} render={props => <LdapConfigurationForm {...props} />} />
       </>
     );
   }
 }
 
-export default translate("plugins")(LdapConfiguration);
+export default withTranslation("plugins")(LdapConfiguration);

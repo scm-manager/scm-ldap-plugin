@@ -1,48 +1,39 @@
-//@flow
-
 import React from "react";
-import {
-  Button,
-  Checkbox,
-  Configuration,
-  InputField,
-  Select
-} from "@scm-manager/ui-components";
-import { translate } from "react-i18next";
+import { Button, Checkbox, Configuration, InputField, Select } from "@scm-manager/ui-components";
+import { withTranslation, WithTranslation } from "react-i18next";
 import TestConnectionDialog from "./TestConnectionDialog";
 import { PROFILES } from "./profiles";
 
 type LdapConfiguration = {
-  profile: string,
-  attributeNameId: string,
-  attributeNameFullname: string,
-  attributeNameMail: string,
-  attributeNameGroup: string,
-  baseDn: string,
-  connectionDn: string,
-  connectionPassword: string,
-  hostUrl: string,
-  searchFilter: string,
-  searchFilterGroup: string,
-  searchScope: string,
-  unitPeople: string,
-  unitGroup: string,
-  referralStrategy: string,
-  enableNestedADGroups: boolean,
-  enableStartTls: boolean,
-  enabled: boolean
+  profile: string;
+  attributeNameId: string;
+  attributeNameFullname: string;
+  attributeNameMail: string;
+  attributeNameGroup: string;
+  baseDn: string;
+  connectionDn: string;
+  connectionPassword: string;
+  hostUrl: string;
+  searchFilter: string;
+  searchFilterGroup: string;
+  searchScope: string;
+  unitPeople: string;
+  unitGroup: string;
+  referralStrategy: string;
+  enableNestedADGroups: boolean;
+  enableStartTls: boolean;
+  enabled: boolean;
 };
 
-type Props = {
-  initialConfiguration: Configuration,
-  readOnly: boolean,
-  onConfigurationChange: (Configuration, boolean) => void,
-  t: string => string
+type Props = WithTranslation & {
+  initialConfiguration: Configuration;
+  readOnly: boolean;
+  onConfigurationChange: (p1: Configuration, p2: boolean) => void;
 };
 
 type State = LdapConfiguration & {
-  activeFields: string[],
-  showTestDialog: boolean
+  activeFields: string[];
+  showTestDialog: boolean;
 };
 
 class LdapConfigurationForm extends React.Component<Props, State> {
@@ -64,15 +55,32 @@ class LdapConfigurationForm extends React.Component<Props, State> {
       {
         [name]: value
       },
-      () => this.props.onConfigurationChange({ ...this.state }, true)
+      () =>
+        this.props.onConfigurationChange(
+          {
+            ...this.state
+          },
+          true
+        )
     );
   };
 
   profileChangedHandler = (value: string) => {
     const profile = PROFILES[value];
     const fields = Object.keys(profile);
-    this.setState({ profile: value, activeFields: fields, ...profile }, () =>
-      this.props.onConfigurationChange({ ...this.state }, true)
+    this.setState(
+      {
+        profile: value,
+        activeFields: fields,
+        ...profile
+      },
+      () =>
+        this.props.onConfigurationChange(
+          {
+            ...this.state
+          },
+          true
+        )
     );
   };
 
@@ -84,7 +92,11 @@ class LdapConfigurationForm extends React.Component<Props, State> {
       <TestConnectionDialog
         config={this.state}
         testLink={this.props.initialConfiguration._links.test.href}
-        onClose={() => this.setState({ showTestDialog: false })}
+        onClose={() =>
+          this.setState({
+            showTestDialog: false
+          })
+        }
       />
     ) : null;
 
@@ -132,14 +144,12 @@ class LdapConfigurationForm extends React.Component<Props, State> {
   }
 
   testConnection = () => {
-    this.setState({ showTestDialog: true });
+    this.setState({
+      showTestDialog: true
+    });
   };
 
-  createDropDown = (
-    name: string,
-    options: string[],
-    handler = this.valueChangeHandler
-  ) => {
+  createDropDown = (name: string, options: string[], handler = this.valueChangeHandler) => {
     const { t } = this.props;
     return this.ifActive(
       name,
@@ -166,7 +176,7 @@ class LdapConfigurationForm extends React.Component<Props, State> {
     });
   };
 
-  createInputField = (name: string, type: string = "text") => {
+  createInputField = (name: string, type = "text") => {
     const { t, readOnly } = this.props;
     return this.ifActive(
       name,
@@ -208,4 +218,4 @@ class LdapConfigurationForm extends React.Component<Props, State> {
   };
 }
 
-export default translate("plugins")(LdapConfigurationForm);
+export default withTranslation("plugins")(LdapConfigurationForm);

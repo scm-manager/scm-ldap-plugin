@@ -1,51 +1,45 @@
-// @flow
-
 import React from "react";
-import {
-  apiClient,
-  Button,
-  InputField,
-  Modal,
-  Tag
-} from "@scm-manager/ui-components";
-import { translate } from "react-i18next";
+import { apiClient, Button, InputField, Modal, Tag } from "@scm-manager/ui-components";
+import { withTranslation, WithTranslation } from "react-i18next";
 
 type TestResultUser = {
-  valid: boolean,
-  name: string,
-  displayName: string,
-  mailAddress: string
+  valid: boolean;
+  name: string;
+  displayName: string;
+  mailAddress: string;
 };
 
 type TestResult = {
-  configured: boolean,
-  connected: boolean,
-  userFound: boolean,
-  userAuthenticated: boolean,
-  exception: string,
-  user: TestResultUser,
-  groups: string[]
+  configured: boolean;
+  connected: boolean;
+  userFound: boolean;
+  userAuthenticated: boolean;
+  exception: string;
+  user: TestResultUser;
+  groups: string[];
 };
 
-type Props = {
-  config: any,
-  testLink: string,
-  onClose: () => any,
-  // context props
-  t: string => string
+type Props = WithTranslation & {
+  config: any;
+  testLink: string;
+  onClose: () => any;
 };
 
 type State = {
-  username: string,
-  password: string,
-  testResult: TestResult
+  username: string;
+  password: string;
+  testResult: TestResult;
 };
 
 class TestConnectionDialog extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    this.state = { username: "", password: "", testResult: undefined };
+    this.state = {
+      username: "",
+      password: "",
+      testResult: undefined
+    };
   }
 
   render() {
@@ -81,12 +75,7 @@ class TestConnectionDialog extends React.Component<Props, State> {
     );
     const footer = (
       <>
-        <Button
-          label={t("scm-ldap-plugin.testForm.submit")}
-          disabled={!valid}
-          action={this.onTest}
-          color="primary"
-        />
+        <Button label={t("scm-ldap-plugin.testForm.submit")} disabled={!valid} action={this.onTest} color="primary" />
         <Button label={t("scm-ldap-plugin.testForm.abort")} action={onClose} />
       </>
     );
@@ -125,16 +114,13 @@ class TestConnectionDialog extends React.Component<Props, State> {
           <td>
             <ul>
               <li>
-                {t("scm-ldap-plugin.testForm.result.userDetailsName")}:{" "}
-                {testResult.user.name}
+                {t("scm-ldap-plugin.testForm.result.userDetailsName")}: {testResult.user.name}
               </li>
               <li>
-                {t("scm-ldap-plugin.testForm.result.userDetailsDisplayName")}:{" "}
-                {testResult.user.displayName}
+                {t("scm-ldap-plugin.testForm.result.userDetailsDisplayName")}: {testResult.user.displayName}
               </li>
               <li>
-                {t("scm-ldap-plugin.testForm.result.userDetailsMail")}:{" "}
-                {testResult.user.mailAddress}
+                {t("scm-ldap-plugin.testForm.result.userDetailsMail")}: {testResult.user.mailAddress}
               </li>
             </ul>
           </td>
@@ -179,11 +165,15 @@ class TestConnectionDialog extends React.Component<Props, State> {
   };
 
   usernameChanged = (value: string) => {
-    this.setState({ username: value });
+    this.setState({
+      username: value
+    });
   };
 
   passwordChanged = (value: string) => {
-    this.setState({ password: value });
+    this.setState({
+      password: value
+    });
   };
 
   onTest = () => {
@@ -194,9 +184,19 @@ class TestConnectionDialog extends React.Component<Props, State> {
         config: this.props.config
       })
       .then(result => result.json())
-      .then(body => this.setState({ testResult: body }))
-      .catch(error => this.setState({ testResult: { exception: error } }));
+      .then(body =>
+        this.setState({
+          testResult: body
+        })
+      )
+      .catch(error =>
+        this.setState({
+          testResult: {
+            exception: error
+          }
+        })
+      );
   };
 }
 
-export default translate("plugins")(TestConnectionDialog);
+export default withTranslation("plugins")(TestConnectionDialog);
