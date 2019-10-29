@@ -1,5 +1,5 @@
 import React from "react";
-import { apiClient, Button, InputField, Modal, Tag } from "@scm-manager/ui-components";
+import { apiClient, Button, InputField, Modal, Tag, Subtitle } from "@scm-manager/ui-components";
 import { withTranslation, WithTranslation } from "react-i18next";
 
 type TestResultUser = {
@@ -139,8 +139,9 @@ class TestConnectionDialog extends React.Component<Props, State> {
       </>
     );
     return (
-      <section className="section">
-        <h1 className="title">{t("scm-ldap-plugin.testForm.result.header")}</h1>
+      <>
+        <hr />
+        <Subtitle subtitle={t("scm-ldap-plugin.testForm.result.header")} />
         <table className="table">
           <tr>
             <td>{t("scm-ldap-plugin.testForm.result.configured")}</td>
@@ -160,7 +161,7 @@ class TestConnectionDialog extends React.Component<Props, State> {
           </tr>
           {testResultDetailRows}
         </table>
-      </section>
+      </>
     );
   };
 
