@@ -2,10 +2,7 @@ package sonia.scm.auth.ldap.resource;
 
 import com.github.sdorra.shiro.ShiroRule;
 import com.github.sdorra.shiro.SubjectAware;
-import org.apache.shiro.authz.UnauthorizedException;
 import org.assertj.core.api.Assertions;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.mock.MockDispatcherFactory;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.junit.Before;
@@ -19,10 +16,9 @@ import sonia.scm.api.v2.resources.ScmPathInfoStore;
 import sonia.scm.auth.ldap.LdapConfig;
 import sonia.scm.auth.ldap.LdapConfigStore;
 import sonia.scm.user.UserTestData;
+import sonia.scm.web.RestDispatcher;
 
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -52,7 +48,7 @@ public class LdapConfigResourceTest {
   @InjectMocks
   private LdapConfigMapperImpl mapper;
 
-  private Dispatcher dispatcher;
+  private RestDispatcher dispatcher;
 
   @Before
   public void init() {
@@ -63,18 +59,10 @@ public class LdapConfigResourceTest {
       }
     };
 
-    dispatcher = MockDispatcherFactory.createDispatcher();
-    dispatcher.getRegistry().addSingletonResource(resource);
+    dispatcher = new RestDispatcher();
+    dispatcher.addSingletonResource(resource);
 
     when(scmPathInfoStore.get()).thenReturn(() -> URI.create("/"));
-
-    dispatcher.getProviderFactory().register(new ExceptionMapper<UnauthorizedException>() {
-      @Override
-      public Response toResponse(UnauthorizedException e) {
-        return Response.status(403).entity(e.toString()).build();
-      }
-    });
-    // when(connectionTester.getState()).thenReturn(new LDAPAuthenticationState());
   }
 
   @Test
@@ -106,7 +94,6 @@ public class LdapConfigResourceTest {
 
     assertEquals(403, response.getStatus());
     Assertions.assertThat(response.getContentAsString())
-      .contains("UnauthorizedException")
       .contains("configuration:read:ldap");
   }
 
@@ -142,7 +129,6 @@ public class LdapConfigResourceTest {
 
     assertEquals(403, response.getStatus());
     Assertions.assertThat(response.getContentAsString())
-      .contains("UnauthorizedException")
       .contains("configuration:write:ldap");
     verify(configStore, never()).set(any());
   }
@@ -185,7 +171,6 @@ public class LdapConfigResourceTest {
 
     assertEquals(403, response.getStatus());
     Assertions.assertThat(response.getContentAsString())
-      .contains("UnauthorizedException")
       .contains("configuration:write:ldap");
     verify(configStore, never()).set(any());
   }
