@@ -57,6 +57,15 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class LdapConfigResourceTest {
 
+  private static final String LDAP_CONFIG_JSON = ("{" +
+          "'attributeNameFullname':'fullName'," +
+          "'attributeNameId':'id'," +
+          "'attributeNameMail':'mail'," +
+          "'hostUrl':'http://ldap'," +
+          "'searchFilter':'filter'," +
+          "'searchScope':'scope'" +
+          "}").replaceAll("'", "\"");
+
   @Rule
   public final ShiroRule shiroRule = new ShiroRule();
 
@@ -128,7 +137,7 @@ public class LdapConfigResourceTest {
     MockHttpRequest request = MockHttpRequest
       .put("/v2/config/ldap")
       .contentType(MediaType.APPLICATION_JSON_TYPE)
-      .content("{}".getBytes());
+      .content(LDAP_CONFIG_JSON.getBytes());
     MockHttpResponse response = new MockHttpResponse();
 
     dispatcher.invoke(request, response);
@@ -145,7 +154,7 @@ public class LdapConfigResourceTest {
     MockHttpRequest request = MockHttpRequest
       .put("/v2/config/ldap")
       .contentType(MediaType.APPLICATION_JSON_TYPE)
-      .content("{}".getBytes());
+      .content(LDAP_CONFIG_JSON.getBytes());
     MockHttpResponse response = new MockHttpResponse();
 
     dispatcher.invoke(request, response);
@@ -187,7 +196,7 @@ public class LdapConfigResourceTest {
     MockHttpRequest request = MockHttpRequest
       .put("/v2/config/ldap")
       .contentType(MediaType.APPLICATION_JSON_TYPE)
-      .content("{}".getBytes());
+      .content(LDAP_CONFIG_JSON.getBytes());
     MockHttpResponse response = new MockHttpResponse();
 
     dispatcher.invoke(request, response);
