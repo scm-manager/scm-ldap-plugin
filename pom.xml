@@ -36,7 +36,7 @@
 
   <artifactId>scm-ldap-plugin</artifactId>
   <packaging>smp</packaging>
-  <version>2.0.0</version>
+  <version>2.1.0-SNAPSHOT</version>
   <name>${project.artifactId}</name>
   <description>Authentication for SCM-Manager using LDAP</description>
 
