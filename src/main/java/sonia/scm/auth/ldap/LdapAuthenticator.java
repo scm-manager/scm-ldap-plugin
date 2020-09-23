@@ -27,6 +27,7 @@ import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sonia.scm.user.User;
+import sonia.scm.util.ValidationUtil;
 
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchResult;
@@ -88,7 +89,11 @@ public class LdapAuthenticator {
       displayName = username;
     }
     user.setDisplayName(displayName);
-    user.setMail(LdapUtil.getAttribute(attributes, config.getAttributeNameMail()));
+
+    String mail = LdapUtil.getAttribute(attributes, config.getAttributeNameMail());
+    if (ValidationUtil.isMailAddressValid(mail)) {
+      user.setMail(mail);
+    }
 
     if (!user.isValid()) {
       throw new InvalidUserException("invalid user object: " + user.toString(), user);

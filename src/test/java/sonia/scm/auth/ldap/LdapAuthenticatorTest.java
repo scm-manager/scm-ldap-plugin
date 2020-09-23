@@ -116,6 +116,15 @@ class LdapAuthenticatorTest extends LdapServerTestBaseJunit5 {
   }
 
   @Test
+  void shouldOnlySetMailIfValid() {
+    ldif(11);
+
+    Optional<User> optionalUser = authenticator.authenticate("trillian", "trilli123");
+    assertThat(optionalUser).isPresent();
+    assertThat(optionalUser.get().getMail()).isNull();
+  }
+
+  @Test
   void shouldReturnUserEvenWithoutDisplayName() {
     ldif(10);
 
