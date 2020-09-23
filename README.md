@@ -31,6 +31,21 @@ In this mode each change to web files (src/main/js or src/main/webapp), should t
 If you compile a class (e.g.: with your IDE from src/main/java to target/classes), 
 the SCM-Manager context will restart automatically. So you can see your changes without restarting the server.
 
+### Test-setup
+To test this plugin against a ldap you may use a [preconfigured ldap inside a docker container](https://github.com/rroemhild/docker-test-openldap): 
+```
+docker pull rroemhild/test-openldap
+docker run --privileged -d -p 389:389 rroemhild/test-openldap
+```
+
+To connect against this ldap container you must set the following settings in your global ldap configuration:
+* Select Profile => `Custom`
+* Set Base DN to `dc=planetexpress,dc=com`
+* Set Connection DN to `cn=admin,dc=planetexpress,dc=com`
+* Set the Connection Password to `GoodNewsEveryone`
+
+Now you can test the connection with username `professor` and password `professor`.
+
 ## Directory & File structure
 
 A quick look at the files and directories you'll see in a SCM-Manager project.
@@ -93,4 +108,3 @@ Looking for more guidance? Full documentation lives on our [homepage](https://ww
 - **Community Support** - Contact the SCM-Manager support team for questions about SCM-Manager, to report bugs or to request features through the official channels. [Find more about this here](https://www.scm-manager.org/support/).
 
 - **Enterprise Support** - Do you require support with the integration of SCM-Manager into your processes, with the customization of the tool or simply a service level agreement (SLA)? **Contact our development partner Cloudogu! Their team is looking forward to discussing your individual requirements with you and will be more than happy to give you a quote.** [Request Enterprise Support](https://cloudogu.com/en/scm-manager-enterprise/).
-
