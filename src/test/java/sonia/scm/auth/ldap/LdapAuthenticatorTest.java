@@ -83,12 +83,6 @@ class LdapAuthenticatorTest extends LdapServerTestBaseJunit5 {
   }
 
   @Test
-  void shouldThrowInvalidUserException() {
-    ldif(5);
-    assertThrows(InvalidUserException.class, () -> authenticator.authenticate("trillian", "trilli123"));
-  }
-
-  @Test
   void shouldThrowConfigurationExceptionIfNoBaseDNWasDefined() {
     config.setBaseDn(null);
     assertThrows(ConfigurationException.class, () -> authenticator.authenticate("trillian", "trilli123"));

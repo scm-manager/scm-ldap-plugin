@@ -82,19 +82,6 @@ class LdapConnectionTesterTest extends LdapServerTestBaseJunit5 {
   }
 
   @Test
-  void shouldReturnInvalidUser() {
-    ldif(5);
-
-    AuthenticationResult result = tester.test("trillian", "trilli123");
-    AuthenticationFailure failure = result.getFailure().get();
-    assertThat(failure.isConnected()).isTrue();
-    assertThat(failure.isUserFound()).isTrue();
-    assertThat(failure.isUserAuthenticated()).isTrue();
-    assertThat(failure.getException()).isNotEmpty();
-    assertThat(result.getUser().get().isValid()).isFalse();
-  }
-
-  @Test
   void shouldReturnInvalidConfiguration() {
     ldif(5);
 
