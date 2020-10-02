@@ -21,12 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package sonia.scm.auth.ldap;
 
-@SuppressWarnings("squid:MaximumInheritanceDepth")
-public class UserAuthenticationFailedException extends LdapException {
+import org.apache.shiro.authc.AuthenticationException;
 
-  public UserAuthenticationFailedException(String message, Throwable cause) {
+@SuppressWarnings("squid:MaximumInheritanceDepth")
+public class LdapException extends AuthenticationException {
+
+  public LdapException(String message) {
+    super(message);
+  }
+
+  public LdapException(String message, Throwable cause) {
     super(message, cause);
   }
 }
