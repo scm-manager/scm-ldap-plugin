@@ -75,7 +75,11 @@ public class LdapGroupResolver implements GroupResolver {
   public Set<String> resolve(String principal) {
     LdapConfig config = store.get();
     if (config.isEnabled()) {
-      return resolveGroups(config, principal);
+      try {
+        return resolveGroups(config, principal);
+      } catch (LdapException ex) {
+        LOG.error("failed to resolve groups for principal: {}", ex);
+      }
     } else {
       LOG.debug("ldap is disabled, returning empty set of groups");
     }

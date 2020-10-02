@@ -30,7 +30,6 @@ import sonia.scm.store.InMemoryConfigurationStore;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LdapGroupResolverTest extends LdapServerTestBaseJunit5 {
 
@@ -124,10 +123,11 @@ class LdapGroupResolverTest extends LdapServerTestBaseJunit5 {
   }
 
   @Test
-  void shouldThrowConfigurationExceptionIfBaseDNIsNotDefined() {
+  void shouldReturnEmptyOnInvalidConfiguration() {
     config.setBaseDn(null);
 
-    assertThrows(ConfigurationException.class, () -> groupResolver.resolve("trillian"));
+    Set<String> groups = groupResolver.resolve("trillian");
+    assertThat(groups).isEmpty();
   }
 
 }
