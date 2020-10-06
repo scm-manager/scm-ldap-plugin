@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 ### Fixed
 - Ignore invalid mail address from ldap ([#7](https://github.com/scm-manager/scm-ldap-plugin/pull/7))
+- Return empty list of groups on error instead of throwing exception ([#9](https://github.com/scm-manager/scm-ldap-plugin/pull/9))
 
 ## 2.0.0 - 2020-06-04
 ### Changed
