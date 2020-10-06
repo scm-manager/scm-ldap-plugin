@@ -93,6 +93,8 @@ public class LdapAuthenticator {
     String mail = LdapUtil.getAttribute(attributes, config.getAttributeNameMail());
     if (ValidationUtil.isMailAddressValid(mail)) {
       user.setMail(mail);
+    } else {
+      logger.warn("No valid e-mail address found");
     }
 
     if (!user.isValid()) {

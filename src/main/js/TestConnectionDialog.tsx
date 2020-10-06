@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 import React from "react";
-import {apiClient, Button, InputField, Modal, Subtitle, Tag} from "@scm-manager/ui-components";
-import {withTranslation, WithTranslation} from "react-i18next";
+import { apiClient, Button, InputField, Modal, Subtitle, Tag } from "@scm-manager/ui-components";
+import { withTranslation, WithTranslation } from "react-i18next";
 
 type TestResultUser = {
   valid: boolean;
@@ -51,7 +51,7 @@ type Props = WithTranslation & {
 type State = {
   username: string;
   password: string;
-  testResult: TestResult;
+  testResult?: TestResult;
 };
 
 class TestConnectionDialog extends React.Component<Props, State> {
@@ -66,8 +66,8 @@ class TestConnectionDialog extends React.Component<Props, State> {
   }
 
   render() {
-    const {t, onClose} = this.props;
-    const {username, password} = this.state;
+    const { t, onClose } = this.props;
+    const { username, password } = this.state;
     const valid = username !== "" && password !== "";
 
     const body = (
@@ -98,8 +98,8 @@ class TestConnectionDialog extends React.Component<Props, State> {
     );
     const footer = (
       <>
-        <Button label={t("scm-ldap-plugin.testForm.submit")} disabled={!valid} action={this.onTest} color="primary"/>
-        <Button label={t("scm-ldap-plugin.testForm.abort")} action={onClose}/>
+        <Button label={t("scm-ldap-plugin.testForm.submit")} disabled={!valid} action={this.onTest} color="primary" />
+        <Button label={t("scm-ldap-plugin.testForm.abort")} action={onClose} />
       </>
     );
 
@@ -115,15 +115,15 @@ class TestConnectionDialog extends React.Component<Props, State> {
   }
 
   renderTestResult = () => {
-    const {t} = this.props;
-    const {testResult} = this.state;
+    const { t } = this.props;
+    const { testResult } = this.state;
 
     if (!testResult) {
       return null;
     }
 
-    const success = <Tag color="success" label="Success"/>;
-    const failure = <Tag color="danger" label="Failure"/>;
+    const success = <Tag color="success" label="Success" />;
+    const failure = <Tag color="danger" label="Failure" />;
     const successOrFailure = (r: boolean) => (r ? success : failure);
 
     const testResultDetailRows = testResult.user ? (
@@ -142,10 +142,13 @@ class TestConnectionDialog extends React.Component<Props, State> {
               <li>
                 {t("scm-ldap-plugin.testForm.result.userDetailsDisplayName")}: {testResult.user.displayName}
               </li>
-              {testResult?.user?.mailAddress &&
+
               <li>
-                {t("scm-ldap-plugin.testForm.result.userDetailsMail")}: {testResult.user.mailAddress}
-              </li>}
+                {t("scm-ldap-plugin.testForm.result.userDetailsMail")}:{" "}
+                {testResult?.user?.mailAddress
+                  ? testResult.user.mailAddress
+                  : t("scm-ldap-plugin.testForm.result.missingValidMail")}
+              </li>
             </ul>
           </td>
         </tr>
@@ -164,8 +167,8 @@ class TestConnectionDialog extends React.Component<Props, State> {
     );
     return (
       <>
-        <hr/>
-        <Subtitle subtitle={t("scm-ldap-plugin.testForm.result.header")}/>
+        <hr />
+        <Subtitle subtitle={t("scm-ldap-plugin.testForm.result.header")} />
         <table className="table">
           <tr>
             <td>{t("scm-ldap-plugin.testForm.result.configured")}</td>

@@ -79,6 +79,7 @@
         "userDetailsName": "Name",
         "userDetailsDisplayName": "Vollständiger Name",
         "userDetailsMail": "E-Mail",
+        "missingValidMail": "<keine gültige E-Mail vorhanden>",
         "groups": "Gruppen",
         "exception": "Fehler"
       }

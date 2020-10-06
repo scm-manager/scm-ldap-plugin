@@ -79,6 +79,7 @@
         "userDetailsName": "Name",
         "userDetailsDisplayName": "Display Name",
         "userDetailsMail": "Mail",
+        "missingValidMail": "<missing valid mail>",
         "groups": "Groups",
         "exception": "Exception"
       }
