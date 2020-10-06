@@ -43,6 +43,8 @@ To connect against this ldap container you must set the following settings in yo
 * Set Base DN to `dc=planetexpress,dc=com`
 * Set Connection DN to `cn=admin,dc=planetexpress,dc=com`
 * Set the Connection Password to `GoodNewsEveryone`
+* Set search filter to `(&(objectClass=inetOrgPerson)(uid={0}))`
+* Set group filter to `(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))`
 
 Now you can test the connection with username `professor` and password `professor`.
 
