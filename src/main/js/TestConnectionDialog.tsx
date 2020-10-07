@@ -22,14 +22,14 @@
  * SOFTWARE.
  */
 import React from "react";
-import { apiClient, Button, InputField, Modal, Tag, Subtitle } from "@scm-manager/ui-components";
+import { apiClient, Button, InputField, Modal, Subtitle, Tag } from "@scm-manager/ui-components";
 import { withTranslation, WithTranslation } from "react-i18next";
 
 type TestResultUser = {
   valid: boolean;
   name: string;
   displayName: string;
-  mailAddress: string;
+  mailAddress?: string;
 };
 
 type TestResult = {
@@ -51,7 +51,7 @@ type Props = WithTranslation & {
 type State = {
   username: string;
   password: string;
-  testResult: TestResult;
+  testResult?: TestResult;
 };
 
 class TestConnectionDialog extends React.Component<Props, State> {
@@ -142,8 +142,12 @@ class TestConnectionDialog extends React.Component<Props, State> {
               <li>
                 {t("scm-ldap-plugin.testForm.result.userDetailsDisplayName")}: {testResult.user.displayName}
               </li>
+
               <li>
-                {t("scm-ldap-plugin.testForm.result.userDetailsMail")}: {testResult.user.mailAddress}
+                {t("scm-ldap-plugin.testForm.result.userDetailsMail")}:{" "}
+                {testResult?.user?.mailAddress
+                  ? testResult.user.mailAddress
+                  : t("scm-ldap-plugin.testForm.result.missingValidMail")}
               </li>
             </ul>
           </td>

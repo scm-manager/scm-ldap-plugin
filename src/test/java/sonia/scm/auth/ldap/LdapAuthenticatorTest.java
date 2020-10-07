@@ -83,12 +83,6 @@ class LdapAuthenticatorTest extends LdapServerTestBaseJunit5 {
   }
 
   @Test
-  void shouldThrowInvalidUserException() {
-    ldif(5);
-    assertThrows(InvalidUserException.class, () -> authenticator.authenticate("trillian", "trilli123"));
-  }
-
-  @Test
   void shouldThrowConfigurationExceptionIfNoBaseDNWasDefined() {
     config.setBaseDn(null);
     assertThrows(ConfigurationException.class, () -> authenticator.authenticate("trillian", "trilli123"));
@@ -109,6 +103,15 @@ class LdapAuthenticatorTest extends LdapServerTestBaseJunit5 {
   @Test
   void shouldReturnUserEvenWithoutMail() {
     ldif(10);
+
+    Optional<User> optionalUser = authenticator.authenticate("trillian", "trilli123");
+    assertThat(optionalUser).isPresent();
+    assertThat(optionalUser.get().getMail()).isNull();
+  }
+
+  @Test
+  void shouldOnlySetMailIfValid() {
+    ldif(11);
 
     Optional<User> optionalUser = authenticator.authenticate("trillian", "trilli123");
     assertThat(optionalUser).isPresent();
