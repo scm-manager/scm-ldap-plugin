@@ -94,7 +94,7 @@ public class LdapAuthenticator {
     if (ValidationUtil.isMailAddressValid(mail)) {
       user.setMail(mail);
     } else {
-      logger.warn("No valid e-mail address found");
+      logger.warn("No valid e-mail address found for user {}", username);
     }
 
     if (!user.isValid()) {
