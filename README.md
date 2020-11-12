@@ -38,6 +38,11 @@ docker pull rroemhild/test-openldap
 docker run --privileged -d -p 389:389 rroemhild/test-openldap
 ```
 
+Or simply use `docker-compose`:
+```
+docker-compose up
+```
+
 To connect against this ldap container you must set the following settings in your global ldap configuration:
 * Select Profile => `Custom`
 * Set Base DN to `dc=planetexpress,dc=com`
