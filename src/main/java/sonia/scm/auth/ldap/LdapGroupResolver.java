@@ -42,8 +42,12 @@ import javax.naming.directory.SearchResult;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Map;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import static sonia.scm.auth.ldap.LdapUtil.*;
@@ -55,6 +59,7 @@ public class LdapGroupResolver implements GroupResolver {
 
   private static final String ATTRIBUTE_GROUP_NAME = "cn";
   private static final String NESTEDGROUP_MATCHINGRULE = ":1.2.840.113556.1.4.1941:=";
+  public static final int MAX_NESTED_RECURSE = 20;
 
   private final Provider<LdapConfig> store;
 
@@ -147,6 +152,10 @@ public class LdapGroupResolver implements GroupResolver {
     if (optionalFilter.isPresent()) {
       LOG.trace("try to fetch groups for user {}", uid);
 
+      // Groups found so far
+      Map<String,String> groupMap = new HashMap<String,String>();
+      // Groups found in each iteration
+      List<String> newGroups = new ArrayList<String>();
 
       // read group of unique names
       SearchControls searchControls = new SearchControls();
@@ -168,10 +177,13 @@ public class LdapGroupResolver implements GroupResolver {
           Attributes groupAttributes = searchResult.getAttributes();
           String name = getAttribute(groupAttributes,
             ATTRIBUTE_GROUP_NAME);
+          String dn = searchResult.getNameInNamespace();
 
           if (Util.isNotEmpty(name)) {
             LOG.trace("append group {} with name {} to user result", searchResult.getNameInNamespace(), name);
             groups.add(name);
+            groupMap.put(dn,name);
+            newGroups.add(dn);
           } else {
             LOG.debug("could not read group name from {}", searchResult.getNameInNamespace());
           }
@@ -179,10 +191,102 @@ public class LdapGroupResolver implements GroupResolver {
       } catch (NamingException ex) {
         LOG.debug("could not find groups", ex);
       }
+      LOG.debug("Now to the nested groups, with {} many groups to search for recusively", newGroups.size());
+      // As long as there are groups to add
+      int recurseCount = 0;
+      while(newGroups.size() > 0 && recurseCount++ < MAX_NESTED_RECURSE) {
+        List<String> nextGroups = new ArrayList<String>();
+        
+        String nestedFilter = createNestedGroupSearchFilter(newGroups, groupMap);
+        LOG.debug("search groups for user {} at {} with filter {}", userDN, searchDN, nestedFilter);
+
+        try (AutoCloseableNamingEnumeration<SearchResult> searchResultEnm = connection.search(searchDN, nestedFilter, searchControls)) {
+            while (searchResultEnm.hasMore())
+            {
+                SearchResult searchResult = searchResultEnm.next();
+                Attributes groupAttributes = searchResult.getAttributes();
+                String name = getAttribute(groupAttributes, 
+                  ATTRIBUTE_GROUP_NAME);
+                String dn = searchResult.getNameInNamespace();
+
+                if (Util.isNotEmpty(name) && Util.isNotEmpty(dn))
+                {
+                    LOG.trace("append group {} with name {} to user result",
+                       searchResult.getNameInNamespace(), name);
+                
+                    groups.add(name);
+                    nextGroups.add(dn);
+                }
+                else
+                {
+                    LOG.debug("could not read group name from {}",
+                       searchResult.getNameInNamespace());
+                }
+            
+                newGroups.clear();
+                for(String groupDN: nextGroups) {
+                    if (!groupMap.containsKey(groupDN)) {
+                        newGroups.add(groupDN);
+                    }
+                }
+            }  
+        }
+        catch (NamingException ex)
+        {
+            LOG.debug("could not find groups", ex);
+        }
+      }
     } else {
       LOG.debug("group filter is empty");
     }
     return groups;
+  }
+  
+  private static String concatFilters(String operator, String... filters)
+  {
+    return concatFiltersArray(operator, filters);
+  }
+
+  private static String concatFiltersArray(String operator, String[] filters)
+  {
+    if (filters.length == 0) {
+      return "";
+    }
+    String filter = "(" + operator;
+    for(String subfilter: filters) {
+      if (!subfilter.startsWith("(") || !subfilter.endsWith(")")) {
+        filter += "(" + subfilter + ")";
+      } else {
+        filter += subfilter;
+      }
+    }
+    filter += ")";
+    return filter;
+  }
+  
+  private String createNestedGroupSearchFilter(List<String> groupDNs, Map<String,String> groupNameMap)
+  {
+    String filter = null;
+    //TODO:
+    String filterPattern = "objectClass=groupOfNames";
+    String memberPattern = "member={0}";
+
+    if (Util.isNotEmpty(filterPattern) && Util.isNotEmpty(memberPattern))
+    {
+      String memberPatterns[] = new String[groupDNs.size()];
+      for(int i = 0; i < groupDNs.size(); i++) {
+        memberPatterns[i] = MessageFormat.format(memberPattern, groupDNs.get(i), groupNameMap.get(groupDNs.get(i)));
+      }
+      String memberFilter = concatFiltersArray("|", memberPatterns);
+      filter = concatFilters("&", filterPattern, memberFilter);
+      LOG.debug("search-filter for nested group search: {}", filter);
+    }
+    else
+    {
+      LOG.debug("search-filter for nested groups not defined");
+    }
+
+    return filter;
   }
 
   private Optional<String> createGroupSearchFilter(String userDN, String uid, String mail) {
