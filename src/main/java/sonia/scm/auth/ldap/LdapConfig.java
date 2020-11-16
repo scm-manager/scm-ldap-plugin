@@ -184,6 +184,28 @@ public class LdapConfig implements Validateable
    *
    * @return
    */
+  public String getSearchFilterNestedGroup()
+  {
+    return searchFilterNestedGroup;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @return
+   */
+  public String getSearchFilterNestedMember()
+  {
+    return searchFilterNestedMember;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @return
+   */
   public String getSearchScope()
   {
     return searchScope;
@@ -220,6 +242,17 @@ public class LdapConfig implements Validateable
   public boolean isEnableNestedADGroups()
   {
     return enableNestedADGroups;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @return
+   */
+  public boolean isEnableNestedGroups()
+  {
+    return enableNestedGroups;
   }
 
   /**
@@ -351,6 +384,17 @@ public class LdapConfig implements Validateable
    * Method description
    *
    *
+   * @param enableNestedADGroups
+   */
+  public void setEnableNestedGroups(boolean enableNestedGroups)
+  {
+    this.enableNestedGroups = enableNestedGroups;
+  }
+
+  /**
+   * Method description
+   *
+   *
    * @param enableStartTls
    */
   public void setEnableStartTls(boolean enableStartTls)
@@ -418,11 +462,33 @@ public class LdapConfig implements Validateable
    * Method description
    *
    *
-   * @param searchFilterGroup
+   * @param searchFilter
    */
   public void setSearchFilterGroup(String searchFilterGroup)
   {
     this.searchFilterGroup = searchFilterGroup;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @param searchFilter
+   */
+  public void setSearchFilterNestedGroup(String searchFilterNestedGroup)
+  {
+    this.searchFilterNestedGroup = searchFilterNestedGroup;
+  }
+
+  /**
+   * Method description
+   *
+   *
+   * @param searchFilter
+   */
+  public void setSearchFilterNestedMember(String searchFilterNestedMember)
+  {
+    this.searchFilterNestedMember = searchFilterNestedMember;
   }
 
   /**
@@ -539,6 +605,16 @@ public class LdapConfig implements Validateable
     "(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))";
 
   /** Field description */
+  @XmlElement(name = "search-filter-nested-group")
+  private String searchFilterNestedGroup =
+    "(objectClass=groupOfUniqueNames)";
+
+  /** Field description */
+  @XmlElement(name = "search-filter-nested-member")
+  private String searchFilterNestedMember =
+    "(uniqueMember={0})";
+
+  /** Field description */
   @XmlElement(name = "search-scope")
   private String searchScope = "one";
 
@@ -561,4 +637,8 @@ public class LdapConfig implements Validateable
   /** Field description */
   @XmlElement(name = "enable-nested-ad-groups")
   private boolean enableNestedADGroups = false;
+
+  /** Field description */
+  @XmlElement(name = "enable-nested-groups")
+  private boolean enableNestedGroups = false;
 }

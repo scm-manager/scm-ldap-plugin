@@ -191,49 +191,45 @@ public class LdapGroupResolver implements GroupResolver {
       } catch (NamingException ex) {
         LOG.debug("could not find groups", ex);
       }
-      LOG.debug("Now to the nested groups, with {} many groups to search for recusively", newGroups.size());
-      // As long as there are groups to add
-      int recurseCount = 0;
-      while(newGroups.size() > 0 && recurseCount++ < MAX_NESTED_RECURSE) {
-        List<String> nextGroups = new ArrayList<String>();
-        
-        String nestedFilter = createNestedGroupSearchFilter(newGroups, groupMap);
-        LOG.debug("search groups for user {} at {} with filter {}", userDN, searchDN, nestedFilter);
 
-        try (AutoCloseableNamingEnumeration<SearchResult> searchResultEnm = connection.search(searchDN, nestedFilter, searchControls)) {
-            while (searchResultEnm.hasMore())
-            {
-                SearchResult searchResult = searchResultEnm.next();
-                Attributes groupAttributes = searchResult.getAttributes();
-                String name = getAttribute(groupAttributes, 
-                  ATTRIBUTE_GROUP_NAME);
-                String dn = searchResult.getNameInNamespace();
+      if(config.isEnableNestedGroups()) {
+        // As long as there are groups to add
+        int recurseCount = 0;
+        while (newGroups.size() > 0 && recurseCount++ < MAX_NESTED_RECURSE) {
+          List<String> nextGroups = new ArrayList<String>();
 
-                if (Util.isNotEmpty(name) && Util.isNotEmpty(dn))
-                {
-                    LOG.trace("append group {} with name {} to user result",
-                       searchResult.getNameInNamespace(), name);
-                
-                    groups.add(name);
-                    nextGroups.add(dn);
+          String nestedFilter = createNestedGroupSearchFilter(newGroups, groupMap);
+          LOG.debug("search groups for user {} at {} with filter {}", userDN, searchDN, nestedFilter);
+
+          try (AutoCloseableNamingEnumeration<SearchResult> searchResultEnm = connection.search(searchDN, nestedFilter, searchControls)) {
+            while (searchResultEnm.hasMore()) {
+              SearchResult searchResult = searchResultEnm.next();
+              Attributes groupAttributes = searchResult.getAttributes();
+              String name = getAttribute(groupAttributes,
+                ATTRIBUTE_GROUP_NAME);
+              String dn = searchResult.getNameInNamespace();
+
+              if (Util.isNotEmpty(name) && Util.isNotEmpty(dn)) {
+                LOG.trace("append group {} with name {} to user result",
+                  searchResult.getNameInNamespace(), name);
+
+                groups.add(name);
+                nextGroups.add(dn);
+              } else {
+                LOG.debug("could not read group name from {}",
+                  searchResult.getNameInNamespace());
+              }
+
+              newGroups.clear();
+              for (String groupDN : nextGroups) {
+                if (!groupMap.containsKey(groupDN)) {
+                  newGroups.add(groupDN);
                 }
-                else
-                {
-                    LOG.debug("could not read group name from {}",
-                       searchResult.getNameInNamespace());
-                }
-            
-                newGroups.clear();
-                for(String groupDN: nextGroups) {
-                    if (!groupMap.containsKey(groupDN)) {
-                        newGroups.add(groupDN);
-                    }
-                }
-            }  
-        }
-        catch (NamingException ex)
-        {
+              }
+            }
+          } catch (NamingException ex) {
             LOG.debug("could not find groups", ex);
+          }
         }
       }
     } else {
@@ -266,10 +262,10 @@ public class LdapGroupResolver implements GroupResolver {
   
   private String createNestedGroupSearchFilter(List<String> groupDNs, Map<String,String> groupNameMap)
   {
+    LdapConfig config = store.get();
     String filter = null;
-    //TODO:
-    String filterPattern = "objectClass=groupOfNames";
-    String memberPattern = "member={0}";
+    String filterPattern = config.getSearchFilterNestedGroup();
+    String memberPattern = config.getSearchFilterNestedMember();
 
     if (Util.isNotEmpty(filterPattern) && Util.isNotEmpty(memberPattern))
     {
