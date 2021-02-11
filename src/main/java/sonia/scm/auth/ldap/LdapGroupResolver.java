@@ -256,7 +256,7 @@ public class LdapGroupResolver implements GroupResolver {
     String filterPattern = config.getSearchFilterNestedGroup();
 
     if (Util.isNotEmpty(filterPattern)) {
-      String filter = MessageFormat.format(filterPattern, escapeLDAPSearchFilter(groupDN));
+      String filter = MessageFormat.format(filterPattern, escapeLDAPSearchFilter(groupDN),escapeLDAPSearchFilter(groupCN));
       LOG.debug("search-filter for group search: {}", filter);
       return Optional.of(filter);
     } else {

@@ -26,7 +26,7 @@
       "searchFilterGroup": "Gruppensuchfilter",
       "searchFilterGroupHelp": "Gruppensuchfilter. Achtung: {0} wird durch die DN des Benutzers ersetzt; {1} wird durch den Nutzernamen ersetzt; {2} wird durch die E-Mail des Benutzers ersetzt",
       "searchFilterNestedGroup": "Gruppenfilter für verschachtelte Gruppen",
-      "searchFilterNestedGroupHelp": "Gruppensuchfilter für verschachtelte Gruppen. Achtung: {0} wird durch die DN der Untergruppe ersetzt",
+      "searchFilterNestedGroupHelp": "Gruppensuchfilter für verschachtelte Gruppen. Achtung: {0} wird durch die DN der Untergruppe ersetzt; {1} wird durch den Gruppennamen (CN) ersetzt",
       "searchScope": "Suchtiefe (scope)",
       "searchScopeHelp": "Suchtiefe (scope) für die Personensuche",
       "unitPeople": "Personen (ou)",
