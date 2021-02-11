@@ -111,29 +111,23 @@ public class LdapGroupResolver implements GroupResolver {
     //the result set
     Set<String> found = new HashSet<>(groups);
 
+    String searchDN = LdapUtil.createDN(config, config.getUnitGroup());
+
     LOG.trace("fetching recursive defined groups");
 
     //loop until fixpoint is reached
     while(!toSearch.isEmpty()) {
       String groupName = toSearch.poll();
 
-      Optional<String> filter = createGroupSearchFilterByName(groupName);
-      if(filter.isPresent()){
-        Set<SearchResult> results = searchGroup(connection, filter.get());
-
-        for(SearchResult searchResult: results) {
-          Attributes resultAttributes = searchResult.getAttributes();
-          Set<String> currentGroups = getGroups(resultAttributes);
-          Optional<String> nestedFilter = createNestedGroupSearchFilter(searchResult.getNameInNamespace());
-          if(nestedFilter.isPresent()) {
-            currentGroups.addAll(fetchGroupByFilter(connection, nestedFilter.get()));
-          }
-          for (String group : currentGroups) {
-            if (!found.contains(group)) {
-              toSearch.add(group);
-              found.add(group);
-            }
-          }
+      Optional<String> nestedFilter = createNestedGroupSearchFilter(groupName,searchDN);
+      Set<String> currentGroups = new HashSet<>();
+      if(nestedFilter.isPresent()) {
+        currentGroups = fetchGroupByFilter(connection, nestedFilter.get());
+      }
+      for (String group : currentGroups) {
+        if (!found.contains(group)) {
+          toSearch.add(group);
+          found.add(group);
         }
       }
     }
@@ -256,12 +250,13 @@ public class LdapGroupResolver implements GroupResolver {
       NESTEDGROUP_MATCHINGRULE.concat(userDN));
   }
 
-  private Optional<String> createNestedGroupSearchFilter(String groupCN){
+  private Optional<String> createNestedGroupSearchFilter(String groupCN, String searchCN){
     LdapConfig config = store.get();
+    String groupDN = MessageFormat.format(ATTRIBUTE_GROUP_NAME+"={0},{1}",groupCN,searchCN);
     String filterPattern = config.getSearchFilterNestedGroup();
 
     if (Util.isNotEmpty(filterPattern)) {
-      String filter = MessageFormat.format(filterPattern, escapeLDAPSearchFilter(groupCN));
+      String filter = MessageFormat.format(filterPattern, escapeLDAPSearchFilter(groupDN));
       LOG.debug("search-filter for group search: {}", filter);
       return Optional.of(filter);
     } else {
