@@ -39,8 +39,8 @@ type LdapConfiguration = {
   hostUrl: string;
   searchFilter: string;
   searchFilterGroup: string;
+  searchFilterGroupByName: string;
   searchFilterNestedGroup: string;
-  searchFilterNestedMember: string;
   searchScope: string;
   unitPeople: string;
   unitGroup: string;
@@ -148,8 +148,7 @@ class LdapConfigurationForm extends React.Component<Props, State> {
         {this.createInputField("hostUrl")}
         {this.createInputField("searchFilter")}
         {this.createInputField("searchFilterGroup")}
-        {this.createInputField("searchFilterNestedGroup")}
-        {this.createInputField("searchFilterNestedMember")}
+        {this.createInputField("searchFilterNextedGroup")}
         {this.createDropDown("searchScope", ["object", "one", "sub"])}
         {this.createInputField("unitPeople")}
         {this.createInputField("unitGroup")}

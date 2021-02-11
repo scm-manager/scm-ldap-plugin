@@ -53,7 +53,6 @@ public class LdapConfigDto extends HalRepresentation {
   private String searchFilter;
   private String searchFilterGroup;
   private String searchFilterNestedGroup;
-  private String searchFilterNestedMember;
   @NotEmpty
   private String searchScope;
   private String unitGroup;
