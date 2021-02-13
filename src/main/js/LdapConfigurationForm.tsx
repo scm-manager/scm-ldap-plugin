@@ -148,7 +148,7 @@ class LdapConfigurationForm extends React.Component<Props, State> {
         {this.createInputField("hostUrl")}
         {this.createInputField("searchFilter")}
         {this.createInputField("searchFilterGroup")}
-        {this.createInputField("searchFilterNextedGroup")}
+        {this.createInputField("searchFilterNestedGroup")}
         {this.createDropDown("searchScope", ["object", "one", "sub"])}
         {this.createInputField("unitPeople")}
         {this.createInputField("unitGroup")}
