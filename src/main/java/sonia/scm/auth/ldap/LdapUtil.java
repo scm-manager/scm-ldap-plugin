@@ -33,8 +33,6 @@ import sonia.scm.util.Util;
 //~--- JDK imports ------------------------------------------------------------
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -208,19 +206,6 @@ class LdapUtil {
     return name;
   }
 
-  /**
-   * Method description
-   *
-   * @param dns
-   * @return cns
-   */
-  public static Set<String> getNames(Set<String> dns) {
-    Set<String> cns = new HashSet<>();
-    for(String dn: dns) {
-      cns.add(getName(dn));
-    }
-    return cns;
-  }
 
   /**
    * Method description
