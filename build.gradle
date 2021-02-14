@@ -28,6 +28,7 @@ plugins {
 }
 
 dependencies {
+  testImplementation "com.github.sdorra:shiro-unit:1.0.1"
   testImplementation "com.unboundid:unboundid-ldapsdk:2.3.0"
 }
 
@@ -37,6 +38,10 @@ scmPlugin {
   description = "Authentication for SCM-Manager using LDAP"
   author = "Thorsten Ludewig"
   category = "Authentication"
+
+  run {
+    loggingConfiguration = "src/main/conf/logging.xml"
+  }
 
   openapi {
     packages = [
