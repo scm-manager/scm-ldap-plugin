@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 import React from "react";
-import { Button, Checkbox, Configuration, InputField, Select } from "@scm-manager/ui-components";
+import { Button, Checkbox, InputField, Select } from "@scm-manager/ui-components";
 import { withTranslation, WithTranslation } from "react-i18next";
 import TestConnectionDialog from "./TestConnectionDialog";
 import { PROFILES } from "./profiles";
@@ -39,7 +39,6 @@ type LdapConfiguration = {
   hostUrl: string;
   searchFilter: string;
   searchFilterGroup: string;
-  searchFilterGroupByName: string;
   searchFilterNestedGroup: string;
   searchScope: string;
   unitPeople: string;
@@ -52,9 +51,9 @@ type LdapConfiguration = {
 };
 
 type Props = WithTranslation & {
-  initialConfiguration: Configuration;
+  initialConfiguration: LdapConfiguration;
   readOnly: boolean;
-  onConfigurationChange: (p1: Configuration, p2: boolean) => void;
+  onConfigurationChange: (config: LdapConfiguration, valid: boolean) => void;
 };
 
 type State = LdapConfiguration & {
