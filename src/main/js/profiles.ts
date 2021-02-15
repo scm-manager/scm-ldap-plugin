@@ -29,9 +29,12 @@ export const PROFILES = {
     attributeNameGroup: "memberOf",
     searchFilter: "(&(objectClass=Person)(sAMAccountName={0}))",
     searchFilterGroup: "(&(objectClass=group)(member={0}))",
+    searchFilterNestedGroup: "",
     searchScope: "sub",
     unitPeople: "",
-    unitGroups: "",
+    unitGroup: "",
+    enableNestedADGroups: true,
+    enableNestedGroups: false,
     referralStrategy: "FOLLOW"
   },
   Apache: {
@@ -41,10 +44,12 @@ export const PROFILES = {
     attributeNameGroup: "memberOf",
     searchFilter: "(&(objectClass=inetOrgPerson)(cn={0}))",
     searchFilterGroup: "(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))",
+    searchFilterNestedGroup: "(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))",
     searchScope: "sub",
     unitPeople: "ou=People",
-    unitGroups: "ou=Groups",
-    enableNestedADGroups: "false",
+    unitGroup: "ou=Groups",
+    enableNestedADGroups: false,
+    enableNestedGroups: false,
     referralStrategy: "FOLLOW"
   },
   OpenDJ: {
@@ -54,11 +59,13 @@ export const PROFILES = {
     attributeNameGroup: "memberOf",
     searchFilter: "(&(objectClass=inetOrgPerson)(uid={0}))",
     searchFilterGroup: "(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))",
+    searchFilterNestedGroup: "(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))",
     searchScope: "sub",
     unitPeople: "ou=People",
-    unitGroups: "ou=Groups",
+    unitGroup: "ou=Groups",
+    enableNestedADGroups: false,
+    enableNestedGroups: false,
     referralStrategy: "FOLLOW",
-    enableNestedADGroups: "false"
   },
   OpenLDAP: {
     attributeNameId: "uid",
@@ -67,11 +74,13 @@ export const PROFILES = {
     attributeNameGroup: "memberOf",
     searchFilter: "(&(objectClass=inetOrgPerson)(uid={0}))",
     searchFilterGroup: "(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))",
+    searchFilterNestedGroup: "(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))",
     searchScope: "sub",
     unitPeople: "ou=People",
-    unitGroups: "ou=Groups",
-    referralStrategy: "FOLLOW",
-    enableNestedADGroups: "false"
+    unitGroup: "ou=Groups",
+    enableNestedADGroups: false,
+    enableNestedGroups: false,
+    referralStrategy: "FOLLOW"
   },
   posix: {
     attributeNameId: "uid",
@@ -80,11 +89,13 @@ export const PROFILES = {
     attributeNameGroup: "memberOf",
     searchFilter: "(&(objectClass=posixAccount)(uid={0}))",
     searchFilterGroup: "(&(objectClass=posixGroup)(memberUid={1}))",
+    searchFilterNestedGroup: "",
     searchScope: "sub",
     unitPeople: "ou=People",
-    unitGroups: "ou=Groups",
-    referralStrategy: "FOLLOW",
-    enableNestedADGroups: "false"
+    unitGroup: "ou=Groups",
+    enableNestedADGroups: false,
+    enableNestedGroups: false,
+    referralStrategy: "FOLLOW"
   },
   sun: {
     attributeNameId: "uid",
@@ -93,11 +104,13 @@ export const PROFILES = {
     attributeNameGroup: "memberOf",
     searchFilter: "(&(objectClass=inetOrgPerson)(uid={0}))",
     searchFilterGroup: "(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))",
+    searchFilterNestedGroup: "(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))",
     searchScope: "sub",
     unitPeople: "ou=People",
-    unitGroups: "ou=Groups",
-    referralStrategy: "FOLLOW",
-    enableNestedADGroups: "false"
+    unitGroup: "ou=Groups",
+    enableNestedADGroups: false,
+    enableNestedGroups: false,
+    referralStrategy: "FOLLOW"
   },
   Custom: {}
 };
