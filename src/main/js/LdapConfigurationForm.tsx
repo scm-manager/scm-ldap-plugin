@@ -138,20 +138,20 @@ class LdapConfigurationForm extends React.Component<Props, State> {
             onChange={this.profileChangedHandler}
           />
         </div>
+        {this.createInputField("hostUrl")}
+        {this.createInputField("baseDn")}
+        {this.createInputField("connectionDn")}
+        {this.createInputField("connectionPassword", "password")}
         {this.createInputField("attributeNameId")}
         {this.createInputField("attributeNameFullname")}
         {this.createInputField("attributeNameMail")}
         {this.createInputField("attributeNameGroup")}
-        {this.createInputField("baseDn")}
-        {this.createInputField("connectionDn")}
-        {this.createInputField("connectionPassword", "password")}
-        {this.createInputField("hostUrl")}
-        {this.createInputField("searchFilter")}
-        {this.createInputField("searchFilterGroup")}
-        {this.createInputField("searchFilterNestedGroup")}
-        {this.createDropDown("searchScope", ["object", "one", "sub"])}
         {this.createInputField("unitPeople")}
+        {this.createInputField("searchFilter")}
         {this.createInputField("unitGroup")}
+        {this.createInputField("searchFilterGroup")}
+        {this.createInputField("searchFilterNestedGroup", "text", "is-full")}
+        {this.createDropDown("searchScope", ["object", "one", "sub"])}
         {this.createDropDown("referralStrategy", ["FOLLOW", "IGNORE", "THROW"])}
         <div className="column is-full">
           {this.createCheckbox("enableNestedADGroups")}
@@ -204,11 +204,11 @@ class LdapConfigurationForm extends React.Component<Props, State> {
     });
   };
 
-  createInputField = (name: string, type = "text") => {
+  createInputField = (name: string, type = "text", className: string = "is-half") => {
     const { t, readOnly } = this.props;
     return this.ifActive(
       name,
-      <div className="column is-half">
+      <div className={`column ${className}`}>
         <InputField
           name={name}
           label={t("scm-ldap-plugin.form." + name)}
