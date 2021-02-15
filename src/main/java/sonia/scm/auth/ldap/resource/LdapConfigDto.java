@@ -52,6 +52,7 @@ public class LdapConfigDto extends HalRepresentation {
   @NotEmpty
   private String searchFilter;
   private String searchFilterGroup;
+  private String searchFilterNestedGroup;
   @NotEmpty
   private String searchScope;
   private String unitGroup;
@@ -59,6 +60,7 @@ public class LdapConfigDto extends HalRepresentation {
   private boolean enabled;
   private boolean enableStartTls;
   private boolean enableNestedADGroups;
+  private boolean enableNestedGroups;
 
   public LdapConfigDto(Links links) {
     super(links);

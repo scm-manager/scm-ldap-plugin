@@ -39,10 +39,13 @@ type LdapConfiguration = {
   hostUrl: string;
   searchFilter: string;
   searchFilterGroup: string;
+  searchFilterGroupByName: string;
+  searchFilterNestedGroup: string;
   searchScope: string;
   unitPeople: string;
   unitGroup: string;
   referralStrategy: string;
+  enableNestedGroups: boolean;
   enableNestedADGroups: boolean;
   enableStartTls: boolean;
   enabled: boolean;
@@ -145,12 +148,14 @@ class LdapConfigurationForm extends React.Component<Props, State> {
         {this.createInputField("hostUrl")}
         {this.createInputField("searchFilter")}
         {this.createInputField("searchFilterGroup")}
+        {this.createInputField("searchFilterNestedGroup")}
         {this.createDropDown("searchScope", ["object", "one", "sub"])}
         {this.createInputField("unitPeople")}
         {this.createInputField("unitGroup")}
         {this.createDropDown("referralStrategy", ["FOLLOW", "IGNORE", "THROW"])}
         <div className="column is-full">
           {this.createCheckbox("enableNestedADGroups")}
+          {this.createCheckbox("enableNestedGroups")}
           {this.createCheckbox("enableStartTls")}
           {this.createCheckbox("enabled")}
         </div>
