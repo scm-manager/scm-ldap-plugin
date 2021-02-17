@@ -40,6 +40,7 @@ docker-compose up
 
 To connect against this ldap container you must set the following settings in your global ldap configuration:
 * Select Profile => `Custom`
+* Set Host URL to `ldap://localhost:10389`
 * Set Base DN to `dc=planetexpress,dc=com`
 * Set Connection DN to `cn=admin,dc=planetexpress,dc=com`
 * Set the Connection Password to `GoodNewsEveryone`
