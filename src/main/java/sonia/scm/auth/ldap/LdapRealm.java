@@ -23,6 +23,7 @@
  */
 package sonia.scm.auth.ldap;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -33,6 +34,8 @@ import org.apache.shiro.authc.credential.AllowAllCredentialsMatcher;
 import org.apache.shiro.realm.AuthenticatingRealm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sonia.scm.cache.Cache;
+import sonia.scm.cache.CacheManager;
 import sonia.scm.plugin.Extension;
 import sonia.scm.security.SyncingRealmHelper;
 import sonia.scm.user.User;
@@ -45,17 +48,24 @@ public class LdapRealm extends AuthenticatingRealm {
 
   public static final String TYPE = "ldap";
 
+  @VisibleForTesting
+  static final String CACHE_NAME = "sonia.scm.ldap.authentication";
+
   private static final Logger logger = LoggerFactory.getLogger(LdapRealm.class);
 
   private final SyncingRealmHelper syncingRealmHelper;
   private final LdapConfigStore configStore;
 
   @Inject
-  public LdapRealm(LdapConfigStore configStore, SyncingRealmHelper syncingRealmHelper) {
+  public LdapRealm(LdapConfigStore configStore, SyncingRealmHelper syncingRealmHelper, CacheManager cacheManager) {
     this.configStore = configStore;
     this.syncingRealmHelper = syncingRealmHelper;
     setAuthenticationTokenClass(UsernamePasswordToken.class);
     setCredentialsMatcher(new AllowAllCredentialsMatcher());
+
+    Cache<Object, AuthenticationInfo> cache = cacheManager.getCache(CACHE_NAME);
+    setAuthenticationCache(cache);
+    setAuthenticationCachingEnabled(true);
   }
 
   @Override
