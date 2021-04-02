@@ -33,7 +33,7 @@ dependencies {
 }
 
 scmPlugin {
-  scmVersion = "2.14.1-SNAPSHOT"
+  scmVersion = "2.14.0"
   displayName = "LDAP"
   description = "Authentication for SCM-Manager using LDAP"
   author = "Thorsten Ludewig"
