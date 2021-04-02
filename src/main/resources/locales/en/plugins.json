@@ -41,6 +41,8 @@
       "enableNestedGroupsHelp": "Enable search for nested groups. This will result in an increase of ldap searches per user.",
       "enableStartTls": "Use StartTLS",
       "enableStartTlsHelp": "Use StartTLS extension to encrypt the connection to the directory server.",
+      "removeInvalidCharacters": "Replace invalid characters in group names",
+      "removeInvalidCharactersHelp": "Invalid characters in group names like '/', '&', '?' or spaces will be replaces with an underscore ('_').",
       "enabled": "Enabled",
       "enabledHelp": "Enables or disables the ldap authentication.",
       "options": {
