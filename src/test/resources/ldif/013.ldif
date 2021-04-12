@@ -73,3 +73,14 @@ objectClass: groupOfUniqueNames
 uniqueMember: cn=RestaurantAtTheStartOfTheUniverse,ou=Groups,dc=scm-manager,dc=org
 uniqueMember: cn=RestaurantAtTheEndOfTheUniverse,ou=Groups,dc=scm-manager,dc=org
 cn: RestaurantsOfTheUniverse
+
+dn: ou=Earth,ou=Groups,dc=scm-manager,dc=org
+objectClass: organizationalUnit
+objectClass: top
+ou: Earth
+
+dn: cn=RestaurantsAtEarth,ou=Earth,ou=Groups,dc=scm-manager,dc=org
+objectClass: groupOfUniqueNames
+uniqueMember: cn=RestaurantAtTheStartOfTheUniverse,ou=Groups,dc=scm-manager,dc=org
+uniqueMember: cn=RestaurantAtTheEndOfTheUniverse,ou=Groups,dc=scm-manager,dc=org
+cn: RestaurantsAtEarth
