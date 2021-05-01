@@ -162,7 +162,7 @@ public class LdapRecursiveGroupTest extends LdapServerTestBaseJunit5 {
     ldif(13);
 
     Set<String> groups = groupResolver.resolve("trillian");
-    assertThat(groups).containsOnly("HeartOfGold", "RestaurantAtTheEndOfTheUniverse", "RestaurantsOfTheUniverse");
+    assertThat(groups).containsOnly("HeartOfGold", "RestaurantAtTheEndOfTheUniverse", "RestaurantsOfTheUniverse", "RestaurantsAtEarth");
   }
 
   @Test

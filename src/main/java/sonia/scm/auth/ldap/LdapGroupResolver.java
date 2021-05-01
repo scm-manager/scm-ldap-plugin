@@ -42,6 +42,7 @@ import javax.naming.directory.SearchResult;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static sonia.scm.auth.ldap.LdapUtil.*;
 
@@ -97,29 +98,27 @@ public class LdapGroupResolver implements GroupResolver {
         groups.addAll(fetchGroups(bindConnection, userDn, principal, mailAttribute));
         groups.addAll(getGroups(attributes));
         if(config.isEnableNestedGroups()){
-          groups = computeRecursiveGroups(bindConnection, config, groups);
+          groups = computeRecursiveGroups(bindConnection, groups);
         }
-        return groups;
+        return groups.stream().map(dn -> {return LdapUtil.getName(dn);}).collect(Collectors.toSet());
       }
     }
     return Collections.emptySet();
   }
 
-  private Set<String> computeRecursiveGroups(LdapConnection connection, LdapConfig config, Set<String> groups) {
+  private Set<String> computeRecursiveGroups(LdapConnection connection, Set<String> groups) {
     //queue for yet to recursively searched groups
     Queue<String> toSearch = new LinkedList<>(groups);
     //the result set
     Set<String> found = new HashSet<>(groups);
 
-    String searchDN = LdapUtil.createDN(config, config.getUnitGroup());
-
     LOG.trace("fetching recursive defined groups");
 
     //loop until fixpoint is reached
     while(!toSearch.isEmpty()) {
-      String groupName = toSearch.poll();
+      String groupDN = toSearch.poll();
 
-      Optional<String> nestedFilter = createNestedGroupSearchFilter(groupName,searchDN);
+      Optional<String> nestedFilter = createNestedGroupSearchFilter(groupDN);
       Set<String> currentGroups = new HashSet<>();
       if(nestedFilter.isPresent()) {
         currentGroups = fetchGroupByFilter(connection, nestedFilter.get());
@@ -152,7 +151,6 @@ public class LdapGroupResolver implements GroupResolver {
           while (userGroupsEnm.hasMore()) {
             String group = (String) userGroupsEnm.next();
 
-            group = getName(group);
             LOG.debug("append group {} to user result", group);
             groups.add(group);
           }
@@ -187,13 +185,9 @@ public class LdapGroupResolver implements GroupResolver {
     Set<SearchResult> results = searchGroup(connection, filter);
     Set<String> groups = new HashSet<>();
     for(SearchResult searchResult: results){
-      String name = getAttribute(searchResult.getAttributes(),ATTRIBUTE_GROUP_NAME);
-      if (Util.isNotEmpty(name)) {
-        LOG.trace("append group {} with name {} to user result", searchResult.getNameInNamespace(), name);
-        groups.add(name);
-      } else {
-        LOG.debug("could not read group name from {}", searchResult.getNameInNamespace());
-      }
+      String dn = searchResult.getNameInNamespace();
+      LOG.trace("append group {} to user result", dn);
+      groups.add(dn);
     }
     return groups;
   }
@@ -250,10 +244,10 @@ public class LdapGroupResolver implements GroupResolver {
       NESTEDGROUP_MATCHINGRULE.concat(userDN));
   }
 
-  private Optional<String> createNestedGroupSearchFilter(String groupCN, String searchCN){
+  private Optional<String> createNestedGroupSearchFilter(String groupDN){
     LdapConfig config = store.get();
-    String groupDN = MessageFormat.format(ATTRIBUTE_GROUP_NAME+"={0},{1}",groupCN,searchCN);
     String filterPattern = config.getSearchFilterNestedGroup();
+    String groupCN = LdapUtil.getName(groupDN);
 
     if (Util.isNotEmpty(filterPattern)) {
       String filter = MessageFormat.format(filterPattern, escapeLDAPSearchFilter(groupDN),escapeLDAPSearchFilter(groupCN));
