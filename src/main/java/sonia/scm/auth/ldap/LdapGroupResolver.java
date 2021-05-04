@@ -44,6 +44,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toSet;
 import static sonia.scm.auth.ldap.LdapUtil.*;
 
 @Extension
@@ -74,7 +75,7 @@ public class LdapGroupResolver implements GroupResolver {
     LdapConfig config = store.get();
     if (config.isEnabled()) {
       try {
-        return resolveGroups(config, principal);
+        return sanitizeGroupNames(resolveGroups(config, principal), config);
       } catch (LdapException ex) {
         LOG.error("failed to resolve groups for principal: {}", ex);
       }
@@ -82,6 +83,14 @@ public class LdapGroupResolver implements GroupResolver {
       LOG.debug("ldap is disabled, returning empty set of groups");
     }
     return Collections.emptySet();
+  }
+
+  private Set<String> sanitizeGroupNames(Set<String> groups, LdapConfig config) {
+    if (config.isRemoveInvalidCharacters()) {
+      return groups.stream().map(name -> name.replaceAll("[:/?#;&=\\s%\\\\]", "_")).collect(toSet());
+    } else {
+      return groups;
+    }
   }
 
   private Set<String> resolveGroups(LdapConfig config, String principal) {

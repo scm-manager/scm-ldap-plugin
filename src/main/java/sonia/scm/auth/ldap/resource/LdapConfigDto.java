@@ -61,6 +61,7 @@ public class LdapConfigDto extends HalRepresentation {
   private boolean enableStartTls;
   private boolean enableNestedADGroups;
   private boolean enableNestedGroups;
+  private boolean removeInvalidCharacters;
 
   public LdapConfigDto(Links links) {
     super(links);

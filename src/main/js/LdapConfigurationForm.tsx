@@ -47,6 +47,7 @@ type LdapConfiguration = {
   enableNestedGroups: boolean;
   enableNestedADGroups: boolean;
   enableStartTls: boolean;
+  removeInvalidCharacters: boolean;
   enabled: boolean;
 };
 
@@ -149,13 +150,16 @@ class LdapConfigurationForm extends React.Component<Props, State> {
         {this.createInputField("searchFilter")}
         {this.createInputField("unitGroup")}
         {this.createInputField("searchFilterGroup")}
-        {this.createInputField("searchFilterNestedGroup", "text", "is-full")}
         {this.createDropDown("searchScope", ["object", "one", "sub"])}
         {this.createDropDown("referralStrategy", ["FOLLOW", "IGNORE", "THROW"])}
         <div className="column is-full">
-          {this.createCheckbox("enableNestedADGroups")}
           {this.createCheckbox("enableNestedGroups")}
+        </div>
+        {this.createInputField("searchFilterNestedGroup", "text", "is-full", !this.state.enableNestedGroups)}
+        <div className="column is-full">
+          {this.createCheckbox("enableNestedADGroups")}
           {this.createCheckbox("enableStartTls")}
+          {this.createCheckbox("removeInvalidCharacters")}
           {this.createCheckbox("enabled")}
         </div>
         <div className="column is-full">
@@ -203,7 +207,7 @@ class LdapConfigurationForm extends React.Component<Props, State> {
     });
   };
 
-  createInputField = (name: string, type = "text", className: string = "is-half") => {
+  createInputField = (name: string, type = "text", className: string = "is-half", disabled: boolean = false) => {
     const { t, readOnly } = this.props;
     return this.ifActive(
       name,
@@ -212,7 +216,7 @@ class LdapConfigurationForm extends React.Component<Props, State> {
           name={name}
           label={t("scm-ldap-plugin.form." + name)}
           helpText={t("scm-ldap-plugin.form." + name + "Help")}
-          disabled={readOnly}
+          disabled={readOnly || disabled}
           value={this.state[name]}
           type={type}
           onChange={this.valueChangeHandler}

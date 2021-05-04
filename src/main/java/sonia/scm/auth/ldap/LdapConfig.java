@@ -24,8 +24,6 @@
 
 package sonia.scm.auth.ldap;
 
-//~--- non-JDK imports --------------------------------------------------------
-
 import sonia.scm.Validateable;
 import sonia.scm.util.Util;
 
@@ -38,488 +36,258 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
- *
  * @author Thorsten Ludewig
  */
 @XmlRootElement(name = "ldap-config")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class LdapConfig implements Validateable
-{
+public class LdapConfig implements Validateable {
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public String getAttributeNameFullname()
-  {
+  @XmlElement(name = "attribute-name-fullname")
+  private String attributeNameFullname = "cn";
+
+  @XmlElement(name = "attribute-name-group")
+  private String attributeNameGroup = "group";
+
+  @XmlElement(name = "attribute-name-id")
+  private String attributeNameId = "uid";
+
+  @XmlElement(name = "attribute-name-mail")
+  private String attributeNameMail = "mail";
+
+  @XmlElement(name = "base-dn")
+  private String baseDn = "dc=scm-manager,dc=org";
+
+  @XmlElement(name = "connection-dn")
+  private String connectionDn = "cn=Directory Manager";
+
+  @SuppressWarnings("squid:S2068") // suppress hardcoded password
+  @XmlElement(name = "connection-password")
+  @XmlJavaTypeAdapter(XmlCipherAdapter.class)
+  private String connectionPassword = "password";
+
+  @XmlElement(name = "host-url")
+  private String hostUrl = "ldap://localhost:389";
+
+  @XmlElement(name = "profile")
+  private String profile = "Custom";
+
+  @XmlElement(name = "referral-strategy")
+  private ReferralStrategy referralStrategy = ReferralStrategy.FOLLOW;
+
+  @XmlElement(name = "search-filter")
+  private String searchFilter = "(&(uid={0})(objectClass=posixAccount))";
+
+  @XmlElement(name = "search-filter-group")
+  private String searchFilterGroup =
+    "(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))";
+
+  @XmlElement(name = "search-filter-nested-group")
+  private String searchFilterNestedGroup =
+    "(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))";
+
+  @XmlElement(name = "search-scope")
+  private String searchScope = "one";
+
+  @XmlElement(name = "unit-groups")
+  private String unitGroup = "ou=Groups";
+
+  @XmlElement(name = "unit-people")
+  private String unitPeople = "ou=People";
+
+  @XmlElement(name = "enabled")
+  private boolean enabled = false;
+
+  @XmlElement(name = "enable-starttls")
+  private boolean enableStartTls = false;
+
+  @XmlElement(name = "enable-nested-ad-groups")
+  private boolean enableNestedADGroups = false;
+
+  @XmlElement(name = "enable-nested-groups")
+  private boolean enableNestedGroups = false;
+
+  @XmlElement(name = "remove-illegal-characters")
+  private boolean removeInvalidCharacters = false;
+
+  public String getAttributeNameFullname() {
     return attributeNameFullname;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public String getAttributeNameGroup()
-  {
+  public String getAttributeNameGroup() {
     return attributeNameGroup;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public String getAttributeNameId()
-  {
+  public String getAttributeNameId() {
     return attributeNameId;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public String getAttributeNameMail()
-  {
+  public String getAttributeNameMail() {
     return attributeNameMail;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public String getBaseDn()
-  {
+  public String getBaseDn() {
     return baseDn;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public String getConnectionDn()
-  {
+  public String getConnectionDn() {
     return connectionDn;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public String getConnectionPassword()
-  {
+  public String getConnectionPassword() {
     return connectionPassword;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public String getHostUrl()
-  {
+  public String getHostUrl() {
     return hostUrl;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public String getProfile()
-  {
+  public String getProfile() {
     return profile;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public ReferralStrategy getReferralStrategy()
-  {
+  public ReferralStrategy getReferralStrategy() {
     return referralStrategy;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public String getSearchFilter()
-  {
+  public String getSearchFilter() {
     return searchFilter;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public String getSearchFilterGroup()
-  {
+  public String getSearchFilterGroup() {
     return searchFilterGroup;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public String getSearchFilterNestedGroup()
-  {
+  public String getSearchFilterNestedGroup() {
     return searchFilterNestedGroup;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public String getSearchScope()
-  {
+  public String getSearchScope() {
     return searchScope;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public String getUnitGroup()
-  {
+  public String getUnitGroup() {
     return unitGroup;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public String getUnitPeople()
-  {
+  public String getUnitPeople() {
     return unitPeople;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public boolean isEnableNestedADGroups()
-  {
+  public boolean isEnableNestedADGroups() {
     return enableNestedADGroups;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public boolean isEnableNestedGroups()
-  {
+  public boolean isEnableNestedGroups() {
     return enableNestedGroups;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public boolean isEnableStartTls()
-  {
+  public boolean isEnableStartTls() {
     return enableStartTls;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
-  public boolean isEnabled()
-  {
+  public boolean isRemoveInvalidCharacters() {
+    return removeInvalidCharacters;
+  }
+
+  public boolean isEnabled() {
     return enabled;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @return
-   */
   @Override
-  public boolean isValid()
-  {
+  public boolean isValid() {
     return isValid(attributeNameId, attributeNameFullname, attributeNameMail,
       hostUrl, searchFilter, searchScope);
   }
 
-  //~--- set methods ----------------------------------------------------------
-
-  /**
-   * Method description
-   *
-   *
-   * @param attributeNameFullname
-   */
-  public void setAttributeNameFullname(String attributeNameFullname)
-  {
+  public void setAttributeNameFullname(String attributeNameFullname) {
     this.attributeNameFullname = attributeNameFullname;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @param attributeNameGroup
-   */
-  public void setAttributeNameGroup(String attributeNameGroup)
-  {
+  public void setAttributeNameGroup(String attributeNameGroup) {
     this.attributeNameGroup = attributeNameGroup;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @param attributeNameId
-   */
-  public void setAttributeNameId(String attributeNameId)
-  {
+  public void setAttributeNameId(String attributeNameId) {
     this.attributeNameId = attributeNameId;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @param attributeNameMail
-   */
-  public void setAttributeNameMail(String attributeNameMail)
-  {
+  public void setAttributeNameMail(String attributeNameMail) {
     this.attributeNameMail = attributeNameMail;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @param baseDn
-   */
-  public void setBaseDn(String baseDn)
-  {
+  public void setBaseDn(String baseDn) {
     this.baseDn = baseDn;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @param connectionDn
-   */
-  public void setConnectionDn(String connectionDn)
-  {
+  public void setConnectionDn(String connectionDn) {
     this.connectionDn = connectionDn;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @param connectionPassword
-   */
-  public void setConnectionPassword(String connectionPassword)
-  {
+  public void setConnectionPassword(String connectionPassword) {
     this.connectionPassword = connectionPassword;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @param enableNestedADGroups
-   */
-  public void setEnableNestedADGroups(boolean enableNestedADGroups)
-  {
+  public void setEnableNestedADGroups(boolean enableNestedADGroups) {
     this.enableNestedADGroups = enableNestedADGroups;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @param enableNestedGroups
-   */
-  public void setEnableNestedGroups(boolean enableNestedGroups)
-  {
+  public void setEnableNestedGroups(boolean enableNestedGroups) {
     this.enableNestedGroups = enableNestedGroups;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @param enableStartTls
-   */
-  public void setEnableStartTls(boolean enableStartTls)
-  {
+  public void setEnableStartTls(boolean enableStartTls) {
     this.enableStartTls = enableStartTls;
   }
 
-  /**
-   * Method description
-   *
-   *
-   *
-   * @param enabled
-   */
-  public void setEnabled(boolean enabled)
-  {
+  public void setEnabled(boolean enabled) {
     this.enabled = enabled;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @param hostUrl
-   */
-  public void setHostUrl(String hostUrl)
-  {
+  public void setHostUrl(String hostUrl) {
     this.hostUrl = hostUrl;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @param profile
-   */
-  public void setProfile(String profile)
-  {
+  public void setProfile(String profile) {
     this.profile = profile;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @param referralStrategy
-   */
-  public void setReferralStrategy(ReferralStrategy referralStrategy)
-  {
+  public void setReferralStrategy(ReferralStrategy referralStrategy) {
     this.referralStrategy = referralStrategy;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @param searchFilter
-   */
-  public void setSearchFilter(String searchFilter)
-  {
+  public void setSearchFilter(String searchFilter) {
     this.searchFilter = searchFilter;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @param searchFilterGroup
-   */
-  public void setSearchFilterGroup(String searchFilterGroup)
-  {
+  public void setSearchFilterGroup(String searchFilterGroup) {
     this.searchFilterGroup = searchFilterGroup;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @param searchFilterNestedGroup
-   */
-  public void setSearchFilterNestedGroup(String searchFilterNestedGroup)
-  {
+  public void setSearchFilterNestedGroup(String searchFilterNestedGroup) {
     this.searchFilterNestedGroup = searchFilterNestedGroup;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @param searchScope
-   */
-  public void setSearchScope(String searchScope)
-  {
+  public void setSearchScope(String searchScope) {
     this.searchScope = searchScope;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @param unitGroup
-   */
-  public void setUnitGroup(String unitGroup)
-  {
+  public void setUnitGroup(String unitGroup) {
     this.unitGroup = unitGroup;
   }
 
-  /**
-   * Method description
-   *
-   *
-   * @param unitPeople
-   */
-  public void setUnitPeople(String unitPeople)
-  {
+  public void setUnitPeople(String unitPeople) {
     this.unitPeople = unitPeople;
   }
 
-  //~--- get methods ----------------------------------------------------------
+  public void setRemoveInvalidCharacters(boolean removeInvalidCharacters) {
+    this.removeInvalidCharacters = removeInvalidCharacters;
+  }
 
-  /**
-   * Method description
-   *
-   *
-   * @param fields
-   *
-   * @return
-   */
-  private boolean isValid(String... fields)
-  {
+  private boolean isValid(String... fields) {
     boolean valid = true;
 
-    for (String field : fields)
-    {
-      if (Util.isEmpty(field))
-      {
+    for (String field : fields) {
+      if (Util.isEmpty(field)) {
         valid = false;
 
         break;
@@ -528,90 +296,4 @@ public class LdapConfig implements Validateable
 
     return valid;
   }
-
-  //~--- fields ---------------------------------------------------------------
-
-  /** Field description */
-  @XmlElement(name = "attribute-name-fullname")
-  private String attributeNameFullname = "cn";
-
-  /** Field description */
-  @XmlElement(name = "attribute-name-group")
-  private String attributeNameGroup = "group";
-
-  /** Field description */
-  @XmlElement(name = "attribute-name-id")
-  private String attributeNameId = "uid";
-
-  /** Field description */
-  @XmlElement(name = "attribute-name-mail")
-  private String attributeNameMail = "mail";
-
-  /** Field description */
-  @XmlElement(name = "base-dn")
-  private String baseDn = "dc=scm-manager,dc=org";
-
-  /** Field description */
-  @XmlElement(name = "connection-dn")
-  private String connectionDn = "cn=Directory Manager";
-
-  /** Field description */
-  @SuppressWarnings("squid:S2068") // suppress hardcoded password
-  @XmlElement(name = "connection-password")
-  @XmlJavaTypeAdapter(XmlCipherAdapter.class)
-  private String connectionPassword = "password";
-
-  /** Field description */
-  @XmlElement(name = "host-url")
-  private String hostUrl = "ldap://localhost:389";
-
-  /** Field description */
-  @XmlElement(name = "profile")
-  private String profile = "Custom";
-
-  /** Field description */
-  @XmlElement(name = "referral-strategy")
-  private ReferralStrategy referralStrategy = ReferralStrategy.FOLLOW;
-
-  /** Field description */
-  @XmlElement(name = "search-filter")
-  private String searchFilter = "(&(uid={0})(objectClass=posixAccount))";
-
-  /** Field description */
-  @XmlElement(name = "search-filter-group")
-  private String searchFilterGroup =
-    "(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))";
-
-  /** Field description */
-  @XmlElement(name = "search-filter-nested-group")
-  private String searchFilterNestedGroup =
-    "(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))";
-
-  /** Field description */
-  @XmlElement(name = "search-scope")
-  private String searchScope = "one";
-
-  /** Field description */
-  @XmlElement(name = "unit-groups")
-  private String unitGroup = "ou=Groups";
-
-  /** Field description */
-  @XmlElement(name = "unit-people")
-  private String unitPeople = "ou=People";
-
-  /** Field description */
-  @XmlElement(name = "enabled")
-  private boolean enabled = false;
-
-  /** Field description */
-  @XmlElement(name = "enable-starttls")
-  private boolean enableStartTls = false;
-
-  /** Field description */
-  @XmlElement(name = "enable-nested-ad-groups")
-  private boolean enableNestedADGroups = false;
-
-  /** Field description */
-  @XmlElement(name = "enable-nested-groups")
-  private boolean enableNestedGroups = false;
 }

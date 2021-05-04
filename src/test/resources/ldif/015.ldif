@@ -1,0 +1,49 @@
+version: 1
+
+dn: dc=scm-manager,dc=org
+objectClass: domain
+objectClass: top
+dc: scm-manager
+
+dn: ou=People,dc=scm-manager,dc=org
+objectClass: organizationalUnit
+objectClass: top
+ou: People
+
+dn: uid=trillian,ou=People,dc=scm-manager,dc=org
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Tricia McMillan
+sn: McMillan
+givenName: Tricia
+uid: trillian
+userPassword: trilli123
+mail: tricia.mcmillan@hitchhiker.com
+memberOf: cn=hg/HeartOfGold,ou=Groups,dc=scm-manager,dc=org
+memberOf: cn=hg/RestaurantAtTheEndOfTheUniverse,ou=Groups,dc=scm-manager,dc=org
+memberOf: cn=Happy Vertical People Transporter,ou=Other Groups,dc=scm-manager,dc=org
+
+dn: ou=Groups,dc=scm-manager,dc=org
+objectClass: organizationalUnit
+objectClass: top
+ou: Groups
+
+dn: cn=hg/HeartOfGold,ou=Groups,dc=scm-manager,dc=org
+objectClass: groupOfUniqueNames
+cn: HeartOfGold
+
+dn: cn=hg/RestaurantAtTheEndOfTheUniverse,ou=Groups,dc=scm-manager,dc=org
+objectClass: groupOfUniqueNames
+cn: RestaurantAtTheEndOfTheUniverse
+
+dn: ou=Other Groups,dc=scm-manager,dc=org
+objectClass: organizationalUnit
+objectClass: top
+ou: Groups
+
+dn: cn=Happy Vertical People Transporter,ou=Other Groups,dc=scm-manager,dc=org
+objectClass: groupOfUniqueNames
+cn: HappyVerticalPeopleTransporter
+

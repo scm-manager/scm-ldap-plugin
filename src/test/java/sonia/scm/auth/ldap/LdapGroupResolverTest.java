@@ -130,4 +130,12 @@ class LdapGroupResolverTest extends LdapServerTestBaseJunit5 {
     assertThat(groups).isEmpty();
   }
 
+  @Test
+  void shouldReplaceIllegalCharacters() {
+    config.setRemoveInvalidCharacters(true);
+    ldif(15);
+
+    Set<String> groups = groupResolver.resolve("trillian");
+    assertThat(groups).containsOnly("hg_HeartOfGold", "hg_RestaurantAtTheEndOfTheUniverse", "Happy_Vertical_People_Transporter");
+  }
 }
