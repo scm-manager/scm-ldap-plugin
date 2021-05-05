@@ -64,7 +64,7 @@
           "THROW": "THROW"
         }
       },
-      "testButton": "Test connection"
+      "testButton": "Test Connection"
     },
     "testForm": {
       "title": "LDAP Connection Test",
