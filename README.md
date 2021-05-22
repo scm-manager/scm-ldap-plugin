@@ -61,7 +61,7 @@ You can use a single `curl` request for this configuration:
 
 ```bash
 curl -u scmadmin:scmadmin \
-     --data '{"attributeNameFullname":"cn","attributeNameGroup":"group","attributeNameId":"uid","attributeNameMail":"mail","baseDn":"dc=planetexpress,dc=com","connectionDn":"cn=admin,dc=planetexpress,dc=com","connectionPassword":"__DUMMY__","hostUrl":"ldap://localhost:389","profile":"Custom","referralStrategy":"FOLLOW","searchFilter":"(&(objectClass=inetOrgPerson)(uid={0}))","searchFilterGroup":"(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))","searchFilterNestedGroup":"(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))","searchScope":"one","unitGroup":"ou=Groups","unitPeople":"ou=People","enabled":true,"enableStartTls":false,"enableNestedADGroups":false,"enableNestedGroups":false,"activeFields":[],"showTestDialog":false}' \
+     --data '{"attributeNameFullname":"cn","attributeNameGroup":"group","attributeNameId":"uid","attributeNameMail":"mail","baseDn":"dc=planetexpress,dc=com","connectionDn":"cn=admin,dc=planetexpress,dc=com","connectionPassword":"GoodNewsEveryone","hostUrl":"ldap://localhost:10389","profile":"Custom","referralStrategy":"FOLLOW","searchFilter":"(&(objectClass=inetOrgPerson)(uid={0}))","searchFilterGroup":"(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))","searchFilterNestedGroup":"(&(objectClass=groupOfUniqueNames)(uniqueMember={0}))","searchScope":"one","unitGroup":"ou=Groups","unitPeople":"ou=People","enabled":true,"enableStartTls":false,"enableNestedADGroups":false,"enableNestedGroups":false,"activeFields":[],"showTestDialog":false}' \
      -H "Content-Type: application/json" \
      -X PUT \
      http://localhost:8081/scm/api/v2/config/ldap
