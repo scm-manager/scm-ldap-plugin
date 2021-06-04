@@ -55,11 +55,13 @@ public class LdapRealm extends AuthenticatingRealm {
 
   private final SyncingRealmHelper syncingRealmHelper;
   private final LdapConfigStore configStore;
+  private final LdapConnectionFactory ldapConnectionFactory;
 
   @Inject
-  public LdapRealm(LdapConfigStore configStore, SyncingRealmHelper syncingRealmHelper, CacheManager cacheManager) {
+  public LdapRealm(LdapConfigStore configStore, SyncingRealmHelper syncingRealmHelper, CacheManager cacheManager, LdapConnectionFactory ldapConnectionFactory) {
     this.configStore = configStore;
     this.syncingRealmHelper = syncingRealmHelper;
+    this.ldapConnectionFactory = ldapConnectionFactory;
     setAuthenticationTokenClass(UsernamePasswordToken.class);
     setCredentialsMatcher(new AllowAllCredentialsMatcher());
 
@@ -82,7 +84,7 @@ public class LdapRealm extends AuthenticatingRealm {
     String username = upt.getUsername();
     char[] password = upt.getPassword();
 
-    LdapAuthenticator authenticator = new LdapAuthenticator(config);
+    LdapAuthenticator authenticator = new LdapAuthenticator(ldapConnectionFactory, config);
     User user = authenticator.authenticate(username, new String(password))
       .orElseThrow(() -> new UnknownAccountException("could not find account with name " + username));
 

@@ -38,9 +38,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 import sonia.scm.api.v2.resources.ScmPathInfoStore;
 import sonia.scm.auth.ldap.LdapConfig;
 import sonia.scm.auth.ldap.LdapConfigStore;
+import sonia.scm.auth.ldap.LdapConnectionFactory;
 import sonia.scm.user.UserTestData;
 import sonia.scm.web.RestDispatcher;
 
+import javax.inject.Provider;
+import javax.net.ssl.SSLContext;
 import javax.ws.rs.core.MediaType;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -73,6 +76,8 @@ public class LdapConfigResourceTest {
   private LdapConfigStore configStore;
   @Mock
   private ScmPathInfoStore scmPathInfoStore;
+  @Mock
+  private LdapConnectionFactory ldapConnectionFactory;
 
   @Mock
   private LdapConnectionTester connectionTester;
@@ -84,7 +89,7 @@ public class LdapConfigResourceTest {
 
   @Before
   public void init() {
-    LdapConfigResource resource = new LdapConfigResource(configStore, mapper) {
+    LdapConfigResource resource = new LdapConfigResource(configStore, mapper, ldapConnectionFactory) {
       @Override
       LdapConnectionTester createConnectionTester(LdapConfig config) {
         return connectionTester;

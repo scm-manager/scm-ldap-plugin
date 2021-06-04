@@ -31,19 +31,22 @@ import sonia.scm.util.ValidationUtil;
 
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchResult;
+import javax.net.ssl.SSLContext;
 import java.util.Optional;
 
 public class LdapAuthenticator {
 
+  private final LdapConnectionFactory connectionFactory;
   private final LdapConfig config;
   private static final Logger logger = LoggerFactory.getLogger(LdapAuthenticator.class);
 
-  public LdapAuthenticator(LdapConfig config) {
+  public LdapAuthenticator(LdapConnectionFactory connectionFactory, LdapConfig config) {
+    this.connectionFactory = connectionFactory;
     this.config = config;
   }
 
   public Optional<User> authenticate(String username, String password) {
-    try (LdapConnection bindConnection = LdapConnection.createBindConnection(config)) {
+    try (LdapConnection bindConnection = connectionFactory.createBindConnection(config)) {
       UserSearcher userSearcher = new UserSearcher(config, bindConnection);
       Optional<SearchResult> optionalSearchResult = searchUser(username, userSearcher);
       if (optionalSearchResult.isPresent()) {
@@ -72,15 +75,14 @@ public class LdapAuthenticator {
 
 
   private void authenticateUser(String userDN, String password) {
-    try (LdapConnection connection = LdapConnection.createUserConnection(config, userDN, password)) {
+    try (LdapConnection connection = connectionFactory.createUserConnection(config, userDN, password)) {
       logger.debug("user {} successfully authenticated", userDN);
     }
   }
 
   private User createUser(Attributes attributes) {
     User user = new User();
-
-    user.setType(LdapRealm.TYPE);
+    user.setExternal(true);
 
     String username = LdapUtil.getAttribute(attributes, config.getAttributeNameId());
     user.setName(username);
@@ -98,7 +100,7 @@ public class LdapAuthenticator {
     }
 
     if (!user.isValid()) {
-      throw new InvalidUserException("invalid user object: " + user.toString(), user);
+      throw new InvalidUserException("invalid user object: " + user, user);
     }
 
     return user;

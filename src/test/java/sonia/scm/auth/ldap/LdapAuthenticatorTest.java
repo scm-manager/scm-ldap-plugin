@@ -27,6 +27,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sonia.scm.user.User;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,9 +39,9 @@ class LdapAuthenticatorTest extends LdapServerTestBaseJunit5 {
   private LdapAuthenticator authenticator;
 
   @BeforeEach
-  void setUpAuthenticator() {
+  void setUpAuthenticator() throws NoSuchAlgorithmException {
     config = createConfig();
-    authenticator = new LdapAuthenticator(config);
+    authenticator = new LdapAuthenticator(new LdapConnectionFactory(), config);
   }
 
   @Test
@@ -128,7 +129,6 @@ class LdapAuthenticatorTest extends LdapServerTestBaseJunit5 {
   }
 
   private void assertTrillian(User user) {
-    assertThat(user.getType()).isEqualTo("ldap");
     assertThat(user.getName()).isEqualTo("trillian");
     assertThat(user.getDisplayName()).isEqualTo("Tricia McMillan");
     assertThat(user.getMail()).isEqualTo("tricia.mcmillan@hitchhiker.com");

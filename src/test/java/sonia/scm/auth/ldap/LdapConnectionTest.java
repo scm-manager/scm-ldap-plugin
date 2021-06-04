@@ -23,8 +23,6 @@
  */
 package sonia.scm.auth.ldap;
 
-//~--- non-JDK imports --------------------------------------------------------
-
 import com.unboundid.ldap.listener.InMemoryDirectoryServer;
 import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig;
 import com.unboundid.ldap.listener.InMemoryListenerConfig;
@@ -32,49 +30,42 @@ import com.unboundid.ldif.LDIFReader;
 import com.unboundid.util.ssl.KeyStoreKeyManager;
 import com.unboundid.util.ssl.SSLUtil;
 import com.unboundid.util.ssl.TrustAllTrustManager;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
 import sonia.scm.auth.ldap.resource.LdapConnectionTester;
 import sonia.scm.util.IOUtil;
 
-//~--- JDK imports ------------------------------------------------------------
-
+import javax.naming.AuthenticationException;
+import javax.naming.NamingException;
+import javax.net.ssl.SSLContext;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
+import java.util.Objects;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
-import javax.naming.AuthenticationException;
-import javax.naming.NamingException;
-
-import javax.net.ssl.SSLContext;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-/**
- * @author Sebastian Sdorra
- */
 public class LdapConnectionTest extends LdapTestBase {
 
   private static final String LDIF = "/ldif/004.ldif";
 
-  //~--- methods --------------------------------------------------------------
+  @Rule
+  public TemporaryFolder tempFolder = new TemporaryFolder();
+
+  private InMemoryDirectoryServer ds;
+  private SSLContext sslContext;
 
   @Before
   public void startServer() throws Exception {
 
     // System.setProperty("javax.net.debug", "all");
 
-    accesslogHandler = new AccessLogHandler();
+    Handler accesslogHandler = new AccessLogHandler();
 
     this.sslContext = createSSLContext();
 
@@ -96,7 +87,7 @@ public class LdapConnectionTest extends LdapTestBase {
 
     try {
       reader =
-        new LDIFReader(LdapConnectionTester.class.getResourceAsStream(LDIF));
+        new LDIFReader(Objects.requireNonNull(LdapConnectionTester.class.getResourceAsStream(LDIF)));
       ds.importFromLDIF(false, reader);
     } finally {
       if (reader != null) {
@@ -107,30 +98,19 @@ public class LdapConnectionTest extends LdapTestBase {
     ds.startListening();
   }
 
-  /**
-   * Method description
-   */
   @After
   public void stopServer() {
     ds.shutDown(true);
   }
 
-  /**
-   * Method description
-   *
-   * @throws IOException
-   * @throws InterruptedException
-   * @throws NamingException
-   */
   @Test
   @SuppressWarnings("squid:S2699") // test throws exception if it fails
-  public void testTlsConnection() throws NamingException, IOException {
+  public void testTlsConnection() throws Exception {
     LdapConfig config = createConfig();
 
     config.setEnableStartTls(true);
 
-    LdapConnection connection = new LdapConnection(config, sslContext, BIND_DN,
-      BIND_PWD);
+    LdapConnection connection = new LdapConnection(config, sslContext, BIND_DN, BIND_PWD);
 
     connection.close();
   }
@@ -141,8 +121,7 @@ public class LdapConnectionTest extends LdapTestBase {
 
     config.setEnableStartTls(true);
 
-    LdapConnection connection = new LdapConnection(config, sslContext, BIND_DN,
-      "test-123");
+    LdapConnection connection = new LdapConnection(config, sslContext, BIND_DN, "test-123");
 
     connection.close();
   }
@@ -154,11 +133,12 @@ public class LdapConnectionTest extends LdapTestBase {
     File keystore = tempFolder.newFile("keystore.jks");
 
     try {
-      input =
-        LdapConnectionTester.class.getResourceAsStream("/security/keystore.jks");
+      input = LdapConnectionTester.class.getResourceAsStream("/security/keystore.jks");
       ouput = new FileOutputStream(keystore);
 
-      IOUtil.copy(input, ouput);
+      if (input != null) {
+        IOUtil.copy(input, ouput);
+      }
     } finally {
       IOUtil.close(input);
       IOUtil.close(ouput);
@@ -168,7 +148,11 @@ public class LdapConnectionTest extends LdapTestBase {
       new SSLUtil(new KeyStoreKeyManager(keystore,
         "scm-manager.org".toCharArray()), new TrustAllTrustManager());
 
-    return sslUtil.createSSLContext();
+    // TLS 1.0 + 1.1 are deprecated with newer jdk 1.8 versions so we have to use 1.2 or above
+    SSLContext sslContext = sslUtil.createSSLContext("TLSv1.2");
+    SSLContext.setDefault(sslContext);
+
+    return sslContext;
   }
 
   //~--- inner classes --------------------------------------------------------
@@ -199,12 +183,4 @@ public class LdapConnectionTest extends LdapTestBase {
 
   //~--- fields ---------------------------------------------------------------
 
-  @Rule
-  public TemporaryFolder tempFolder = new TemporaryFolder();
-
-  private Handler accesslogHandler;
-
-  private InMemoryDirectoryServer ds;
-
-  private SSLContext sslContext;
 }

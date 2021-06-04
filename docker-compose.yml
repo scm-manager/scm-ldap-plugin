@@ -28,4 +28,5 @@ services:
     image: rroemhild/test-openldap
     ports:
         - "10389:10389"
+        - "10636:10636"
     privileged: true
