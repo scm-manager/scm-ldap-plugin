@@ -23,8 +23,6 @@
  */
 package sonia.scm.auth.ldap;
 
-//~--- non-JDK imports --------------------------------------------------------
-
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.UnknownAccountException;
@@ -32,7 +30,6 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import sonia.scm.cache.Cache;
@@ -40,17 +37,14 @@ import sonia.scm.cache.CacheManager;
 import sonia.scm.security.SyncingRealmHelper;
 import sonia.scm.user.User;
 
+import java.security.NoSuchAlgorithmException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-//~--- JDK imports ------------------------------------------------------------
-
-/**
- * @author Sebastian Sdorra
- */
 @ExtendWith(MockitoExtension.class)
 class LdapRealmTest extends LdapServerTestBaseJunit5 {
 
@@ -63,7 +57,6 @@ class LdapRealmTest extends LdapServerTestBaseJunit5 {
   @Mock
   private CacheManager cacheManager;
 
-  @InjectMocks
   private LdapRealm realm;
 
   @Mock
@@ -74,10 +67,11 @@ class LdapRealmTest extends LdapServerTestBaseJunit5 {
 
   @BeforeEach
   @SuppressWarnings("unchecked")
-  void setUpRealm() {
+  void setUpRealm() throws NoSuchAlgorithmException {
     config = createConfig();
     lenient().when(configStore.get()).thenReturn(config);
     lenient().when(cacheManager.getCache(LdapRealm.CACHE_NAME)).thenReturn(cache);
+    realm = new LdapRealm(configStore, syncingRealmHelper, cacheManager, new LdapConnectionFactory());
   }
 
   @Test
@@ -124,11 +118,11 @@ class LdapRealmTest extends LdapServerTestBaseJunit5 {
 
   @Test
   @SuppressWarnings("unchecked")
-  void shouldReturnAuthenticationInfoFromCache() {
+  void shouldReturnAuthenticationInfoFromCache() throws NoSuchAlgorithmException {
     AuthenticationToken token = createToken("trillian", "trilli123");
 
     AuthenticationInfo authenticationInfoMock = mock(AuthenticationInfo.class);
-    LdapRealm realm = new LdapRealm(configStore, syncingRealmHelper, cacheManager);
+    LdapRealm realm = new LdapRealm(configStore, syncingRealmHelper, cacheManager, new LdapConnectionFactory());
     when(cache.get("trillian")).thenReturn(authenticationInfoMock);
 
     AuthenticationInfo authenticationInfo = realm.getAuthenticationInfo(token);

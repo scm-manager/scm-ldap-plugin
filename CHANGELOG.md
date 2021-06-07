@@ -4,11 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Changed
+- Use custom ssl context ([#31](https://github.com/scm-manager/scm-ldap-plugin/pull/31))
+
 ## 2.3.0
 ### Added
 - Option to replace invalid characters in group names ([#19](https://github.com/scm-manager/scm-ldap-plugin/pull/19))
 ### Fixed
-- Calculate corret DN for nested group search filter ([#20](https://github.com/scm-manager/scm-ldap-plugin/pull/20))
+- Calculate correct DN for nested group search filter ([#20](https://github.com/scm-manager/scm-ldap-plugin/pull/20))
 
 ## 2.2.0 - 2021-03-01
 ### Changed

@@ -39,6 +39,8 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+import javax.net.ssl.SSLContext;
+import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -56,18 +58,20 @@ public class LdapGroupResolver implements GroupResolver {
   private static final String NESTEDGROUP_MATCHINGRULE = ":1.2.840.113556.1.4.1941:=";
 
   private final Provider<LdapConfig> store;
+  private final LdapConnectionFactory ldapConnectionFactory;
 
   @Inject
-  public LdapGroupResolver(LdapConfigStore store) {
-    this((Provider<LdapConfig>) store);
+  public LdapGroupResolver(LdapConfigStore store, LdapConnectionFactory ldapConnectionFactory) {
+    this((Provider<LdapConfig>) store, ldapConnectionFactory);
   }
 
-  private LdapGroupResolver(Provider<LdapConfig> store) {
+  private LdapGroupResolver(Provider<LdapConfig> store, LdapConnectionFactory ldapConnectionFactory) {
     this.store = store;
+    this.ldapConnectionFactory = ldapConnectionFactory;
   }
 
-  public static LdapGroupResolver from(LdapConfig config) {
-    return new LdapGroupResolver(Providers.of(config));
+  public static LdapGroupResolver from(LdapConnectionFactory ldapConnectionFactory, LdapConfig config) {
+    return new LdapGroupResolver(Providers.of(config), ldapConnectionFactory);
   }
 
   @Override
@@ -77,7 +81,7 @@ public class LdapGroupResolver implements GroupResolver {
       try {
         return sanitizeGroupNames(resolveGroups(config, principal), config);
       } catch (LdapException ex) {
-        LOG.error("failed to resolve groups for principal: {}", ex);
+        LOG.error("failed to resolve groups for principal: {}", principal, ex);
       }
     } else {
       LOG.debug("ldap is disabled, returning empty set of groups");
@@ -94,7 +98,7 @@ public class LdapGroupResolver implements GroupResolver {
   }
 
   private Set<String> resolveGroups(LdapConfig config, String principal) {
-    try (LdapConnection bindConnection = LdapConnection.createBindConnection(config)) {
+    try (LdapConnection bindConnection = ldapConnectionFactory.createBindConnection(config)) {
       UserSearcher searcher = new UserSearcher(config, bindConnection);
       Optional<SearchResult> optionalSearchResult = searcher.search(principal, config.getAttributeNameGroup(), config.getAttributeNameMail());
       if (optionalSearchResult.isPresent()) {
@@ -109,7 +113,7 @@ public class LdapGroupResolver implements GroupResolver {
         if(config.isEnableNestedGroups()){
           groups = computeRecursiveGroups(bindConnection, groups);
         }
-        return groups.stream().map(dn -> {return LdapUtil.getName(dn);}).collect(Collectors.toSet());
+        return groups.stream().map(LdapUtil::getName).collect(Collectors.toSet());
       }
     }
     return Collections.emptySet();
@@ -228,6 +232,7 @@ public class LdapGroupResolver implements GroupResolver {
     return results;
   }
 
+  @SuppressWarnings("java:S1192")
   private Optional<String> createGroupSearchFilter(String userDN, String uid, String mail) {
     LdapConfig config = store.get();
     String filterPattern = config.getSearchFilterGroup();
@@ -268,23 +273,13 @@ public class LdapGroupResolver implements GroupResolver {
     return Optional.empty();
   }
 
-  private Optional<String> createGroupSearchFilterByName(String groupCN) {
-    LdapConfig config = store.get();
-    String filterPattern = ATTRIBUTE_GROUP_NAME+"={0}";
-
-    String filter = MessageFormat.format(filterPattern, escapeLDAPSearchFilter(groupCN));
-    LOG.debug("search-filter for group search: {}", filter);
-
-    return Optional.of(filter);
-  }
-
   /**
    * Sanitize LDAP search filter to prevent LDAP injection.
    * Source: https://www.owasp.org/index.php/Preventing_LDAP_Injection_in_Java
    * \\\\ is there because java.MessageFormat.format() is suppressing \\ to \
    *
-   * @param filter
-   * @return
+   * @param filter filter for ldap search
+   * @return result
    */
   public String escapeLDAPSearchFilter(String filter) {
     StringBuilder sb = new StringBuilder();

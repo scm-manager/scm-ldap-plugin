@@ -28,6 +28,7 @@ import org.apache.commons.lang.StringUtils;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ObjectFactory;
 import sonia.scm.api.v2.resources.LinkBuilder;
@@ -50,6 +51,7 @@ public abstract class LdapConfigMapper {
   @Inject
   private ScmPathInfoStore scmPathInfoStore;
 
+  @Mapping(ignore = true, target = "attributes")
   public abstract LdapConfigDto map(LdapConfig config);
 
   public abstract LdapConfig map(LdapConfigDto dto, @Context LdapConfig oldConfig);

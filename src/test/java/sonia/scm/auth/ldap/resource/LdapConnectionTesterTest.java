@@ -26,7 +26,12 @@ package sonia.scm.auth.ldap.resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sonia.scm.auth.ldap.LdapConfig;
+import sonia.scm.auth.ldap.LdapConnectionFactory;
 import sonia.scm.auth.ldap.LdapServerTestBaseJunit5;
+
+import javax.net.ssl.SSLContext;
+
+import java.security.NoSuchAlgorithmException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,11 +39,12 @@ class LdapConnectionTesterTest extends LdapServerTestBaseJunit5 {
 
   private LdapConfig config;
   private LdapConnectionTester tester;
+  private SSLContext sslContext;
 
   @BeforeEach
-  void setUpConnectionTester() {
+  void setUpConnectionTester() throws NoSuchAlgorithmException {
     config = createConfig();
-    tester = new LdapConnectionTester(config);
+    tester = new LdapConnectionTester(new LdapConnectionFactory(), config);
   }
 
   @Test
@@ -47,7 +53,7 @@ class LdapConnectionTesterTest extends LdapServerTestBaseJunit5 {
 
     AuthenticationResult result = tester.test("trillian", "trilli123");
     assertThat(result.getFailure()).isEmpty();
-    assertThat(result.getUser().get().getName()).isEqualTo("trillian");
+    assertThat(result.getUser()).hasValueSatisfying(r -> assertThat(r.getName()).isEqualTo("trillian"));
     assertThat(result.getGroups()).containsOnly("HeartOfGold", "RestaurantAtTheEndOfTheUniverse", "HappyVerticalPeopleTransporter");
   }
 
@@ -64,6 +70,7 @@ class LdapConnectionTesterTest extends LdapServerTestBaseJunit5 {
     config.setConnectionPassword("nonono");
 
     AuthenticationResult result = tester.test("trillian", "trilli123");
+    assertThat(result.getFailure()).isPresent();
     AuthenticationFailure failure = result.getFailure().get();
     assertThat(failure.isConnected()).isFalse();
     assertThat(failure.getException()).isNotEmpty();
@@ -74,6 +81,7 @@ class LdapConnectionTesterTest extends LdapServerTestBaseJunit5 {
     ldif(3);
 
     AuthenticationResult result = tester.test("trillian", "trilli1234");
+    assertThat(result.getFailure()).isPresent();
     AuthenticationFailure failure = result.getFailure().get();
     assertThat(failure.isConnected()).isTrue();
     assertThat(failure.isUserFound()).isTrue();
@@ -88,6 +96,7 @@ class LdapConnectionTesterTest extends LdapServerTestBaseJunit5 {
     config.setAttributeNameId(null);
 
     AuthenticationResult result = tester.test("trillian", "trilli123");
+    assertThat(result.getFailure()).isPresent();
     AuthenticationFailure failure = result.getFailure().get();
     assertThat(failure.isConfigured()).isFalse();
     assertThat(failure.isConnected()).isFalse();
@@ -103,6 +112,7 @@ class LdapConnectionTesterTest extends LdapServerTestBaseJunit5 {
     config.setBaseDn("dc=invalid,dc=org");
 
     AuthenticationResult result = tester.test("trillain", "trilli123");
+    assertThat(result.getFailure()).isPresent();
     AuthenticationFailure failure = result.getFailure().get();
     assertThat(failure.isConfigured()).isTrue();
     assertThat(failure.isConnected()).isTrue();

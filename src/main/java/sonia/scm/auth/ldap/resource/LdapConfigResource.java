@@ -35,6 +35,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import sonia.scm.api.v2.resources.ErrorDto;
 import sonia.scm.auth.ldap.LdapConfig;
 import sonia.scm.auth.ldap.LdapConfigStore;
+import sonia.scm.auth.ldap.LdapConnectionFactory;
 import sonia.scm.config.ConfigurationPermissions;
 import sonia.scm.user.User;
 import sonia.scm.web.VndMediaType;
@@ -64,11 +65,13 @@ public class LdapConfigResource {
 
   private final LdapConfigStore configStore;
   private final LdapConfigMapper mapper;
+  private final LdapConnectionFactory ldapConnectionFactory;
 
   @Inject
-  public LdapConfigResource(LdapConfigStore configStore, LdapConfigMapper mapper) {
+  public LdapConfigResource(LdapConfigStore configStore, LdapConfigMapper mapper, LdapConnectionFactory ldapConnectionFactory) {
     this.configStore = configStore;
     this.mapper = mapper;
+    this.ldapConnectionFactory = ldapConnectionFactory;
   }
 
   @POST
@@ -120,7 +123,7 @@ public class LdapConfigResource {
 
   @VisibleForTesting
   LdapConnectionTester createConnectionTester(LdapConfig config) {
-    return new LdapConnectionTester(config);
+    return new LdapConnectionTester(ldapConnectionFactory, config);
   }
 
   @GET

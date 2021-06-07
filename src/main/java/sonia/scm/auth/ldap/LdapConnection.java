@@ -62,6 +62,8 @@ class LdapConnection implements Closeable {
   private static final String PROPERTY_TIMEOUT_READ =
     "com.sun.jndi.ldap.read.timeout";
 
+  private static final String PROPERTY_SSL_SOCKET_FACTORY = "java.naming.ldap.factory.socket";
+
   /**
    * connect timeout: 5sec
    */
@@ -80,33 +82,28 @@ class LdapConnection implements Closeable {
 
   private final LdapContext context;
   private StartTlsResponse tls;
-
-  static LdapConnection createBindConnection(LdapConfig config) {
-    try {
-      return new LdapConnection(config, null, config.getConnectionDn(), config.getConnectionPassword());
-    } catch (IOException | NamingException ex) {
-      throw new BindConnectionFailedException("failed to create bind connection for " + config.getConnectionDn(), ex);
-    }
-  }
-
-  static LdapConnection createUserConnection(LdapConfig config, String userDn, String password) {
-    try {
-      return new LdapConnection(config, null, userDn, password);
-    } catch (IOException | NamingException ex) {
-      throw new UserAuthenticationFailedException("failed to authenticate user " + userDn, ex);
-    }
-  }
+  private final SSLContext sslContext;
 
   @VisibleForTesting
   LdapConnection(LdapConfig config, SSLContext sslContext, String userDN, String password) throws NamingException, IOException {
-    context = new InitialLdapContext(createConnectionProperties(config, userDN, password), null);
+    this.sslContext = sslContext;
+    ThreadLocalSocketFactory.setDelegate(sslContext.getSocketFactory());
+    // JNDI uses the context classloader to instantiate the socket factory
+    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-    if (config.isEnableStartTls()) {
-      startTLS(config, sslContext, userDN, password);
+    Thread.currentThread().setContextClassLoader(LdapConnection.class.getClassLoader());
+    try {
+      context = new InitialLdapContext(createConnectionProperties(config, userDN, password), null);
+
+      if (config.isEnableStartTls()) {
+        startTLS(config, userDN, password);
+      }
+    } finally {
+      Thread.currentThread().setContextClassLoader(classLoader);
     }
   }
 
-  private void startTLS(LdapConfig config, SSLContext sslContext, String userDN, String password) throws NamingException, IOException {
+  private void startTLS(LdapConfig config, String userDN, String password) throws NamingException, IOException {
     logger.debug("send starttls request");
 
     tls = (StartTlsResponse) context.extendedOperation(new StartTlsRequest());
@@ -137,8 +134,8 @@ class LdapConnection implements Closeable {
   }
 
   @SuppressWarnings("squid:S1149") // we have to use hashtable, because it is required by jndi
-  private Hashtable<String, String> createConnectionProperties(LdapConfig config, String userDN, String password) {
-    Hashtable<String, String> ldapProperties = new Hashtable<>(11);
+  private Hashtable<String, Object> createConnectionProperties(LdapConfig config, String userDN, String password) {
+    Hashtable<String, Object> ldapProperties = new Hashtable<>(12);
 
     ldapProperties.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
     ldapProperties.put(Context.PROVIDER_URL, config.getHostUrl());
@@ -165,6 +162,11 @@ class LdapConnection implements Closeable {
     ldapProperties.put(Context.REFERRAL, referral);
     ldapProperties.put("java.naming.ldap.version", "3");
 
+    if (config.getHostUrl().startsWith("ldaps")) {
+      ldapProperties.put(Context.SECURITY_PROTOCOL, "ssl");
+      ldapProperties.put(PROPERTY_SSL_SOCKET_FACTORY, ThreadLocalSocketFactory.class.getName());
+    }
+
     return ldapProperties;
   }
 
@@ -177,5 +179,6 @@ class LdapConnection implements Closeable {
   public void close() {
     LdapUtil.close(tls);
     LdapUtil.close(context);
+    ThreadLocalSocketFactory.clearDelegate();
   }
 }

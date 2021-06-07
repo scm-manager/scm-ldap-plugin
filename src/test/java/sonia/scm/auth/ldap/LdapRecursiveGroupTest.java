@@ -23,28 +23,31 @@
  */
 package sonia.scm.auth.ldap;
 
+import com.google.inject.util.Providers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import sonia.scm.store.InMemoryConfigurationStore;
 
+import javax.net.ssl.SSLContext;
+import java.security.NoSuchAlgorithmException;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LdapRecursiveGroupTest extends LdapServerTestBaseJunit5 {
+class LdapRecursiveGroupTest extends LdapServerTestBaseJunit5 {
 
   private LdapConfig config;
   private LdapGroupResolver groupResolver;
 
   @BeforeEach
-  void setUpAuthenticator() {
+  void setUpAuthenticator() throws NoSuchAlgorithmException {
     config = createConfig();
     config.setEnableNestedGroups(true);
     LdapConfigStore ldapConfigStore = new LdapConfigStore(new InMemoryConfigurationStore<>());
     ldapConfigStore.set(config);
-    groupResolver = new LdapGroupResolver(ldapConfigStore);
+    groupResolver = new LdapGroupResolver(ldapConfigStore, new LdapConnectionFactory());
   }
 
   /*
@@ -174,7 +177,7 @@ public class LdapRecursiveGroupTest extends LdapServerTestBaseJunit5 {
   }
 
   @Test
-  @Timeout(value = 1, unit = TimeUnit.SECONDS)
+  @Timeout(value = 1)
   void shouldReturnGroupsFromUniqueMemberWithLoop() {
     ldif(14);
 

@@ -23,10 +23,14 @@
  */
 package sonia.scm.auth.ldap;
 
+import com.google.inject.util.Providers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sonia.scm.store.InMemoryConfigurationStore;
 
+import javax.inject.Provider;
+import javax.net.ssl.SSLContext;
+import java.security.NoSuchAlgorithmException;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,11 +41,11 @@ class LdapGroupResolverTest extends LdapServerTestBaseJunit5 {
   private LdapGroupResolver groupResolver;
 
   @BeforeEach
-  void setUpAuthenticator() {
+  void setUpAuthenticator() throws NoSuchAlgorithmException {
     config = createConfig();
     LdapConfigStore ldapConfigStore = new LdapConfigStore(new InMemoryConfigurationStore<>());
     ldapConfigStore.set(config);
-    groupResolver = new LdapGroupResolver(ldapConfigStore);
+    groupResolver = new LdapGroupResolver(ldapConfigStore, new LdapConnectionFactory());
   }
 
   @Test

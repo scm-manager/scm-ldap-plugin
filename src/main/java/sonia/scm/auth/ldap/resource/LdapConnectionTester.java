@@ -28,6 +28,7 @@ import sonia.scm.auth.ldap.ConfigurationException;
 import sonia.scm.auth.ldap.InvalidUserException;
 import sonia.scm.auth.ldap.LdapAuthenticator;
 import sonia.scm.auth.ldap.LdapConfig;
+import sonia.scm.auth.ldap.LdapConnectionFactory;
 import sonia.scm.auth.ldap.LdapGroupResolver;
 import sonia.scm.auth.ldap.UserAuthenticationFailedException;
 import sonia.scm.auth.ldap.UserSearchFailedException;
@@ -39,13 +40,15 @@ import java.util.Set;
 public class LdapConnectionTester {
 
   private final LdapConfig config;
+  private final LdapConnectionFactory ldapConnectionFactory;
 
-  LdapConnectionTester(LdapConfig config) {
+  LdapConnectionTester(LdapConnectionFactory ldapConnectionFactory, LdapConfig config) {
     this.config = config;
+    this.ldapConnectionFactory = ldapConnectionFactory;
   }
 
   AuthenticationResult test(String username, String password) {
-    LdapAuthenticator authenticator = new LdapAuthenticator(config);
+    LdapAuthenticator authenticator = new LdapAuthenticator(ldapConnectionFactory, config);
     try {
       Optional<User> optionalUser = authenticator.authenticate(username, password);
 
@@ -53,7 +56,7 @@ public class LdapConnectionTester {
         return new AuthenticationResult(AuthenticationFailure.userNotFound());
       }
 
-      LdapGroupResolver groupResolver = LdapGroupResolver.from(config);
+      LdapGroupResolver groupResolver = LdapGroupResolver.from(ldapConnectionFactory, config);
       Set<String> groups = groupResolver.resolve(username);
 
       return new AuthenticationResult(optionalUser.get(), groups);
