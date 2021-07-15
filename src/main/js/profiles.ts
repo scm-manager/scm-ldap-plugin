@@ -35,6 +35,7 @@ export const PROFILES = {
     unitGroup: "",
     enableNestedADGroups: true,
     enableNestedGroups: false,
+    excludeGroupsOutsideUnit: false,
     referralStrategy: "FOLLOW"
   },
   Apache: {
@@ -50,6 +51,7 @@ export const PROFILES = {
     unitGroup: "ou=Groups",
     enableNestedADGroups: false,
     enableNestedGroups: false,
+    excludeGroupsOutsideUnit: false,
     referralStrategy: "FOLLOW"
   },
   OpenDJ: {
@@ -65,6 +67,7 @@ export const PROFILES = {
     unitGroup: "ou=Groups",
     enableNestedADGroups: false,
     enableNestedGroups: false,
+    excludeGroupsOutsideUnit: false,
     referralStrategy: "FOLLOW",
   },
   OpenLDAP: {
@@ -80,6 +83,7 @@ export const PROFILES = {
     unitGroup: "ou=Groups",
     enableNestedADGroups: false,
     enableNestedGroups: false,
+    excludeGroupsOutsideUnit: false,
     referralStrategy: "FOLLOW"
   },
   posix: {
@@ -95,6 +99,7 @@ export const PROFILES = {
     unitGroup: "ou=Groups",
     enableNestedADGroups: false,
     enableNestedGroups: false,
+    excludeGroupsOutsideUnit: false,
     referralStrategy: "FOLLOW"
   },
   sun: {
@@ -110,6 +115,7 @@ export const PROFILES = {
     unitGroup: "ou=Groups",
     enableNestedADGroups: false,
     enableNestedGroups: false,
+    excludeGroupsOutsideUnit: false,
     referralStrategy: "FOLLOW"
   },
   Custom: {}

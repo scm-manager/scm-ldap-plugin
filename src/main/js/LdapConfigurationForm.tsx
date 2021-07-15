@@ -47,6 +47,7 @@ type LdapConfiguration = {
   enableNestedGroups: boolean;
   enableNestedADGroups: boolean;
   enableStartTls: boolean;
+  excludeGroupsOutsideUnit: boolean;
   removeInvalidCharacters: boolean;
   enabled: boolean;
 };
@@ -160,6 +161,7 @@ class LdapConfigurationForm extends React.Component<Props, State> {
           {this.createCheckbox("enableNestedADGroups")}
           {this.createCheckbox("enableStartTls")}
           {this.createCheckbox("removeInvalidCharacters")}
+          {this.createCheckbox("excludeGroupsOutsideUnit")}
           {this.createCheckbox("enabled")}
         </div>
         <div className="column is-full">

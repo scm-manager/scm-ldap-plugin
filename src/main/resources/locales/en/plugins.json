@@ -43,6 +43,8 @@
       "enableStartTlsHelp": "Use StartTLS extension to encrypt the connection to the directory server.",
       "removeInvalidCharacters": "Replace invalid characters in group names",
       "removeInvalidCharactersHelp": "Invalid characters in group names like '/', '&', '?' or spaces will be replaces with an underscore ('_').",
+      "excludeGroupsOutsideUnit": "Exclude groups outside of groups unit",
+      "excludeGroupsOutsideUnitHelp": "Removes all groups which are located outside of the configured groups unit, even if the group attribute contains such groups.",
       "enabled": "Enabled",
       "enabledHelp": "Enables or disables the ldap authentication.",
       "options": {

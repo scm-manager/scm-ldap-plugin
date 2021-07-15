@@ -206,6 +206,14 @@ class LdapUtil {
     return name;
   }
 
+  public static String getParentDN(String dn) {
+    int index = dn.indexOf(',');
+    if (index > 0) {
+      return dn.substring(index + 1);
+    }
+    return dn;
+  }
+
 
   /**
    * Method description
