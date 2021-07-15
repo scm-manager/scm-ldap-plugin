@@ -159,4 +159,14 @@ class LdapGroupResolverTest extends LdapServerTestBaseJunit5 {
     Set<String> groups = groupResolver.resolve("trillian");
     assertThat(groups).containsOnly("HappyVerticalPeopleTransporter");
   }
+
+  @Test
+  void shouldResolveOnlyGroupsOfUnitFromSubTree() {
+    config.setExcludeGroupsOutsideUnit(true);
+    config.setUnitGroup("ou=Other Groups");
+    ldif(17);
+
+    Set<String> groups = groupResolver.resolve("trillian");
+    assertThat(groups).containsOnly("Happy Vertical People Transporter");
+  }
 }

@@ -134,7 +134,7 @@ public class LdapGroupResolver implements GroupResolver {
       String groupsUnit = LdapUtil.createDN(config, config.getUnitGroup()).toLowerCase(Locale.ENGLISH);
       return dn -> {
         String parent = LdapUtil.getParentDN(dn).toLowerCase(Locale.ENGLISH);
-        return parent.startsWith(groupsUnit);
+        return parent.endsWith(groupsUnit);
       };
     }
     return dn -> true;
