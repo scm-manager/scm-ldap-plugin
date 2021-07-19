@@ -43,6 +43,8 @@
       "enableStartTlsHelp": "Verwende StartTLS Erweiterung um eine verschlüsselte Verbindung zum DirecotryServer aufzubauen.",
       "removeInvalidCharacters": "Ungültige Zeichen im Gruppennamen ersetzen",
       "removeInvalidCharactersHelp": "Ungültige Zeichen im Gruppennamen wie '/', '&', '?' oder Leerzeichen werden mit einem Unterstrich ('_') ersetzt.",
+      "excludeGroupsOutsideUnit": "Verwende nur Gruppen aus dem Gruppen-Pfad",
+      "excludeGroupsOutsideUnitHelp": "Entfernt alle Gruppen aus dem Ergebnis, die nicht aus dem Gruppen-Pfad kommen, auch wenn das Gruppen Attribut Gruppen aus anderen Pfaden zurückliefert.",
       "enabled": "Aktiviert",
       "enabledHelp": "Aktiviert / Deaktiviert die LDAP Authentifizierung",
       "options": {

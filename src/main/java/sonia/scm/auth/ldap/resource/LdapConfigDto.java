@@ -62,6 +62,7 @@ public class LdapConfigDto extends HalRepresentation {
   private boolean enableNestedADGroups;
   private boolean enableNestedGroups;
   private boolean removeInvalidCharacters;
+  private boolean excludeGroupsOutsideUnit;
 
   public LdapConfigDto(Links links) {
     super(links);

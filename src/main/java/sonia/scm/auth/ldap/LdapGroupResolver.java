@@ -39,15 +39,21 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
-import javax.net.ssl.SSLContext;
-import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Queue;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
-import static sonia.scm.auth.ldap.LdapUtil.*;
+import static sonia.scm.auth.ldap.LdapUtil.close;
+import static sonia.scm.auth.ldap.LdapUtil.getAttribute;
 
 @Extension
 public class LdapGroupResolver implements GroupResolver {
@@ -113,10 +119,25 @@ public class LdapGroupResolver implements GroupResolver {
         if(config.isEnableNestedGroups()){
           groups = computeRecursiveGroups(bindConnection, groups);
         }
-        return groups.stream().map(LdapUtil::getName).collect(Collectors.toSet());
+        Predicate<String> unitFilter = unitFilter(config);
+        return groups.stream()
+          .filter(unitFilter)
+          .map(LdapUtil::getName)
+          .collect(Collectors.toSet());
       }
     }
     return Collections.emptySet();
+  }
+
+  private Predicate<String> unitFilter(LdapConfig config) {
+    if (config.isExcludeGroupsOutsideUnit() && !Strings.isNullOrEmpty(config.getUnitGroup())) {
+      String groupsUnit = LdapUtil.createDN(config, config.getUnitGroup()).toLowerCase(Locale.ENGLISH);
+      return dn -> {
+        String parent = LdapUtil.getParentDN(dn).toLowerCase(Locale.ENGLISH);
+        return parent.endsWith(groupsUnit);
+      };
+    }
+    return dn -> true;
   }
 
   private Set<String> computeRecursiveGroups(LdapConnection connection, Set<String> groups) {

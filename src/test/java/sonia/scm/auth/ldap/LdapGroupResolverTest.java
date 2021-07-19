@@ -23,13 +23,10 @@
  */
 package sonia.scm.auth.ldap;
 
-import com.google.inject.util.Providers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sonia.scm.store.InMemoryConfigurationStore;
 
-import javax.inject.Provider;
-import javax.net.ssl.SSLContext;
 import java.security.NoSuchAlgorithmException;
 import java.util.Set;
 
@@ -141,5 +138,35 @@ class LdapGroupResolverTest extends LdapServerTestBaseJunit5 {
 
     Set<String> groups = groupResolver.resolve("trillian");
     assertThat(groups).containsOnly("hg_HeartOfGold", "hg_RestaurantAtTheEndOfTheUniverse", "Happy_Vertical_People_Transporter");
+  }
+
+  @Test
+  void shouldResolveOnlyGroupsOfUnitFromAttribute() {
+    config.setExcludeGroupsOutsideUnit(true);
+    config.setUnitGroup("ou=Other Groups");
+    ldif(15);
+
+    Set<String> groups = groupResolver.resolve("trillian");
+    assertThat(groups).containsOnly("Happy Vertical People Transporter");
+  }
+
+  @Test
+  void shouldResolveOnlyGroupsOfUnitFromSearchFilter() {
+    config.setExcludeGroupsOutsideUnit(true);
+    config.setUnitGroup("ou=Other Groups");
+    ldif(16);
+
+    Set<String> groups = groupResolver.resolve("trillian");
+    assertThat(groups).containsOnly("HappyVerticalPeopleTransporter");
+  }
+
+  @Test
+  void shouldResolveOnlyGroupsOfUnitFromSubTree() {
+    config.setExcludeGroupsOutsideUnit(true);
+    config.setUnitGroup("ou=Other Groups");
+    ldif(17);
+
+    Set<String> groups = groupResolver.resolve("trillian");
+    assertThat(groups).containsOnly("Happy Vertical People Transporter");
   }
 }

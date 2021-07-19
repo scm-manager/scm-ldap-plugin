@@ -109,6 +109,9 @@ public class LdapConfig implements Validateable {
   @XmlElement(name = "remove-illegal-characters")
   private boolean removeInvalidCharacters = false;
 
+  @XmlElement(name = "exclude-groups-outside-unit")
+  private boolean excludeGroupsOutsideUnit = false;
+
   public String getAttributeNameFullname() {
     return attributeNameFullname;
   }
@@ -187,6 +190,10 @@ public class LdapConfig implements Validateable {
 
   public boolean isRemoveInvalidCharacters() {
     return removeInvalidCharacters;
+  }
+
+  public boolean isExcludeGroupsOutsideUnit() {
+    return excludeGroupsOutsideUnit;
   }
 
   public boolean isEnabled() {
@@ -281,6 +288,10 @@ public class LdapConfig implements Validateable {
 
   public void setRemoveInvalidCharacters(boolean removeInvalidCharacters) {
     this.removeInvalidCharacters = removeInvalidCharacters;
+  }
+
+  public void setExcludeGroupsOutsideUnit(boolean excludeGroupsOutsideUnit) {
+    this.excludeGroupsOutsideUnit = excludeGroupsOutsideUnit;
   }
 
   private boolean isValid(String... fields) {
