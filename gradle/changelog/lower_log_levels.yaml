@@ -1,0 +1,2 @@
+- type: added
+  description: Lower log levels ([#39](https://github.com/scm-manager/scm-ldap-plugin/pull/39))

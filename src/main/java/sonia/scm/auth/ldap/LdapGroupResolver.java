@@ -87,7 +87,7 @@ public class LdapGroupResolver implements GroupResolver {
       try {
         return sanitizeGroupNames(resolveGroups(config, principal), config);
       } catch (LdapException ex) {
-        LOG.error("failed to resolve groups for principal: {}", principal, ex);
+        LOG.warn("failed to resolve groups for principal: {}", principal, ex);
       }
     } else {
       LOG.debug("ldap is disabled, returning empty set of groups");
