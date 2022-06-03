@@ -31,5 +31,11 @@
     expireAfterAccess="60"
     expireAfterWrite="120"
   />
+  <cache
+    name="sonia.scm.ldap.invalidCredentials"
+    maximumSize="1000"
+    expireAfterAccess="2"
+    expireAfterWrite="5"
+  />
 
 </caches>

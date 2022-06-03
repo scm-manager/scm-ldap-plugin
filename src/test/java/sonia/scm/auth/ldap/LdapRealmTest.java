@@ -23,6 +23,7 @@
  */
 package sonia.scm.auth.ldap;
 
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.UnknownAccountException;
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import sonia.scm.cache.Cache;
 import sonia.scm.cache.CacheManager;
@@ -63,15 +65,21 @@ class LdapRealmTest extends LdapServerTestBaseJunit5 {
   @SuppressWarnings("rawtypes")
   private Cache cache;
 
+  @Spy
+  private LdapConnectionFactory ldapConnectionFactory;
+
+  @Mock
+  private InvalidCredentialsCache invalidCredentialsCache;
+
   private LdapConfig config;
 
   @BeforeEach
   @SuppressWarnings("unchecked")
-  void setUpRealm() throws NoSuchAlgorithmException {
+  void setUpRealm() {
     config = createConfig();
     lenient().when(configStore.get()).thenReturn(config);
     lenient().when(cacheManager.getCache(LdapRealm.CACHE_NAME)).thenReturn(cache);
-    realm = new LdapRealm(configStore, syncingRealmHelper, cacheManager, new LdapConnectionFactory());
+    realm = new LdapRealm(configStore, syncingRealmHelper, cacheManager, ldapConnectionFactory, invalidCredentialsCache);
   }
 
   @Test
@@ -122,7 +130,7 @@ class LdapRealmTest extends LdapServerTestBaseJunit5 {
     AuthenticationToken token = createToken("trillian", "trilli123");
 
     AuthenticationInfo authenticationInfoMock = mock(AuthenticationInfo.class);
-    LdapRealm realm = new LdapRealm(configStore, syncingRealmHelper, cacheManager, new LdapConnectionFactory());
+    LdapRealm realm = new LdapRealm(configStore, syncingRealmHelper, cacheManager, new LdapConnectionFactory(), invalidCredentialsCache);
     when(cache.get("trillian")).thenReturn(authenticationInfoMock);
 
     AuthenticationInfo authenticationInfo = realm.getAuthenticationInfo(token);
@@ -137,7 +145,26 @@ class LdapRealmTest extends LdapServerTestBaseJunit5 {
     assertThrows(UserAuthenticationFailedException.class, () -> realm.doGetAuthenticationInfo(token));
   }
 
-  private AuthenticationToken createToken(String username, String password) {
+  @Test
+  void shouldNotQueryLdapIfInvalidPasswordIsCached() {
+    UsernamePasswordToken token = createToken("trillian", "trilli123");
+    doThrow(AuthenticationException.class).when(invalidCredentialsCache).verifyNotInvalid(token);
+
+    assertThrows(AuthenticationException.class, () -> realm.getAuthenticationInfo(token));
+
+    verifyNoInteractions(ldapConnectionFactory);
+  }
+
+  @Test
+  void shouldCacheInvalidCredential() {
+    UsernamePasswordToken token = createToken("trillian", "trilli123");
+
+    assertThrows(AuthenticationException.class, () -> realm.getAuthenticationInfo(token));
+
+    verify(invalidCredentialsCache).cacheAsInvalid(any());
+  }
+
+  private UsernamePasswordToken createToken(String username, String password) {
     return new UsernamePasswordToken(username, password);
   }
 }
