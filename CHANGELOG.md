@@ -4,15 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 2.4.0
+## 2.5.0 - 2022-06-08
+### Added
+- Cache invalid credentials ([#50](https://github.com/scm-manager/scm-ldap-plugin/pull/50))
+
+## 2.4.0 - 2021-07-19
 ### Added
 - Option to exclude groups which are located outside group unit ([#33](https://github.com/scm-manager/scm-ldap-plugin/pull/33))
+
 ### Changed
 - Use custom ssl context ([#31](https://github.com/scm-manager/scm-ldap-plugin/pull/31))
 
-## 2.3.0
+## 2.3.0 - 2021-05-04
 ### Added
 - Option to replace invalid characters in group names ([#19](https://github.com/scm-manager/scm-ldap-plugin/pull/19))
+
 ### Fixed
 - Calculate correct DN for nested group search filter ([#20](https://github.com/scm-manager/scm-ldap-plugin/pull/20))
 
@@ -37,3 +43,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 2.0.0-rc2 - 2020-03-13
 ### Added
 - Add swagger rest annotations to generate openAPI specs for the scm-openapi-plugin. ([#2](https://github.com/scm-manager/scm-ldap-plugin/pull/2))
+
