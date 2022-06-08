@@ -26,6 +26,7 @@ package sonia.scm.auth.ldap;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.UnknownAccountException;
@@ -56,12 +57,19 @@ public class LdapRealm extends AuthenticatingRealm {
   private final SyncingRealmHelper syncingRealmHelper;
   private final LdapConfigStore configStore;
   private final LdapConnectionFactory ldapConnectionFactory;
+  private final InvalidCredentialsCache invalidCredentialsCache;
 
   @Inject
-  public LdapRealm(LdapConfigStore configStore, SyncingRealmHelper syncingRealmHelper, CacheManager cacheManager, LdapConnectionFactory ldapConnectionFactory) {
+  public LdapRealm(LdapConfigStore configStore,
+                   SyncingRealmHelper syncingRealmHelper,
+                   CacheManager cacheManager,
+                   LdapConnectionFactory ldapConnectionFactory,
+                   InvalidCredentialsCache invalidCredentialsCache) {
     this.configStore = configStore;
     this.syncingRealmHelper = syncingRealmHelper;
     this.ldapConnectionFactory = ldapConnectionFactory;
+    this.invalidCredentialsCache = invalidCredentialsCache;
+
     setAuthenticationTokenClass(UsernamePasswordToken.class);
     setCredentialsMatcher(new AllowAllCredentialsMatcher());
 
@@ -84,9 +92,17 @@ public class LdapRealm extends AuthenticatingRealm {
     String username = upt.getUsername();
     char[] password = upt.getPassword();
 
+    invalidCredentialsCache.verifyNotInvalid(upt);
+
     LdapAuthenticator authenticator = new LdapAuthenticator(ldapConnectionFactory, config);
-    User user = authenticator.authenticate(username, new String(password))
-      .orElseThrow(() -> new UnknownAccountException("could not find account with name " + username));
+    User user;
+    try {
+      user = authenticator.authenticate(username, new String(password))
+        .orElseThrow(() -> new UnknownAccountException("could not find account with name " + username));
+    } catch (AuthenticationException e) {
+      invalidCredentialsCache.cacheAsInvalid(upt);
+      throw e;
+    }
 
     syncingRealmHelper.store(user);
     return syncingRealmHelper.createAuthenticationInfo(TYPE, user);
