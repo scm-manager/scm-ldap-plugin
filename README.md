@@ -40,7 +40,7 @@ In this mode each change to web files (src/main/js or src/main/webapp), should t
 To test this plugin against a ldap you may use a [preconfigured ldap inside a docker container](https://github.com/rroemhild/docker-test-openldap):
 ```
 docker pull rroemhild/test-openldap
-docker run --privileged -d -p 389:389 rroemhild/test-openldap
+docker run --privileged -d -p 10389:10389 rroemhild/test-openldap
 ```
 
 Or simply use `docker-compose`:
