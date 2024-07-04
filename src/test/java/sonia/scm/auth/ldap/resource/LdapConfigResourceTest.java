@@ -42,9 +42,9 @@ import sonia.scm.auth.ldap.LdapConnectionFactory;
 import sonia.scm.user.UserTestData;
 import sonia.scm.web.RestDispatcher;
 
-import javax.inject.Provider;
+import jakarta.inject.Provider;
 import javax.net.ssl.SSLContext;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;

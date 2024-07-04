@@ -12,7 +12,7 @@
     "dependencies": {
         "@scm-manager/ui-components": "^2.14.0",
         "@scm-manager/ui-extensions": "^2.14.0",
-        "@scm-manager/ui-plugins": "2.14.0",
+        "@scm-manager/ui-plugins": "3.2.3-20240525-044023",
         "classnames": "^2.2.6",
         "query-string": "^5.0.1",
         "react": "^16.10.2",

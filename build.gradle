@@ -23,7 +23,7 @@
  */
 
 plugins {
-  id 'org.scm-manager.smp' version '0.15.0'
+  id 'org.scm-manager.smp' version '0.16.4'
 }
 
 dependencies {
@@ -32,7 +32,7 @@ dependencies {
 }
 
 scmPlugin {
-  scmVersion = "2.34.0"
+  scmVersion = "3.2.3-SNAPSHOT"
   displayName = "LDAP"
   description = "Authentication for SCM-Manager using LDAP"
   author = "Thorsten Ludewig"

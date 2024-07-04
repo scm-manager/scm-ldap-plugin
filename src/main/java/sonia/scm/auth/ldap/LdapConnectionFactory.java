@@ -26,8 +26,8 @@ package sonia.scm.auth.ldap;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.util.Providers;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
 import javax.naming.NamingException;
 import javax.net.ssl.SSLContext;
 import java.io.IOException;

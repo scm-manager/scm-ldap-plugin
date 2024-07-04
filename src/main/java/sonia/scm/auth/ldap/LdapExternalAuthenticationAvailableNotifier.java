@@ -21,36 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package sonia.scm.auth.ldap;
 
-import com.google.common.annotations.VisibleForTesting;
-import sonia.scm.store.ConfigurationStore;
-import sonia.scm.store.ConfigurationStoreFactory;
-
 import jakarta.inject.Inject;
-import jakarta.inject.Provider;
-import jakarta.inject.Singleton;
+import sonia.scm.plugin.Extension;
+import sonia.scm.user.ExternalAuthenticationAvailableNotifier;
 
-@Singleton
-public class LdapConfigStore implements Provider<LdapConfig> {
+@Extension
+public class LdapExternalAuthenticationAvailableNotifier implements ExternalAuthenticationAvailableNotifier {
 
-  private final ConfigurationStore<LdapConfig> configurationStore;
+  private final LdapConfigStore ldapConfigStore;
 
   @Inject
-  public LdapConfigStore(ConfigurationStoreFactory configurationStoreFactory) {
-    this(configurationStoreFactory.withType(LdapConfig.class).withName("ldap").build());
+  public LdapExternalAuthenticationAvailableNotifier(LdapConfigStore ldapConfigStore) {
+    this.ldapConfigStore = ldapConfigStore;
   }
 
-  @VisibleForTesting
-  LdapConfigStore(ConfigurationStore<LdapConfig> configurationStore) {
-    this.configurationStore = configurationStore;
-  }
-
-  public LdapConfig get() {
-    return configurationStore.getOptional().orElse(new LdapConfig());
-  }
-
-  public void set(LdapConfig config) {
-    configurationStore.set(config);
+  @Override
+  public boolean isExternalAuthenticationAvailable() {
+    return ldapConfigStore.get().isEnabled();
   }
 }

@@ -31,8 +31,8 @@ import sonia.scm.group.GroupResolver;
 import sonia.scm.plugin.Extension;
 import sonia.scm.util.Util;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;

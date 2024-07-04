@@ -33,8 +33,8 @@ import sonia.scm.api.v2.resources.ScmPathInfoStore;
 import sonia.scm.config.ConfigurationPermissions;
 import sonia.scm.plugin.Extension;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
 
 import static sonia.scm.auth.ldap.resource.LdapModule.PERMISSION_NAME;
 

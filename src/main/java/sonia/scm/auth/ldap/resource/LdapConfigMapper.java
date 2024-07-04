@@ -36,7 +36,7 @@ import sonia.scm.api.v2.resources.ScmPathInfoStore;
 import sonia.scm.auth.ldap.LdapConfig;
 import sonia.scm.config.ConfigurationPermissions;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import static de.otto.edison.hal.Link.link;
 import static de.otto.edison.hal.Links.linkingTo;
