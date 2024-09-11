@@ -1,7 +1,7 @@
 {
     "name": "@scm-manager/scm-ldap-plugin",
     "private": true,
-    "version": "2.6.1-SNAPSHOT",
+    "version": "3.0.0",
     "license": "AGPLv3",
     "main": "./src/main/js/index.ts",
     "scripts": {
