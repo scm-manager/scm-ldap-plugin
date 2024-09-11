@@ -2,7 +2,7 @@
     "name": "@scm-manager/scm-ldap-plugin",
     "private": true,
     "version": "2.6.1-SNAPSHOT",
-    "license": "MIT",
+    "license": "AGPLv3",
     "main": "./src/main/js/index.ts",
     "scripts": {
         "build": "plugin-scripts build",
