@@ -57,7 +57,7 @@ class UserSearcher {
       if (searchResultEnm.hasMore()) {
         return Optional.of(searchResultEnm.next());
       } else {
-        logger.warn("no user with username {} found", username);
+        logger.debug("no user with username {} found", username);
         return Optional.empty();
       }
     } catch (NamingException ex) {

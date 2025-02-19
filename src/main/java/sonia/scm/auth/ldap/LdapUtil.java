@@ -110,7 +110,7 @@ class LdapUtil {
       try {
         context.close();
       } catch (NamingException ex) {
-        logger.error("could not close context", ex);
+        logger.warn("could not close context", ex);
       }
     }
   }
@@ -125,7 +125,7 @@ class LdapUtil {
       try {
         tls.close();
       } catch (IOException ex) {
-        logger.error("could not close tls response", ex);
+        logger.warn("could not close tls response", ex);
       }
     }
   }
@@ -140,7 +140,7 @@ class LdapUtil {
       try {
         enm.close();
       } catch (NamingException ex) {
-        logger.error("could not close enumeration", ex);
+        logger.warn("could not close enumeration", ex);
       }
     }
   }
@@ -168,7 +168,7 @@ class LdapUtil {
         }
       }
     } catch (NamingException ex) {
-      logger.warn("could not fetch attribute ".concat(name), ex);
+      logger.warn("could not fetch attribute '{}'", name, ex);
     }
 
     return value;
@@ -227,10 +227,10 @@ class LdapUtil {
       } else if (SCOPE_OBJECT.equalsIgnoreCase(scopeString)) {
         scope = SearchControls.OBJECT_SCOPE;
       } else if (logger.isWarnEnabled()) {
-        logger.warn("unknown scope {}, using subtree scope", scopeString);
+        logger.info("unknown scope {}, using subtree scope", scopeString);
       }
     } else if (logger.isWarnEnabled()) {
-      logger.warn("no search scope defined, using subtree scope");
+      logger.info("no search scope defined, using subtree scope");
     }
 
     return scope;
