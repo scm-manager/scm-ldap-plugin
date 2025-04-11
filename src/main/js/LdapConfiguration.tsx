@@ -14,25 +14,26 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import React from "react";
+import React, {FC} from "react";
 import { Title, Configuration } from "@scm-manager/ui-components";
 import LdapConfigurationForm from "./LdapConfigurationForm";
-import { withTranslation, WithTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
+import { useDocumentTitle } from "@scm-manager/ui-core";
 
-type Props = WithTranslation & {
+type Props = {
   link: string;
 };
 
-class LdapConfiguration extends React.Component<Props> {
-  render(): React.ReactNode {
-    const { t, link } = this.props;
-    return (
-      <>
-        <Title title={t("scm-ldap-plugin.form.header")} />
-        <Configuration link={link} t={t} render={props => <LdapConfigurationForm {...props} />} />
-      </>
-    );
-  }
-}
+const LdapConfiguration: FC<Props> = ({ link }) => {
+  const [t] = useTranslation("plugins");
+  useDocumentTitle(t("scm-ldap-plugin.nav-link"));
 
-export default withTranslation("plugins")(LdapConfiguration);
+  return (
+    <>
+      <Title title={t("scm-ldap-plugin.form.header")} />
+      <Configuration link={link} render={props => <LdapConfigurationForm {...props} />} />
+    </>
+  );
+};
+
+export default LdapConfiguration;
