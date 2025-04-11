@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 3.1.0 - 2025-04-11
+### Added
+- Lower log levels ([#39](https://github.com/scm-manager/scm-ldap-plugin/pull/39))
+- Descriptive document titles
+
 ## 3.0.0 - 2024-09-11
 ### Changed
 - Changeover to AGPLv3 license
