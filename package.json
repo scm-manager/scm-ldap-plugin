@@ -22,7 +22,7 @@
         "redux": "^4.0.0",
         "styled-components": "^5.3.5",
         "react-dom": "^17.0.1",
-        "react-router": "^5.3.1",
+        "react-router": "^7.5.2",
         "@scm-manager/ui-api": "3.7.0",
         "@scm-manager/ui-forms": "3.7.0",
         "@scm-manager/ui-buttons": "3.7.0",
