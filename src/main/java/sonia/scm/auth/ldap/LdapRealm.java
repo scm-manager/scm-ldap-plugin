@@ -24,7 +24,6 @@ import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.authc.credential.AllowAllCredentialsMatcher;
 import org.apache.shiro.realm.AuthenticatingRealm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,22 +48,21 @@ public class LdapRealm extends AuthenticatingRealm {
 
   private final SyncingRealmHelper syncingRealmHelper;
   private final LdapConfigStore configStore;
-  private final LdapConnectionFactory ldapConnectionFactory;
+  private final LdapAuthenticatorFactory ldapAuthenticatorFactory;
   private final InvalidCredentialsCache invalidCredentialsCache;
 
   @Inject
   public LdapRealm(LdapConfigStore configStore,
                    SyncingRealmHelper syncingRealmHelper,
                    CacheManager cacheManager,
-                   LdapConnectionFactory ldapConnectionFactory,
+                   LdapAuthenticatorFactory ldapAuthenticatorFactory,
                    InvalidCredentialsCache invalidCredentialsCache) {
     this.configStore = configStore;
     this.syncingRealmHelper = syncingRealmHelper;
-    this.ldapConnectionFactory = ldapConnectionFactory;
+    this.ldapAuthenticatorFactory = ldapAuthenticatorFactory;
     this.invalidCredentialsCache = invalidCredentialsCache;
 
     setAuthenticationTokenClass(UsernamePasswordToken.class);
-    setCredentialsMatcher(new AllowAllCredentialsMatcher());
 
     Cache<Object, AuthenticationInfo> cache = cacheManager.getCache(CACHE_NAME);
     setAuthenticationCache(cache);
@@ -87,7 +85,7 @@ public class LdapRealm extends AuthenticatingRealm {
 
     invalidCredentialsCache.verifyNotInvalid(upt);
 
-    LdapAuthenticator authenticator = new LdapAuthenticator(ldapConnectionFactory, config);
+    LdapAuthenticator authenticator = ldapAuthenticatorFactory.create(config);
     User user;
     try {
       user = authenticator.authenticate(username, new String(password))
@@ -98,6 +96,16 @@ public class LdapRealm extends AuthenticatingRealm {
     }
 
     syncingRealmHelper.store(user);
+    /*
+    IMPORTANT:
+    AuthenticatingRealm requires the password of the user to verify if user credentials are already cached.
+    Otherwise, the SimpleCredentialMatcher can't verify already cached credentials without causing a NullPointerException.
+    Setting this password needs to happen after storing the user in the syncingRealmHelper because this would cause the override of the user password.
+    */
+    if(user.getPassword() == null) {
+      user.setPassword(new String(password));
+    }
+
     return syncingRealmHelper.createAuthenticationInfo(TYPE, user);
   }
 }
