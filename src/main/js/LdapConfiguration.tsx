@@ -18,7 +18,6 @@ import React, {FC} from "react";
 import { Title, Configuration } from "@scm-manager/ui-components";
 import LdapConfigurationForm from "./LdapConfigurationForm";
 import { useTranslation } from "react-i18next";
-import { useDocumentTitle } from "@scm-manager/ui-core";
 
 type Props = {
   link: string;
@@ -26,7 +25,6 @@ type Props = {
 
 const LdapConfiguration: FC<Props> = ({ link }) => {
   const [t] = useTranslation("plugins");
-  useDocumentTitle(t("scm-ldap-plugin.nav-link"));
 
   return (
     <>

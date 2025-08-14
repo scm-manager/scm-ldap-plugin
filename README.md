@@ -7,7 +7,7 @@
   scm-ldap-plugin
 </h1>
 
-This plugin provides an Authentication for SCM-Manager using LDAP.
+This plugin provides LDAP-compatible servers as an additional authentication source for SCM-Manager.
 
 ## Usage
 
@@ -67,7 +67,8 @@ curl -u scmadmin:scmadmin \
      http://localhost:8081/scm/api/v2/config/ldap
 ```
 
-Now you can test the connection with username `professor` and password `professor`.
+The OpenLDAP test server provides some test users. You can find examples for 
+user/password combinations for this image [at this page](https://github.com/rroemhild/docker-test-openldap).
 
 ## Directory & File structure
 

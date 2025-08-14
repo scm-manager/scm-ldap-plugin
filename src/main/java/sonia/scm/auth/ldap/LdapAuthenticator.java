@@ -17,21 +17,19 @@
 package sonia.scm.auth.ldap;
 
 import com.google.common.base.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import sonia.scm.user.User;
 import sonia.scm.util.ValidationUtil;
 
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchResult;
-import javax.net.ssl.SSLContext;
 import java.util.Optional;
 
+@Slf4j
 public class LdapAuthenticator {
 
   private final LdapConnectionFactory connectionFactory;
   private final LdapConfig config;
-  private static final Logger logger = LoggerFactory.getLogger(LdapAuthenticator.class);
 
   public LdapAuthenticator(LdapConnectionFactory connectionFactory, LdapConfig config) {
     this.connectionFactory = connectionFactory;
@@ -40,6 +38,7 @@ public class LdapAuthenticator {
 
   public Optional<User> authenticate(String username, String password) {
     try (LdapConnection bindConnection = connectionFactory.createBindConnection(config)) {
+      log.trace("bind connection to ldap server established");
       UserSearcher userSearcher = new UserSearcher(config, bindConnection);
       Optional<SearchResult> optionalSearchResult = searchUser(username, userSearcher);
       if (optionalSearchResult.isPresent()) {
@@ -49,8 +48,7 @@ public class LdapAuthenticator {
         authenticateUser(userDN, password);
         Attributes attributes = searchResult.getAttributes();
         User user = createUser(attributes);
-
-        logger.trace("successfully created user from from ldap response: {}", user);
+        log.trace("successfully created external user from ldap response: {}", user);
         return Optional.of(user);
       }
     }
@@ -68,8 +66,8 @@ public class LdapAuthenticator {
 
 
   private void authenticateUser(String userDN, String password) {
-    try (LdapConnection connection = connectionFactory.createUserConnection(config, userDN, password)) {
-      logger.debug("user {} successfully authenticated", userDN);
+    try (LdapConnection ignored = connectionFactory.createUserConnection(config, userDN, password)) {
+      log.debug("user {} successfully authenticated", userDN);
     }
   }
 
@@ -89,7 +87,7 @@ public class LdapAuthenticator {
     if (ValidationUtil.isMailAddressValid(mail)) {
       user.setMail(mail);
     } else {
-      logger.warn("No valid e-mail address found for user {}", username);
+      log.warn("No valid e-mail address found for user {}", username);
     }
 
     if (!user.isValid()) {
