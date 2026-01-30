@@ -19,8 +19,8 @@ plugins {
 }
 
 dependencies {
-  testImplementation "com.github.sdorra:shiro-unit:1.0.1"
-  testImplementation "com.unboundid:unboundid-ldapsdk:2.3.0"
+  testImplementation "com.github.sdorra:shiro-unit:1.0.2"
+  testImplementation "com.unboundid:unboundid-ldapsdk:7.0.4"
 }
 
 scmPlugin {
