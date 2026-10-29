@@ -15,8 +15,8 @@
  */
 
 import React from "react";
-import { Button, Checkbox, InputField, Select } from "@scm-manager/ui-components";
 import { withTranslation, WithTranslation } from "react-i18next";
+import { Button, Checkbox, InputField, Select } from "@scm-manager/ui-components";
 import TestConnectionDialog from "./TestConnectionDialog";
 import { PROFILES } from "./profiles";
 
@@ -62,7 +62,7 @@ class LdapConfigurationForm extends React.Component<Props, State> {
     this.state = {
       ...props.initialConfiguration,
       activeFields: [],
-      showTestDialog: false
+      showTestDialog: false,
     };
   }
 
@@ -73,15 +73,15 @@ class LdapConfigurationForm extends React.Component<Props, State> {
   valueChangeHandler = (value: any, name: string) => {
     this.setState(
       {
-        [name]: value
+        [name]: value,
       },
       () =>
         this.props.onConfigurationChange(
           {
-            ...this.state
+            ...this.state,
           },
-          true
-        )
+          true,
+        ),
     );
   };
 
@@ -92,15 +92,15 @@ class LdapConfigurationForm extends React.Component<Props, State> {
       {
         profile: value,
         activeFields: fields,
-        ...profile
+        ...profile,
       },
       () =>
         this.props.onConfigurationChange(
           {
-            ...this.state
+            ...this.state,
           },
-          true
-        )
+          true,
+        ),
     );
   };
 
@@ -114,7 +114,7 @@ class LdapConfigurationForm extends React.Component<Props, State> {
         testLink={this.props.initialConfiguration._links.test.href}
         onClose={() =>
           this.setState({
-            showTestDialog: false
+            showTestDialog: false,
           })
         }
       />
@@ -146,9 +146,7 @@ class LdapConfigurationForm extends React.Component<Props, State> {
         {this.createInputField("searchFilterGroup")}
         {this.createDropDown("searchScope", ["object", "one", "sub"])}
         {this.createDropDown("referralStrategy", ["FOLLOW", "IGNORE", "THROW"])}
-        <div className="column is-full">
-          {this.createCheckbox("enableNestedGroups")}
-        </div>
+        <div className="column is-full">{this.createCheckbox("enableNestedGroups")}</div>
         {this.createInputField("searchFilterNestedGroup", "text", "is-full", !this.state.enableNestedGroups)}
         <div className="column is-full">
           {this.createCheckbox("enableNestedADGroups")}
@@ -171,7 +169,7 @@ class LdapConfigurationForm extends React.Component<Props, State> {
 
   testConnection = () => {
     this.setState({
-      showTestDialog: true
+      showTestDialog: true,
     });
   };
 
@@ -188,16 +186,16 @@ class LdapConfigurationForm extends React.Component<Props, State> {
           options={this.createOptions(name, options)}
           onChange={handler}
         />
-      </div>
+      </div>,
     );
   };
 
   createOptions = (name: string, options: string[]) => {
     const { t } = this.props;
-    return options.map(value => {
+    return options.map((value) => {
       return {
         value: value,
-        label: t("scm-ldap-plugin.form.options." + name + "." + value)
+        label: t("scm-ldap-plugin.form.options." + name + "." + value),
       };
     });
   };
@@ -216,7 +214,7 @@ class LdapConfigurationForm extends React.Component<Props, State> {
           type={type}
           onChange={this.valueChangeHandler}
         />
-      </div>
+      </div>,
     );
   };
 
@@ -231,7 +229,7 @@ class LdapConfigurationForm extends React.Component<Props, State> {
         checked={this.state[name]}
         disabled={readOnly}
         onChange={this.valueChangeHandler}
-      />
+      />,
     );
   };
 

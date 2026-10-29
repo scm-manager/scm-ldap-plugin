@@ -15,8 +15,9 @@
  */
 
 import React from "react";
-import { apiClient, Button, InputField, Modal, Subtitle, Tag } from "@scm-manager/ui-components";
 import { withTranslation, WithTranslation } from "react-i18next";
+import { apiClient, Button, InputField, Modal, Tag } from "@scm-manager/ui-components";
+import { Subtitle } from "@scm-manager/ui-core";
 
 type TestResultUser = {
   valid: boolean;
@@ -54,7 +55,7 @@ class TestConnectionDialog extends React.Component<Props, State> {
     this.state = {
       username: "",
       password: "",
-      testResult: undefined
+      testResult: undefined,
     };
   }
 
@@ -187,13 +188,13 @@ class TestConnectionDialog extends React.Component<Props, State> {
 
   usernameChanged = (value: string) => {
     this.setState({
-      username: value
+      username: value,
     });
   };
 
   passwordChanged = (value: string) => {
     this.setState({
-      password: value
+      password: value,
     });
   };
 
@@ -202,20 +203,20 @@ class TestConnectionDialog extends React.Component<Props, State> {
       .post(this.props.testLink, {
         username: this.state.username,
         password: this.state.password,
-        config: this.props.config
+        config: this.props.config,
       })
-      .then(result => result.json())
-      .then(body =>
+      .then((result) => result.json())
+      .then((body) =>
         this.setState({
-          testResult: body
-        })
+          testResult: body,
+        }),
       )
-      .catch(error =>
+      .catch((error) =>
         this.setState({
           testResult: {
-            exception: error
-          }
-        })
+            exception: error,
+          },
+        }),
       );
   };
 }

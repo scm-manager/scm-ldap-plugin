@@ -29,7 +29,7 @@ export const PROFILES = {
     enableNestedADGroups: true,
     enableNestedGroups: false,
     excludeGroupsOutsideUnit: false,
-    referralStrategy: "FOLLOW"
+    referralStrategy: "FOLLOW",
   },
   Apache: {
     attributeNameId: "cn",
@@ -45,7 +45,7 @@ export const PROFILES = {
     enableNestedADGroups: false,
     enableNestedGroups: false,
     excludeGroupsOutsideUnit: false,
-    referralStrategy: "FOLLOW"
+    referralStrategy: "FOLLOW",
   },
   OpenDJ: {
     attributeNameId: "uid",
@@ -77,7 +77,7 @@ export const PROFILES = {
     enableNestedADGroups: false,
     enableNestedGroups: false,
     excludeGroupsOutsideUnit: false,
-    referralStrategy: "FOLLOW"
+    referralStrategy: "FOLLOW",
   },
   posix: {
     attributeNameId: "uid",
@@ -93,7 +93,7 @@ export const PROFILES = {
     enableNestedADGroups: false,
     enableNestedGroups: false,
     excludeGroupsOutsideUnit: false,
-    referralStrategy: "FOLLOW"
+    referralStrategy: "FOLLOW",
   },
   sun: {
     attributeNameId: "uid",
@@ -109,7 +109,7 @@ export const PROFILES = {
     enableNestedADGroups: false,
     enableNestedGroups: false,
     excludeGroupsOutsideUnit: false,
-    referralStrategy: "FOLLOW"
+    referralStrategy: "FOLLOW",
   },
-  Custom: {}
+  Custom: {},
 };
